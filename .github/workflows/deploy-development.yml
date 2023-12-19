@@ -6,7 +6,7 @@ on:
 jobs:
   deploy-development:
     name: Deploy development
-    uses: Nacionaline-sporto-agentura/reusable-workflows/.github/workflows/sporto-registras-deploy.yml@main
+    uses: Nacionaline-sporto-agentura/reusable-workflows/.github/workflows/sporto-registras-deploy.yml@triggering-deploys
     secrets: inherit
     permissions:
       contents: read
