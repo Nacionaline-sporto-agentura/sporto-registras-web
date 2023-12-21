@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { Filters } from './filters/reducer';
+import { UserReducer } from './user/reducer';
 
 const persistConfig = {
   key: 'filters',
@@ -12,6 +13,7 @@ const persistConfig = {
 
 const reducers = combineReducers({
   filters: Filters.reducer,
+  user: UserReducer.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);
