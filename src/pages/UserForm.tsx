@@ -102,7 +102,7 @@ const UserForm = () => {
     return await updateUser.mutateAsync(params);
   };
 
-  const createUser = useMutation((params: User) => Api.createUser({ params }), {
+  const createUser = useMutation((params: User) => Api.createAdminUser({ params }), {
     onError: ({ response }) => {
       handleErrorToastFromServer(response);
     },
@@ -120,7 +120,7 @@ const UserForm = () => {
     retry: false,
   });
 
-  const updateUser = useMutation((params: User) => Api.updateUser({ params, id }), {
+  const updateUser = useMutation((params: User) => Api.updateAdminUser({ params, id }), {
     onError: ({ response }) => {
       handleErrorToastFromServer(response);
     },

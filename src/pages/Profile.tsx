@@ -88,7 +88,7 @@ const Profile = () => {
   const user = useAppSelector((state) => state.user.userData);
 
   const updateProfile = useMutation(
-    (values: UserProps) => Api.updateUser({ params: values, id: user.id || '' }),
+    (values: UserProps) => Api.updateAdminUser({ params: values, id: user.id || '' }),
     {
       onSuccess: () => {
         handleSuccessToast(validationTexts.profileUpdated);

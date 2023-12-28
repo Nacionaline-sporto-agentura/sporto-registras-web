@@ -232,7 +232,7 @@ class Api {
     });
   };
 
-  updateUser = async ({ params, id }: { params: any; id: string }) => {
+  updateAdminUser = async ({ params, id }: { params: any; id: string }) => {
     return this.patch({
       resource: Resources.ADMINS,
       params,
@@ -264,7 +264,7 @@ class Api {
     });
   };
 
-  createUser = async ({ params }: { params: any }) => {
+  createAdminUser = async ({ params }: { params: any }) => {
     return this.post({
       resource: Resources.ADMINS,
       params,

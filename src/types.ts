@@ -11,7 +11,7 @@ export interface User {
   phone?: string;
   profiles?: Profile[];
   groups?: Group[];
-  authStrategy: AuthStrategy;
+  authStrategy?: AuthStrategy;
 }
 
 export type ProfileId = 'freelancer' | string;
