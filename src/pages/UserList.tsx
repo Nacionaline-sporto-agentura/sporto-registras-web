@@ -14,7 +14,14 @@ import Api from '../utils/api';
 import { useGenericTablePageHooks, useTableData } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 import { getInternalTabs } from '../utils/tabs';
-import { buttonsTitles, emptyState, emptyStateUrl, inputLabels, pageTitles } from '../utils/texts';
+import {
+  buttonsTitles,
+  emptyState,
+  emptyStateUrl,
+  inputLabels,
+  pageTitles,
+  roleLabels,
+} from '../utils/texts';
 
 const filterConfig = () => ({
   firstName: {
@@ -45,7 +52,10 @@ export const columns = {
 
 export const mapUsersList = (users: User[]): TableRow[] =>
   users.map((user: User) => {
-    const groups = user.groups?.map((group) => ({ label: group.name, url: slugs.group(group.id) }));
+    const groups = user.groups?.map((group) => ({
+      label: `${group.name} (${roleLabels[group.role]})`,
+      url: slugs.groupUsers(group.id),
+    }));
     return {
       id: user.id,
       name: user.fullName,

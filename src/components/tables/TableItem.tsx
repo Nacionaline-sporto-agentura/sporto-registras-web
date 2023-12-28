@@ -13,11 +13,17 @@ const TableItem = ({ items }: TableItemProps) => {
     return <>-</>;
   }
 
+  const handleNavigate = (e: any, url: string) => {
+    e.stopPropagation();
+
+    navigate(url);
+  };
+
   return (
     <Row>
       {items.map((item) => {
         return (
-          <Container key={JSON.stringify(item)} onClick={() => navigate(item.url)}>
+          <Container key={JSON.stringify(item)} onClick={(e) => handleNavigate(e, item.url)}>
             <Label>{item.label}</Label>
           </Container>
         );

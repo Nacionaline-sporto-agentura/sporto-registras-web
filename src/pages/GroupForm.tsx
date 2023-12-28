@@ -70,7 +70,7 @@ const GroupsFormPage = () => {
 
   const initialValues: GroupProps = {
     name: group?.name || '',
-    parent: parent || '',
+    parent: group?.parent || parent || '',
   };
 
   const { data: groupOptions = [] } = useQuery(
