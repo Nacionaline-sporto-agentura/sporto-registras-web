@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { device } from '../../styles';
 import { buttonsTitles } from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
-import Icon from './Icons';
+import Icon, { IconName } from './Icons';
 
 interface ActionContainerInterface {
   onClose: () => void;
@@ -29,12 +29,11 @@ const DeleteCard = ({
     <>
       <Container tabIndex={0}>
         <IconContainer onClick={() => onClose()}>
-          <StyledCloseButton name={'close'} />
+          <StyledCloseButton name={IconName.close} />
         </IconContainer>
         <Title>{title}</Title>
         <Description>
-          {descriptionFirstPart}
-          <Name>{name}</Name> {descriptionSecondPart}
+          {descriptionFirstPart} <Name>{name}</Name> {descriptionSecondPart}
         </Description>
         <BottomRow>
           <StyledButton onClick={() => onClose()} variant={ButtonColors.TRANSPARENT} type="button">

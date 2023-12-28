@@ -135,8 +135,7 @@ const GroupDeleteComponent = ({ group }: AdditionalDeleteGroupComponentInterface
           <CloseIcon onClick={() => setOpen(false)} />
           <Title>{deleteTitles.group}</Title>
           <Description>
-            {deleteDescriptionFirstPart.group}
-            <Name>{name}</Name>
+            {deleteDescriptionFirstPart.group} <Name>{name}</Name>{' '}
             {deleteDescriptionSecondPart.group}
           </Description>
           {renderAdditionalInfo()}

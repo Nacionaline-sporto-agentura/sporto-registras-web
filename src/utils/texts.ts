@@ -43,8 +43,8 @@ export const deleteTitles = {
 };
 
 export const deleteDescriptionFirstPart = {
-  group: 'Ar esate tikri, kad norite ištrinti ',
-  user: 'Ar esate tikri, kad norite ištrinti ',
+  group: 'Ar esate tikri, kad norite ištrinti',
+  user: 'Ar esate tikri, kad norite ištrinti',
 };
 
 export const deleteDescriptionSecondPart = {
