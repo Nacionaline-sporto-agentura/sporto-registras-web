@@ -9,8 +9,8 @@ import { useAppSelector } from '../state/hooks';
 import { FormColumn, FormRow } from '../styles/CommonStyles';
 import { ReactQueryError } from '../types';
 import Api from '../utils/api';
-import { RoleType } from '../utils/constants';
-import { getReactQueryErrorMessage, handleSuccessToast, hasPermission } from '../utils/functions';
+import { AuthStrategy } from '../utils/constants';
+import { getReactQueryErrorMessage, handleSuccessToast } from '../utils/functions';
 import { formLabels, inputLabels, pageTitles, validationTexts } from '../utils/texts';
 
 export interface UserProps {
@@ -86,7 +86,6 @@ export const validateProfileForm = Yup.object().shape(
 
 const Profile = () => {
   const user = useAppSelector((state) => state.user.userData);
-  const isAdmin = !hasPermission(user, [RoleType.USER]);
 
   const updateProfile = useMutation(
     (values: UserProps) => Api.updateUser({ params: values, id: user.id || '' }),
@@ -118,6 +117,8 @@ const Profile = () => {
       setErrors({ oldPassword: errorMessage });
     }
   };
+
+  const canChangePassword = user.authStrategy === AuthStrategy.PASSWORD;
 
   const initialProfileValues: UserProps = {
     firstName: user?.firstName || '',
@@ -170,7 +171,7 @@ const Profile = () => {
             />
           </FormRow>
         </SimpleContainer>
-        {isAdmin && (
+        {canChangePassword && (
           <SimpleContainer title={formLabels.changePassword}>
             <FormRow columns={2}>
               <PasswordField

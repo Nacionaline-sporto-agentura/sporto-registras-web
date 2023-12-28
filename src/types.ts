@@ -1,4 +1,4 @@
-import { RoleType, TableItemWidth } from './utils/constants';
+import { AuthStrategy, RoleType, TableItemWidth } from './utils/constants';
 
 export interface User {
   id?: string;
@@ -10,7 +10,8 @@ export interface User {
   type?: RoleType;
   phone?: string;
   profiles?: Profile[];
-  groups?: any[];
+  groups?: Group[];
+  authStrategy: AuthStrategy;
 }
 
 export type ProfileId = 'freelancer' | string;

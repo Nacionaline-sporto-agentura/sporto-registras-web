@@ -29,7 +29,7 @@ const GroupsFormPage = () => {
 
   const title = !isNew(id) ? pageTitles.updateGroup : pageTitles.newGroup;
 
-  const handleSubmit = async ({ name }: GroupProps) => {
+  const handleSubmit = async ({ name, parent }: GroupProps) => {
     const params = {
       name,
     };
@@ -100,7 +100,9 @@ const GroupsFormPage = () => {
             error={errors?.group}
             groupOptions={groupOptions}
             value={values.parent}
-            onChange={(value) => handleChange('parent', value)}
+            onChange={(value) => {
+              handleChange('parent', value.id);
+            }}
           />
         </Row>
       </SimpleContainer>

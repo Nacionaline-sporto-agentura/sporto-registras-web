@@ -16,3 +16,7 @@ export enum TableItemWidth {
   SMALL = '40px',
   LARGE = 'auto',
 }
+
+export enum AuthStrategy {
+  PASSWORD = 'PASSWORD',
+}

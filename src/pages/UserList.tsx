@@ -5,6 +5,7 @@ import DynamicFilter from '../components/other/DynamicFilter';
 import { FilterInputTypes } from '../components/other/DynamicFilter/Filter';
 import TabBar from '../components/other/TabBar';
 import MainTable from '../components/tables/MainTable';
+import TableItem from '../components/tables/TableItem';
 import { actions as filterActions } from '../state/filters/reducer';
 import { useAppSelector } from '../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
@@ -44,10 +45,11 @@ export const columns = {
 
 export const mapUsersList = (users: User[]): TableRow[] =>
   users.map((user: User) => {
+    const groups = user.groups?.map((group) => ({ label: group.name, url: slugs.group(group.id) }));
     return {
       id: user.id,
       name: user.fullName,
-      groups: '',
+      groups: <TableItem items={groups} />,
       phone: user.phone,
       email: user.email,
     };
@@ -73,7 +75,7 @@ const UserList = () => {
     dispatch(filterActions.setUserFilters(filters));
   };
 
-  const tabs = getInternalTabs()
+  const tabs = getInternalTabs();
 
   const notFoundInfo: NotFoundInfoProps = {
     text: emptyState.users,

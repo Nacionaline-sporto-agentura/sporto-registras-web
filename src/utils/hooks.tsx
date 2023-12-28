@@ -67,7 +67,6 @@ export const useCheckAuthMutation = () => {
     },
     onSuccess: (data: User) => {
       if (data) {
-        handleSetProfile(data?.profiles);
         dispatch(userAction.setUser({ userData: data, loggedIn: true }));
       }
     },
