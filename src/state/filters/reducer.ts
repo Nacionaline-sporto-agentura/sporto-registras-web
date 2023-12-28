@@ -1,23 +1,29 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { GroupFilters, UserFilters } from '../../types';
 
-interface FiltersState {
-  filter: any;
+interface UsersFiltersState {
+  userFilters: UserFilters;
+  groupFilters: GroupFilters;
 }
 
-const initialState: FiltersState = {
-  filter: {},
+const initialState: UsersFiltersState = {
+  userFilters: {},
+  groupFilters: {},
 };
 
-export const Filters = createSlice({
-  name: 'filters',
+export const filtersReducer = createSlice({
+  name: 'userFilters',
   initialState,
   reducers: {
-    setFilters: (state, action) => {
-      return { ...state, filter: action.payload };
+    setUserFilters: (state, action) => {
+      return { ...state, userFilters: action.payload };
+    },
+    setGroupFilters: (state, action) => {
+      return { ...state, groupFilters: action.payload };
     },
   },
 });
 
-export default Filters.reducer;
+export default filtersReducer.reducer;
 
-export const actions = Filters.actions;
+export const actions = filtersReducer.actions;
