@@ -13,7 +13,7 @@ export const slugs = {
   profile: '/profilis',
   users: '/vidiniai-naudotojai/naudotojai',
   newUser: '/vidiniai-naudotojai/naudotojai/naujas',
-  user: (id: string) => `/naudotojai/${id}`,
+  user: (id: string) => `/vidiniai-naudotojai/naudotojai/${id}`,
   groupGroups: (id: string) => `/vidiniai-naudotojai/grupes/${id}/grupes`,
   group: (id: string) => `/vidiniai-naudotojai/grupes/${id}`,
   groups: '/vidiniai-naudotojai/grupes',
