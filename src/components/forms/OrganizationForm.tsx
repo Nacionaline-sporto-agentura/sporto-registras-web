@@ -1,4 +1,3 @@
-import { InstitutionProps } from '../../pages/InstitutionForm';
 import { FormRow } from '../../styles/CommonStyles';
 import { formLabels, inputLabels } from '../../utils/texts';
 import DateField from '../DateField';
@@ -13,10 +12,12 @@ const OrganizationForm = ({
   errors,
   handleChange,
   groupOptions,
+  toggleCanHaveChildren = false,
 }: {
-  values: InstitutionProps;
+  values: any;
   errors: any;
   handleChange;
+  toggleCanHaveChildren?: boolean;
   groupOptions;
 }) => {
   return (
@@ -63,13 +64,15 @@ const OrganizationForm = ({
             onChange={(companyEmail) => handleChange('companyEmail', companyEmail)}
           />
         </FormRow>
-        <FormRow columns={1}>
-          <CheckBox
-            label={inputLabels.canHaveChildren}
-            value={values.canHaveChildren}
-            onChange={(value) => handleChange('canHaveChildren', value)}
-          />
-        </FormRow>
+        {toggleCanHaveChildren && (
+          <FormRow columns={1}>
+            <CheckBox
+              label={inputLabels.canHaveChildren}
+              value={values.canHaveChildren}
+              onChange={(value) => handleChange('canHaveChildren', value)}
+            />
+          </FormRow>
+        )}
       </SimpleContainer>
 
       {values.canHaveChildren && (

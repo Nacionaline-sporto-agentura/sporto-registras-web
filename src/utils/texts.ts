@@ -1,4 +1,4 @@
-import { RoleType, ServerErrorMessages } from './constants';
+import { AdminRoleType, ServerErrorMessages } from './constants';
 
 export const validationTexts = {
   requireText: 'Privalote įvesti',
@@ -98,10 +98,12 @@ export const pageTitles = {
   organizations: 'Sporto organizacijos',
   newOrganization: 'Nauja organizacija',
   newInstitution: 'Nauja įstaiga',
+  updateOrganization: 'Atnaujinti organizaciją',
 };
 
 export const buttonsTitles = {
   back: 'Grįžti atgal',
+  group: 'Ištrinti grupę',
   clearAll: 'Išvalyti visus',
   profile: 'Profilis',
   logout: 'Atsijungti',
@@ -138,6 +140,6 @@ export const url = {
   new: 'naujas',
 };
 export const roleLabels = {
-  [RoleType.USER]: 'Naudotojas',
-  [RoleType.ADMIN]: 'Administratorius',
+  [AdminRoleType.USER]: 'Naudotojas',
+  [AdminRoleType.ADMIN]: 'Administratorius',
 };

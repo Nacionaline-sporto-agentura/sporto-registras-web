@@ -58,7 +58,7 @@ const OrganizationPage = () => {
       <ViewRow>
         <ViewInnerRow>
           <ViewTitle>{group?.name || '-'}</ViewTitle>
-          <EditIcon onClick={() => {}} />
+          <EditIcon onClick={() => navigate(slugs.updateOrganization(id))} />
         </ViewInnerRow>
       </ViewRow>
       <SimpleContainer>

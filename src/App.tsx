@@ -16,7 +16,7 @@ import ResetPassword from './pages/ResetPassword';
 import { useAppSelector } from './state/hooks';
 import { GlobalStyle, theme } from './styles';
 import api from './utils/api';
-import { RoleType } from './utils/constants';
+import { AdminRoleType } from './utils/constants';
 import { handleErrorToastFromServer } from './utils/functions';
 import { useCheckAuthMutation } from './utils/hooks';
 import { handleUpdateTokens } from './utils/loginFunctions';
@@ -121,7 +121,7 @@ const PublicRoute = ({ loggedIn }: ProtectedRouteProps) => {
 
   const user = useAppSelector((state) => state.user.userData);
 
-  const userWithoutProfile = loggedIn && user.type == RoleType.USER && !profileId;
+  const userWithoutProfile = loggedIn && user.type == AdminRoleType.USER && !profileId;
 
   if (loggedIn && !userWithoutProfile) {
     return <Navigate to={'/'} replace />;

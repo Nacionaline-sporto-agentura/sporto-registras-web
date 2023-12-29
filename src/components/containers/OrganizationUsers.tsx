@@ -1,13 +1,18 @@
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { NotFoundInfoProps } from '../../types';
 import api from '../../utils/api';
-import { groupUserLabels } from '../../utils/columns';
 import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
 import { mapGroupUsersList } from '../../utils/mapFunctions';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, emptyState, emptyStateUrl } from '../../utils/texts';
 import Button from '../buttons/Button';
 import MainTable from '../tables/MainTable';
+
+export const columns = {
+  name: { label: 'Naudotojas', show: true },
+  phone: { label: 'Telefonas', show: true },
+  email: { label: 'El. paštas', show: true },
+};
 
 const OrganizationUsers = () => {
   const { navigate, page, id = '' } = useGenericTablePageHooks();
@@ -44,11 +49,11 @@ const OrganizationUsers = () => {
       </TableButtonsRow>
       <MainTable
         loading={loading}
-        onClick={(userId) => navigate(slugs.user(id, userId))}
+        onClick={(userId) => navigate(slugs.organizationUser(id, userId))}
         isFilterApplied={false}
         notFoundInfo={notFound}
         data={tableData}
-        columns={groupUserLabels}
+        columns={columns}
       />
     </>
   );

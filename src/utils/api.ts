@@ -266,7 +266,6 @@ class Api {
   getAdminUsers = async ({ filter, page }: TableList) => {
     return this.getList({
       resource: Resources.ADMINS,
-      populate: [Populations.GROUPS],
       page,
       filter,
     });
@@ -279,9 +278,39 @@ class Api {
     });
   };
 
+  updateTenantUser = async ({
+    params,
+    id,
+    tenantId,
+  }: {
+    params: any;
+    id: string;
+    tenantId: string;
+  }) => {
+    return this.patch({
+      resource: `${Resources.TENANTS}/${tenantId}/users`,
+      params,
+      id,
+    });
+  };
+
+  getTenantUser = async ({ tenantId, id }: { id: string; tenantId: string }) => {
+    return this.getOne({
+      resource: `${Resources.TENANTS}/${tenantId}/users`,
+      id,
+    });
+  };
+
+  deleteTenantUser = async ({ tenantId, id }: { id: string; tenantId: string }) => {
+    return this.delete({
+      resource: `${Resources.TENANTS}/${tenantId}/users`,
+      id,
+    });
+  };
+
   updateUser = async ({ params, id }: { params: any; id: string }) => {
     return this.patch({
-      resource: Resources.USERS,
+      resource: Resources.ADMINS,
       params,
       id,
     });
@@ -301,6 +330,13 @@ class Api {
     });
   };
 
+  createUser = async ({ params }: { params: any }) => {
+    return this.post({
+      resource: Resources.USERS,
+      params,
+    });
+  };
+
   getUsers = async ({ filter, page, query }: TableList) => {
     return this.getList({
       resource: Resources.USERS,
@@ -314,13 +350,6 @@ class Api {
     return this.getList({
       resource: `${Resources.TENANTS}/${id}/users`,
       page,
-    });
-  };
-
-  createUser = async ({ params }: { params: any }) => {
-    return this.post({
-      resource: Resources.USERS,
-      params,
     });
   };
 
@@ -391,16 +420,15 @@ class Api {
       sort: [SortFields.NAME],
     });
 
-  getTenantOptions = async ({ query }: TableList) =>
+  getTenantOptions = async () =>
     await this.getList({
       resource: Resources.TENANTS,
       populate: [Populations.CHILDREN],
-      query,
       pageSize: '9999',
       sort: [SortFields.NAME],
     });
 
-  getTenant = async ({ id }: { id: string }): Promise<Group> => {
+  getTenant = async ({ id }: { id: string }): Promise<any> => {
     return await this.getOne({
       resource: Resources.TENANTS,
       populate: [Populations.CHILDREN],

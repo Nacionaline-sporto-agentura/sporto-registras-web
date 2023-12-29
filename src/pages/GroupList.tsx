@@ -13,6 +13,7 @@ import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
 import { NotFoundInfoProps } from '../types';
 import Api from '../utils/api';
 import { groupColumns } from '../utils/columns';
+import { canManageGroup, isSuperAdmin } from '../utils/functions';
 import { useGenericTablePageHooks, useTableData } from '../utils/hooks';
 import { mapGroupList } from '../utils/mapFunctions';
 import { slugs } from '../utils/routes';
@@ -32,10 +33,11 @@ const rowConfig = [['name']];
 const GroupsList = () => {
   const { dispatch, navigate, page } = useGenericTablePageHooks();
   const { id } = useParams();
+  const currentUser = useAppSelector((state) => state.user.userData);
 
   const tabs = getInternalTabs();
 
-  const showButton = true;
+  const showButton = isSuperAdmin(currentUser.type);
 
   const newGroupUrl = `${slugs.newGroup}${id ? `?parent=${id}` : ''}`;
 

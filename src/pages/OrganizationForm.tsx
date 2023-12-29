@@ -115,7 +115,7 @@ const OrganizationFormPage = () => {
       code: companyCode,
       phone: companyPhone,
       email: companyEmail?.toLowerCase(),
-      parent,
+      ...(!!parent && { parent: parseInt(parent) }),
       tenantType: TenantTypes.ORGANIZATION,
       data,
     };
@@ -164,8 +164,7 @@ const OrganizationFormPage = () => {
 
   const { data: groupOptions = [] } = useQuery(
     ['tenantOption', id],
-    async () =>
-      (await Api.getTenantOptions({ query: { tenantType: TenantTypes.ORGANIZATION } })).rows,
+    async () => (await Api.getTenantOptions()).rows,
     {
       onError: () => {
         handleErrorToastFromServer();

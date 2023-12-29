@@ -54,19 +54,10 @@ const Icon = ({ name, className }: IconProps) => {
       return <AiOutlineArrowRight className={className} />;
     case IconName.forward:
       return <MdArrowForwardIos className={className} />;
-    case IconName.edit:
-      return <MdOutlineEdit className={className} />;
-    case IconName.back:
-      return <MdArrowBack className={className} />;
-    case IconName.checkmark:
-      return <MdDone className={className} />;
-    case IconName.visibleOn:
-      return <MdOutlineVisibility className={className} />;
 
     case IconName.calendar:
       return <BiCalendarEvent className={className} />;
-    case 'forward':
-      return <MdArrowForwardIos className={className} />;
+
     case IconName.edit:
       return <MdOutlineEdit className={className} />;
     case IconName.back:

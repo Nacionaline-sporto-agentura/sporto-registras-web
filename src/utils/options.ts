@@ -1,3 +1,3 @@
-import { RoleType } from './constants';
+import { AdminRoleType } from './constants';
 
-export const getUserRoleOptions = () => [RoleType.ADMIN, RoleType.USER];
+export const getUserRoleOptions = () => [AdminRoleType.ADMIN, AdminRoleType.USER];
