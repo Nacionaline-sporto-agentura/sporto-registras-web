@@ -14,6 +14,7 @@ export enum Resources {
   REMIND_PASSWORD = '/auth/remind',
   ADMINS = 'api/admins',
   GROUPS = 'api/groups',
+  TENANTS = 'api/tenants',
 }
 
 export enum Populations {
@@ -28,6 +29,7 @@ export enum SortFields {
 
 interface TableList<T = any> {
   filter?: T;
+  query?: any;
   page?: string;
   id?: string;
   pageSize?: string;
@@ -289,12 +291,6 @@ class Api {
       sort: [SortFields.NAME],
     });
 
-  createGroup = async ({ params }: { params: GroupProps }): Promise<Group> =>
-    await this.post({
-      resource: Resources.GROUPS,
-      params,
-    });
-
   getGroup = async ({ id }: { id: string }): Promise<Group> => {
     return await this.getOne({
       resource: Resources.GROUPS,
@@ -303,11 +299,22 @@ class Api {
     });
   };
 
+  createGroup = async ({ params }: { params: GroupProps }): Promise<Group> =>
+    await this.post({
+      resource: Resources.GROUPS,
+      params,
+    });
+
   updateGroup = async ({ params, id }: { params: GroupProps; id: string }): Promise<Group> =>
     await this.patch({
       resource: Resources.GROUPS,
       params,
       id,
+    });
+  deleteGroup = async ({ id }) =>
+    await this.getOne({
+      id,
+      resource: Resources.GROUPS,
     });
 
   getGroupParent = async ({ id }) =>
@@ -323,10 +330,40 @@ class Api {
       resource: `${Resources.GROUPS}/${id}/users`,
     });
 
-  deleteGroup = async ({ id }) =>
+  getTenants = async ({ page, filter, query }: TableList) =>
+    await this.getList({
+      resource: Resources.TENANTS,
+      populate: [Populations.CHILDREN],
+      query,
+      page,
+      filter,
+      sort: [SortFields.NAME],
+    });
+
+  getTenantOptions = async () =>
+    await this.getList({
+      resource: Resources.TENANTS,
+      populate: [Populations.CHILDREN],
+      pageSize: '9999',
+      sort: [SortFields.NAME],
+    });
+
+  createTenant = async ({ params }: { params: GroupProps }) =>
+    await this.post({
+      resource: Resources.TENANTS,
+      params,
+    });
+
+  updateTenant = async ({ params, id }: { params: GroupProps; id: string }) =>
+    await this.patch({
+      resource: Resources.TENANTS,
+      params,
+      id,
+    });
+  deleteTenant = async ({ id }) =>
     await this.getOne({
       id,
-      resource: Resources.GROUPS,
+      resource: Resources.TENANTS,
     });
 }
 

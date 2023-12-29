@@ -20,3 +20,8 @@ export enum TableItemWidth {
 export enum AuthStrategy {
   PASSWORD = 'PASSWORD',
 }
+
+export enum TenantTypes {
+  MUNICIPALITY = 'MUNICIPALITY',
+  ORGANIZATION = 'ORGANIZATION',
+}

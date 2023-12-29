@@ -4,11 +4,13 @@ import { GroupFilters, UserFilters } from '../../types';
 interface UsersFiltersState {
   userFilters: UserFilters;
   groupFilters: GroupFilters;
+  institutionFilters: GroupFilters;
 }
 
 const initialState: UsersFiltersState = {
   userFilters: {},
   groupFilters: {},
+  institutionFilters: {},
 };
 
 export const filtersReducer = createSlice({
@@ -20,6 +22,9 @@ export const filtersReducer = createSlice({
     },
     setGroupFilters: (state, action) => {
       return { ...state, groupFilters: action.payload };
+    },
+    setInstitutionFilters: (state, action) => {
+      return { ...state, institutionFilters: action.payload };
     },
   },
 });

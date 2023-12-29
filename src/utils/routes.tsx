@@ -1,9 +1,14 @@
 import GroupPage from '../pages/Group';
 import GroupsFormPage from '../pages/GroupForm';
 import GroupsList from '../pages/GroupList';
+import InstitutionForm from '../pages/InstitutionForm';
+import InstitutionList from '../pages/InstitutionList';
+import OrganizationForm from '../pages/OrganizationForm';
+import OrganizationList from '../pages/OrganizationList';
 import Profile from '../pages/Profile';
 import UserForm from '../pages/UserForm';
 import UserList from '../pages/UserList';
+import { pageTitles } from './texts';
 
 export const slugs = {
   login: '/login',
@@ -20,7 +25,14 @@ export const slugs = {
   newGroup: `/vidiniai-naudotojai/grupes/naujas`,
   editGroup: (id: string) => `/vidiniai-naudotojai/grupes/${id}/redaguoti`,
   groupUsers: (id: string) => `/vidiniai-naudotojai/grupes/${id}/nariai`,
+  institutions: `/istaigos`,
+  institution: (id: string) => `/istaigos/${id}`,
+  newInstitutions: `/istaigos/naujas`,
+  organizations: `/organizacijos`,
+  organization: (id: string) => `/organizacijos/${id}`,
+  newOrganization: `/organizacijos/naujas`,
 };
+
 export const routes = [
   {
     name: 'Vidiniai naudotojai',
@@ -29,9 +41,30 @@ export const routes = [
     component: <GroupsList />,
   },
   {
+    name: pageTitles.institutions,
+    slug: slugs.institutions,
+    sidebar: true,
+    component: <InstitutionList />,
+  },
+  {
+    slug: slugs.newInstitutions,
+    component: <InstitutionForm />,
+  },
+  {
+    name: pageTitles.organizations,
+    slug: slugs.organizations,
+    sidebar: true,
+    component: <OrganizationList />,
+  },
+  {
+    slug: slugs.newOrganization,
+    component: <OrganizationForm />,
+  },
+  {
     slug: slugs.users,
     component: <UserList />,
   },
+
   {
     slug: slugs.editGroup(':id'),
     component: <GroupsFormPage />,

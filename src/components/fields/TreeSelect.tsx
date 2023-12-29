@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import styled from 'styled-components';
 import { device } from '../../styles';
 import { Group } from '../../types';
+import { inputLabels } from '../../utils/texts';
 import Icon, { IconName } from '../other/Icons';
 import FieldWrapper from './components/FieldWrapper';
 
@@ -106,6 +107,7 @@ const TreeSelectField = ({
           style={{ width: '100%', height: '40px' }}
           dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
           value={value}
+          notFoundContent={inputLabels.noOptions}
           treeData={clonedGroupOptions}
           fieldNames={{ label: 'name', children: 'children', value: 'id' }}
           onChange={(value) => {

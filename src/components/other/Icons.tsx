@@ -1,3 +1,4 @@
+import { BiCalendarEvent } from 'react-icons/bi';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { HiOutlineArrowNarrowLeft } from 'react-icons/hi';
 import { IoCloseOutline } from 'react-icons/io5';
@@ -40,6 +41,8 @@ export enum IconName {
 
 const Icon = ({ name, className }: IconProps) => {
   switch (name) {
+    case IconName.calendar:
+      return <BiCalendarEvent className={className} />;
     case 'forward':
       return <MdArrowForwardIos className={className} />;
     case IconName.edit:
