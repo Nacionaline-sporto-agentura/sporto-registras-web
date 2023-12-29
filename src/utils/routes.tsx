@@ -188,12 +188,12 @@ export const useFilteredRoutes = () => {
   return routes.filter((route) => {
     let select = true;
 
-    if (select && route.role) {
+    if (route.role) {
       select = user.type === route.role;
     }
 
     if (select && route.tenantRole) {
-      select = currentProfile?.role === route.role;
+      select = currentProfile?.role === route.tenantRole;
     }
 
     if (select && route.appType) {
