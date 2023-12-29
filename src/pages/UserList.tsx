@@ -1,27 +1,20 @@
 import { isEmpty } from 'lodash';
+import Cookies from 'universal-cookie';
 import Button from '../components/buttons/Button';
 import TablePageLayout from '../components/layouts/TablePageLayout';
 import DynamicFilter from '../components/other/DynamicFilter';
 import { FilterInputTypes } from '../components/other/DynamicFilter/Filter';
-import TabBar from '../components/other/TabBar';
 import MainTable from '../components/tables/MainTable';
-import TableItem from '../components/tables/TableItem';
 import { actions as filterActions } from '../state/filters/reducer';
 import { useAppSelector } from '../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
-import { NotFoundInfoProps, TableRow, User } from '../types';
+import { NotFoundInfoProps } from '../types';
 import Api from '../utils/api';
-import { useGenericTablePageHooks, useTableData } from '../utils/hooks';
+import { groupUserLabels } from '../utils/columns';
+import { useGenericTablePageHooks, useIsTenantAdmin, useTableData } from '../utils/hooks';
+import { mapGroupUsersList } from '../utils/mapFunctions';
 import { slugs } from '../utils/routes';
-import { getInternalTabs } from '../utils/tabs';
-import {
-  buttonsTitles,
-  emptyState,
-  emptyStateUrl,
-  inputLabels,
-  pageTitles,
-  roleLabels,
-} from '../utils/texts';
+import { buttonsTitles, emptyState, emptyStateUrl, inputLabels, pageTitles } from '../utils/texts';
 
 const filterConfig = () => ({
   firstName: {
@@ -42,42 +35,25 @@ const filterConfig = () => ({
 });
 
 const rowConfig = [['firstName', 'lastName'], ['email']];
+const cookies = new Cookies();
 
-export const columns = {
-  name: { label: 'Naudotojas', show: true },
-  groups: { label: 'Grupės', show: true },
-  phone: { label: 'Telefonas', show: true },
-  email: { label: 'El. paštas', show: true },
-};
-
-export const mapUsersList = (users: User[]): TableRow[] =>
-  users.map((user: User) => {
-    const groups = user.groups?.map((group) => ({
-      label: `${group.name} (${roleLabels[group.role]})`,
-      url: slugs.groupUsers(group.id),
-    }));
-    return {
-      id: user.id,
-      name: user.fullName,
-      groups: <TableItem items={groups} />,
-      phone: user.phone,
-      email: user.email,
-    };
-  });
+const profileId = cookies.get('profileId');
 
 const UserList = () => {
   const { page, navigate, dispatch } = useGenericTablePageHooks();
+  const isTenantAdmin = useIsTenantAdmin();
 
   const filters = useAppSelector((state) => state.filters.userFilters);
 
   const { tableData, loading } = useTableData({
-    name: 'users',
+    name: 'externalUsers',
     endpoint: () =>
-      Api.getAdminUsers({
+      Api.getTenantUsers({
+        id: profileId,
         page,
         filter: filters,
       }),
-    mapData: (list) => mapUsersList(list),
+    mapData: (list) => mapGroupUsersList(list),
     dependencyArray: [filters, page],
   });
 
@@ -85,17 +61,14 @@ const UserList = () => {
     dispatch(filterActions.setUserFilters(filters));
   };
 
-  const tabs = getInternalTabs();
-
   const notFoundInfo: NotFoundInfoProps = {
     text: emptyState.users,
-    url: slugs.newAdminUser,
+    url: slugs.newUser,
     urlText: emptyStateUrl.user,
   };
 
   return (
     <TablePageLayout title={pageTitles.users}>
-      <TabBar tabs={tabs} />
       <TableButtonsRow>
         <TableButtonsInnerRow>
           <DynamicFilter
@@ -106,15 +79,17 @@ const UserList = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        <Button onClick={() => navigate(slugs.newAdminUser)}>{buttonsTitles.newUser}</Button>
+        {isTenantAdmin && (
+          <Button onClick={() => navigate(slugs.newUser)}>{buttonsTitles.newUser}</Button>
+        )}
       </TableButtonsRow>
       <MainTable
         loading={loading}
         notFoundInfo={notFoundInfo}
         isFilterApplied={!isEmpty(filters)}
         data={tableData}
-        columns={columns}
-        onClick={(id) => navigate(slugs.adminUser(id))}
+        columns={groupUserLabels}
+        onClick={(id) => navigate(slugs.user(id))}
       />
     </TablePageLayout>
   );

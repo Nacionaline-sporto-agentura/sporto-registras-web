@@ -1,9 +1,9 @@
 import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
+import SideBar from '../../../SideBar';
 import { device } from '../../styles';
 import { useWindowSize } from '../../utils/hooks';
 import MobileNavbar from '../other/MobileNavBar';
-import SideBar from '../other/SideBar';
 
 export interface DefaultLayoutProps {
   children?: JSX.Element;

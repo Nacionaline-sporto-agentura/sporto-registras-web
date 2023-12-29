@@ -1,10 +1,12 @@
 import AdminUserForm from '../pages/AdminUserForm';
+import AdminUserList from '../pages/AdminUserList';
 import GroupPage from '../pages/Group';
 import GroupsFormPage from '../pages/GroupForm';
 import GroupsList from '../pages/GroupList';
 import InstitutionPage from '../pages/Institution';
-import { default as InstitutionForm, default as UserForm } from '../pages/InstitutionForm';
+import { default as InstitutionForm } from '../pages/InstitutionForm';
 import InstitutionList from '../pages/InstitutionList';
+import MyOrganization from '../pages/MyOrganization';
 import Organization from '../pages/Organization';
 import OrganizationForm from '../pages/OrganizationForm';
 import OrganizationList from '../pages/OrganizationList';
@@ -12,10 +14,11 @@ import OrganizationUser from '../pages/OrganizationUser';
 import Profile from '../pages/Profile';
 import UpdateInstitutionForm from '../pages/UpdateInstitutionForm';
 import UpdateOrganizationForm from '../pages/UpdateOrganizationForm';
+import UserForm from '../pages/UserForm';
 import UserList from '../pages/UserList';
-import Users from '../pages/Users';
 import { useAppSelector } from '../state/hooks';
 import { AdminRoleType, Apps } from './constants';
+import { useGetCurrentProfile } from './hooks';
 import { pageTitles } from './texts';
 
 export const slugs = {
@@ -45,8 +48,10 @@ export const slugs = {
   updateOrganization: (id: string) => `/organizacijos/${id}/atnaujinti`,
   organizationUsers: (id: string) => `/organizacijos/${id}/nariai`,
   newOrganization: `/organizacijos/naujas`,
+  myOrganization: `/mano-organizacija`,
   users: '/naudotojai',
-  newUser: (tenantId: string) => `/organizacijos/${tenantId}/nariai/naujas`,
+  newUser: `/naudotojai/naujas`,
+  newOrganizationUser: (tenantId: string) => `/organizacijos/${tenantId}/nariai/naujas`,
   organizationUser: (tenantId: string, id: string) => `/organizacijos/${tenantId}/nariai/${id}`,
   user: (id: string) => `/naudotojai/${id}`,
 };
@@ -59,6 +64,29 @@ export const routes = [
     component: <GroupsList />,
     role: AdminRoleType.ADMIN,
     appType: Apps.USERS,
+  },
+  {
+    name: pageTitles.organizations,
+    slug: slugs.organizations,
+    sidebar: true,
+    component: <OrganizationList />,
+    tenantRole: AdminRoleType.ADMIN,
+  },
+
+  {
+    name: pageTitles.myOrganization,
+    slug: slugs.myOrganization,
+    sidebar: true,
+    role: AdminRoleType.USER,
+    component: <MyOrganization />,
+  },
+
+  {
+    name: pageTitles.users,
+    role: AdminRoleType.USER,
+    sidebar: true,
+    slug: slugs.users,
+    component: <UserList />,
   },
   {
     name: pageTitles.institutions,
@@ -93,18 +121,12 @@ export const routes = [
   },
 
   {
-    name: pageTitles.organizations,
-    slug: slugs.organizations,
-    sidebar: true,
-    component: <OrganizationList />,
-  },
-  {
     slug: slugs.newOrganization,
     component: <OrganizationForm />,
   },
   {
     slug: slugs.adminUsers,
-    component: <UserList />,
+    component: <AdminUserList />,
     role: AdminRoleType.ADMIN,
   },
 
@@ -142,13 +164,6 @@ export const routes = [
     slug: slugs.profile,
     component: <Profile />,
   },
-  {
-    name: pageTitles.users,
-    role: AdminRoleType.USER,
-    sidebar: true,
-    slug: slugs.users,
-    component: <Users />,
-  },
 
   {
     role: AdminRoleType.USER,
@@ -168,6 +183,7 @@ export const routes = [
 
 export const useFilteredRoutes = () => {
   const user = useAppSelector((state) => state.user.userData);
+  const currentProfile = useGetCurrentProfile();
 
   return routes.filter((route) => {
     let select = true;
@@ -175,7 +191,12 @@ export const useFilteredRoutes = () => {
     if (route.role) {
       select = user.type === route.role;
     }
-    if (route.appType) {
+
+    if (select && route.tenantRole) {
+      select = currentProfile?.role === route.tenantRole;
+    }
+
+    if (select && route.appType) {
       select = !!user?.permissions?.[route.appType];
     }
 

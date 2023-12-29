@@ -13,12 +13,14 @@ const OrganizationForm = ({
   handleChange,
   groupOptions,
   toggleCanHaveChildren = false,
+  disabled,
 }: {
   values: any;
   errors: any;
   handleChange;
   toggleCanHaveChildren?: boolean;
   groupOptions;
+  disabled?: boolean;
 }) => {
   return (
     <>
@@ -28,6 +30,7 @@ const OrganizationForm = ({
             label={inputLabels.name}
             value={values.companyName}
             error={errors.companyName}
+            disabled={disabled}
             name="name"
             onChange={(name) => handleChange('companyName', name?.trim())}
           />
@@ -36,6 +39,7 @@ const OrganizationForm = ({
             name={`group`}
             error={errors?.parent}
             groupOptions={groupOptions}
+            disabled={disabled}
             value={values.parent}
             onChange={(value) => {
               handleChange('parent', value.id);
@@ -45,6 +49,7 @@ const OrganizationForm = ({
             label={inputLabels.companyCode}
             value={values.companyCode}
             error={errors.companyCode}
+            disabled={disabled}
             name="companyCode"
             onChange={(companyCode) => handleChange('companyCode', companyCode)}
           />
@@ -53,6 +58,7 @@ const OrganizationForm = ({
             label={inputLabels.companyPhone}
             value={values.companyPhone}
             error={errors.companyPhone}
+            disabled={disabled}
             name="companyPhone"
             onChange={(companyPhone) => handleChange('companyPhone', companyPhone)}
           />
@@ -60,6 +66,7 @@ const OrganizationForm = ({
             label={inputLabels.companyEmail}
             value={values.companyEmail}
             error={errors.companyEmail}
+            disabled={disabled}
             name="companyEmail"
             onChange={(companyEmail) => handleChange('companyEmail', companyEmail)}
           />
@@ -69,6 +76,7 @@ const OrganizationForm = ({
             <CheckBox
               label={inputLabels.canHaveChildren}
               value={values.canHaveChildren}
+              disabled={disabled}
               onChange={(value) => handleChange('canHaveChildren', value)}
             />
           </FormRow>
@@ -82,6 +90,7 @@ const OrganizationForm = ({
               label={inputLabels.legalForm}
               value={values?.data?.legalForm}
               error={errors?.data?.legalForm}
+              disabled={disabled}
               name="legalForm"
               options={[]}
               onChange={(legalForm) => handleChange('data.legalForm', legalForm)}
@@ -91,6 +100,7 @@ const OrganizationForm = ({
               label={inputLabels.organizationType}
               value={values?.data?.type}
               error={errors?.data?.type}
+              disabled={disabled}
               name="type"
               options={[]}
               onChange={(type) => handleChange('data.type', type)}
@@ -100,6 +110,7 @@ const OrganizationForm = ({
               label={inputLabels.locationAddress}
               value={values.address}
               error={errors.address}
+              disabled={disabled}
               name="address"
               onChange={(address) => handleChange('address', address)}
             />
@@ -108,12 +119,14 @@ const OrganizationForm = ({
               label={inputLabels.foundedAt}
               value={values?.data?.foundedAt}
               error={errors?.data?.foundedAt}
+              disabled={disabled}
               onChange={(foundedAt) => handleChange('data.foundedAt', foundedAt)}
             />
             <TextField
               label={inputLabels.url}
               value={values?.data?.url}
               error={errors?.data?.url}
+              disabled={disabled}
               name="url"
               onChange={(companyEmail) => handleChange('data.url', companyEmail)}
             />
@@ -121,17 +134,20 @@ const OrganizationForm = ({
           <FormRow columns={1}>
             <CheckBox
               label={inputLabels.hasBeneficiaryStatus}
+              disabled={disabled}
               value={values.data?.hasBeneficiaryStatus}
               onChange={(value) => handleChange('data.hasBeneficiaryStatus', value)}
             />
             <CheckBox
               label={inputLabels.nonGovernmentalOrganization}
               value={values.data?.nonGovernmentalOrganization}
+              disabled={disabled}
               onChange={(value) => handleChange('data.nonGovernmentalOrganization', value)}
             />
             <CheckBox
               label={inputLabels.nonFormalEducation}
               value={values.data?.nonFormalEducation}
+              disabled={disabled}
               onChange={(value) => handleChange('data.nonFormalEducation', value)}
             />
           </FormRow>

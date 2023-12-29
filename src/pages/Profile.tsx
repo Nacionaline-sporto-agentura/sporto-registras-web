@@ -6,7 +6,7 @@ import FormPageWrapper from '../components/layouts/FormLayout';
 import PasswordCheckListContainer from '../components/other/PasswordCheckListContainer';
 import SimpleContainer from '../components/other/SimpleContainer';
 import { useAppSelector } from '../state/hooks';
-import { FormColumn, FormRow } from '../styles/CommonStyles';
+import { Column, FormColumn, FormRow } from '../styles/CommonStyles';
 import { ReactQueryError } from '../types';
 import Api from '../utils/api';
 import { AuthStrategy } from '../utils/constants';
@@ -133,7 +133,7 @@ const Profile = () => {
 
   const renderProfileForm = (values: UserProps, errors: any, handleChange) => {
     return (
-      <>
+      <Column>
         <SimpleContainer title={formLabels.profileInfo}>
           <FormRow columns={2}>
             <TextField
@@ -209,7 +209,7 @@ const Profile = () => {
             </FormRow>
           </SimpleContainer>
         )}
-      </>
+      </Column>
     );
   };
 

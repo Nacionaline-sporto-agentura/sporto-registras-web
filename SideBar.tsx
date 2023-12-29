@@ -1,13 +1,13 @@
 import { isEmpty } from 'lodash';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { useAppSelector } from '../../state/hooks';
-import { useLogoutMutation } from '../../utils/hooks';
-import { slugs, useFilteredRoutes } from '../../utils/routes';
-import Avatar from './Avatar';
-import Icon, { IconName } from './Icons';
-import Logo from './Logo';
-import ProfilesDropdown from './ProfileDropdown';
+import Avatar from './src/components/other/Avatar';
+import Icon, { IconName } from './src/components/other/Icons';
+import Logo from './src/components/other/Logo';
+import ProfilesDropdown from './src/components/other/ProfileDropdown';
+import { useAppSelector } from './src/state/hooks';
+import { useLogoutMutation } from './src/utils/hooks';
+import { slugs, useFilteredRoutes } from './src/utils/routes';
 
 interface ModuleMenuProps {
   className?: string;
@@ -24,11 +24,10 @@ const SideBar = ({ className }: ModuleMenuProps) => {
     return (routes || [])
       .filter((route) => route.sidebar)
       .map((route) => {
+        const isActive = route.slug.split('/')[1] === currentLocation.pathname.split('/')[1];
         return (
           <Link to={route.slug} key={route.slug}>
-            <Tab isActive={route.slug.includes(currentLocation.pathname.split('/')[1])}>
-              {route.name}
-            </Tab>
+            <Tab isActive={isActive}>{route.name}</Tab>
           </Link>
         );
       });
@@ -39,8 +38,7 @@ const SideBar = ({ className }: ModuleMenuProps) => {
         <TitleRow>
           <Logo />
         </TitleRow>
-
-        {renderTabs()}
+        <Column>{renderTabs()}</Column>
       </div>
       <BottomRow>
         {hasProfiles ? (
@@ -67,6 +65,12 @@ const SideBar = ({ className }: ModuleMenuProps) => {
 };
 
 export default SideBar;
+
+export const Column = styled.div`
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+`;
 
 const Header = styled.div`
   display: flex;

@@ -36,6 +36,7 @@ const TreeSelectField = ({
   showError = true,
   groupOptions,
   className,
+  disabled,
   padding,
   onChange,
   groups,
@@ -107,6 +108,7 @@ const TreeSelectField = ({
           style={{ width: '100%', height: '40px' }}
           dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
           value={value}
+          disabled={disabled}
           notFoundContent={inputLabels.noOptions}
           treeData={clonedGroupOptions}
           fieldNames={{ label: 'name', children: 'children', value: 'id' }}
