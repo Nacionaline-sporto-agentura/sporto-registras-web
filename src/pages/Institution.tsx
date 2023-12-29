@@ -21,15 +21,15 @@ import { slugs } from '../utils/routes';
 export const getTabs = (id: string) => [
   {
     label: 'Nariai',
-    slug: slugs.organizationUsers(id),
+    slug: slugs.updateInstitution(id),
   },
 ];
 
-const OrganizationPage = () => {
+const InstitutionPage = () => {
   const navigate = useNavigate();
   const { id = '' } = useParams();
 
-  const { isLoading, data: group } = useQuery(['organization', id], () => Api.getTenant({ id }), {
+  const { isLoading, data: group } = useQuery(['institution', id], () => Api.getTenant({ id }), {
     onError: () => {
       navigate(slugs.groups);
     },
@@ -44,7 +44,7 @@ const OrganizationPage = () => {
   }
 
   const containers = {
-    [slugs.organizationUsers(id)]: <OrganizationUsers />,
+    [slugs.updateInstitution(id)]: <OrganizationUsers />,
   };
 
   return (
@@ -54,7 +54,7 @@ const OrganizationPage = () => {
       <ViewRow>
         <ViewInnerRow>
           <ViewTitle>{group?.name || '-'}</ViewTitle>
-          <EditIcon onClick={() => navigate(slugs.updateOrganization(id))} />
+          <EditIcon onClick={() => navigate(slugs.updateInstitution(id))} />
         </ViewInnerRow>
       </ViewRow>
       <SimpleContainer>
@@ -65,4 +65,4 @@ const OrganizationPage = () => {
   );
 };
 
-export default OrganizationPage;
+export default InstitutionPage;

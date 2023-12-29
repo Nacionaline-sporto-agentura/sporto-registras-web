@@ -2,6 +2,7 @@ import AdminUserForm from '../pages/AdminUserForm';
 import GroupPage from '../pages/Group';
 import GroupsFormPage from '../pages/GroupForm';
 import GroupsList from '../pages/GroupList';
+import InstitutionPage from '../pages/Institution';
 import { default as InstitutionForm, default as UserForm } from '../pages/InstitutionForm';
 import InstitutionList from '../pages/InstitutionList';
 import Organization from '../pages/Organization';
@@ -9,11 +10,12 @@ import OrganizationForm from '../pages/OrganizationForm';
 import OrganizationList from '../pages/OrganizationList';
 import OrganizationUser from '../pages/OrganizationUser';
 import Profile from '../pages/Profile';
+import UpdateInstitutionForm from '../pages/UpdateInstitutionForm';
 import UpdateOrganizationForm from '../pages/UpdateOrganizationForm';
 import UserList from '../pages/UserList';
 import Users from '../pages/Users';
 import { useAppSelector } from '../state/hooks';
-import { AdminRoleType } from './constants';
+import { AdminRoleType, Apps } from './constants';
 import { pageTitles } from './texts';
 
 export const slugs = {
@@ -34,6 +36,8 @@ export const slugs = {
   groupUsers: (id: string) => `/vidiniai-naudotojai/grupes/${id}/nariai`,
   institutions: `/istaigos`,
   institution: (id: string) => `/istaigos/${id}`,
+  institutionUsers: (id: string) => `/istaigos/${id}/nariai`,
+  institutionUser: (tenantId: string, id: string) => `/organizacijos/${tenantId}/nariai/${id}`,
   updateInstitution: (id: string) => `/istaigos/${id}/atnaujinti`,
   newInstitutions: `/istaigos/naujas`,
   organizations: `/organizacijos`,
@@ -53,19 +57,20 @@ export const routes = [
     slug: slugs.groups,
     sidebar: true,
     component: <GroupsList />,
-    admin: true,
+    role: AdminRoleType.ADMIN,
+    appType: Apps.USERS,
   },
   {
     name: pageTitles.institutions,
     slug: slugs.institutions,
     sidebar: true,
     component: <InstitutionList />,
-    admin: true,
+    role: AdminRoleType.ADMIN,
   },
   {
     slug: slugs.newInstitutions,
     component: <InstitutionForm />,
-    admin: true,
+    role: AdminRoleType.ADMIN,
   },
   {
     slug: slugs.organizationUser(':tenantId', ':id'),
@@ -76,6 +81,17 @@ export const routes = [
     slug: slugs.organizationUsers(':id'),
     component: <Organization />,
   },
+  {
+    slug: slugs.institutionUsers(':id'),
+    component: <InstitutionPage />,
+    role: AdminRoleType.ADMIN,
+  },
+  {
+    slug: slugs.institutionUser(':tenantId', ':id'),
+    component: <OrganizationUser />,
+    role: AdminRoleType.ADMIN,
+  },
+
   {
     name: pageTitles.organizations,
     slug: slugs.organizations,
@@ -89,33 +105,38 @@ export const routes = [
   {
     slug: slugs.adminUsers,
     component: <UserList />,
-    admin: true,
+    role: AdminRoleType.ADMIN,
   },
 
   {
     slug: slugs.editGroup(':id'),
     component: <GroupsFormPage />,
-    admin: true,
+    role: AdminRoleType.ADMIN,
+    appType: Apps.USERS,
   },
   {
     slug: slugs.newGroup,
     component: <GroupsFormPage />,
-    admin: true,
+    role: AdminRoleType.ADMIN,
+    appType: Apps.USERS,
   },
   {
     slug: slugs.groupGroups(':id'),
     component: <GroupPage />,
-    admin: true,
+    role: AdminRoleType.ADMIN,
+    appType: Apps.USERS,
   },
   {
     slug: slugs.groupUsers(':id'),
     component: <GroupPage />,
-    admin: true,
+    role: AdminRoleType.ADMIN,
+    appType: Apps.USERS,
   },
   {
     slug: slugs.adminUser(':id'),
     component: <AdminUserForm />,
-    admin: true,
+    role: AdminRoleType.ADMIN,
+    appType: Apps.USERS,
   },
   {
     slug: slugs.profile,
@@ -123,20 +144,21 @@ export const routes = [
   },
   {
     name: pageTitles.users,
-    user: true,
+    role: AdminRoleType.USER,
     sidebar: true,
     slug: slugs.users,
     component: <Users />,
   },
 
   {
-    user: true,
+    role: AdminRoleType.USER,
     slug: slugs.user(':id'),
     component: <UserForm />,
   },
   {
     slug: slugs.updateInstitution(':id'),
-    component: <UpdateOrganizationForm />,
+    role: AdminRoleType.ADMIN,
+    component: <UpdateInstitutionForm />,
   },
   {
     slug: slugs.updateOrganization(':id'),
@@ -148,14 +170,15 @@ export const useFilteredRoutes = () => {
   const user = useAppSelector((state) => state.user.userData);
 
   return routes.filter((route) => {
-    if (route.admin) {
-      return user.type === AdminRoleType.ADMIN;
+    let select = true;
+
+    if (route.role) {
+      select = user.type === route.role;
+    }
+    if (route.appType) {
+      select = !!user?.permissions?.[route.appType];
     }
 
-    if (route.user) {
-      return user.type === AdminRoleType.USER;
-    }
-
-    return true;
+    return select;
   });
 };

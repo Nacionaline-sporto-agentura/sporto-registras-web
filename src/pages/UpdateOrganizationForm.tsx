@@ -4,7 +4,6 @@ import * as Yup from 'yup';
 import OrganizationForm from '../components/forms/OrganizationForm';
 import FormPageWrapper from '../components/layouts/FormLayout';
 import FullscreenLoader from '../components/other/FullscreenLoader';
-import { useAppSelector } from '../state/hooks';
 import { Column } from '../styles/CommonStyles';
 import { DeleteInfoProps, ReactQueryError } from '../types';
 import Api from '../utils/api';
@@ -61,14 +60,13 @@ export interface InstitutionProps {
 const UpdateOrganizationForm = () => {
   const navigate = useNavigate();
   const { id = '' } = useParams();
-  const currentUser = useAppSelector((state) => state.user.userData);
   const [searchParams] = useSearchParams();
   const { parent } = Object.fromEntries([...Array.from(searchParams)]);
 
   const title = pageTitles.updateOrganization;
 
   const { isFetching, data: institution } = useQuery(
-    ['institution', id],
+    ['organization', id],
     () => Api.getTenant({ id }),
     {
       onError: () => {

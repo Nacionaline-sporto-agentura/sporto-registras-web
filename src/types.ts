@@ -12,6 +12,7 @@ export interface User {
   profiles?: Profile[];
   groups?: Group[];
   authStrategy?: AuthStrategy;
+  permissions?: { [key: string]: { accesses: string[]; features: string[] } };
 }
 
 export type ProfileId = 'freelancer' | string;

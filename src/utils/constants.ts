@@ -30,3 +30,8 @@ export enum TenantTypes {
   MUNICIPALITY = 'MUNICIPALITY',
   ORGANIZATION = 'ORGANIZATION',
 }
+
+export enum Apps {
+  USERS = 'USERS',
+  REGISTRAS = 'REGISTRAS',
+}

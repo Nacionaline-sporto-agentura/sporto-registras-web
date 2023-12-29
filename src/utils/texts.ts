@@ -99,6 +99,7 @@ export const pageTitles = {
   newOrganization: 'Nauja organizacija',
   newInstitution: 'Nauja įstaiga',
   updateOrganization: 'Atnaujinti organizaciją',
+  updateInstitution: 'Atnaujinti instituciją',
 };
 
 export const buttonsTitles = {
