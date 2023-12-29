@@ -1,11 +1,13 @@
+import { isEmpty } from 'lodash';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAppSelector } from '../../state/hooks';
 import { useLogoutMutation } from '../../utils/hooks';
-import { routes, slugs } from '../../utils/routes';
+import { slugs, useFilteredRoutes } from '../../utils/routes';
 import Avatar from './Avatar';
 import Icon, { IconName } from './Icons';
 import Logo from './Logo';
+import ProfilesDropdown from './ProfileDropdown';
 
 interface ModuleMenuProps {
   className?: string;
@@ -15,6 +17,8 @@ const SideBar = ({ className }: ModuleMenuProps) => {
   const user = useAppSelector((state) => state.user.userData);
   const { mutateAsync } = useLogoutMutation();
   const currentLocation = useLocation();
+  const hasProfiles = !isEmpty(user.profiles);
+  const routes = useFilteredRoutes();
 
   const renderTabs = () => {
     return (routes || [])
@@ -39,20 +43,24 @@ const SideBar = ({ className }: ModuleMenuProps) => {
         {renderTabs()}
       </div>
       <BottomRow>
-        <ProfileRow>
-          <Link to={slugs.profile}>
-            <InnerRow>
-              <Avatar name={user?.firstName || ''} surname={user?.lastName || ''} />
-              <UserInfo>
-                <FullName>{`${user?.firstName} ${user?.lastName}`}</FullName>
-                <Email>{user?.email}</Email>
-              </UserInfo>
-            </InnerRow>
-          </Link>
-          <div onClick={() => mutateAsync()}>
-            <StyledLogoutIcon name={IconName.logout} />
-          </div>
-        </ProfileRow>
+        {hasProfiles ? (
+          <ProfilesDropdown />
+        ) : (
+          <ProfileRow>
+            <Link to={slugs.profile}>
+              <InnerRow>
+                <Avatar name={user?.firstName || ''} surname={user?.lastName || ''} />
+                <UserInfo>
+                  <FullName>{`${user?.firstName} ${user?.lastName}`}</FullName>
+                  <Email>{user?.email}</Email>
+                </UserInfo>
+              </InnerRow>
+            </Link>
+            <div onClick={() => mutateAsync()}>
+              <StyledLogoutIcon name={IconName.logout} />
+            </div>
+          </ProfileRow>
+        )}
       </BottomRow>
     </Header>
   );

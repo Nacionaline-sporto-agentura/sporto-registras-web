@@ -5,10 +5,15 @@ export enum ServerErrorMessages {
   NOT_FOUND = 'NOT_FOUND',
 }
 
-export enum RoleType {
+export enum AdminRoleType {
   ADMIN = 'ADMIN',
   USER = 'USER',
   SUPER_ADMIN = 'SUPER_ADMIN',
+}
+
+export enum UserRoleType {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
 }
 
 export enum TableItemWidth {
@@ -19,4 +24,9 @@ export enum TableItemWidth {
 
 export enum AuthStrategy {
   PASSWORD = 'PASSWORD',
+}
+
+export enum TenantTypes {
+  MUNICIPALITY = 'MUNICIPALITY',
+  ORGANIZATION = 'ORGANIZATION',
 }

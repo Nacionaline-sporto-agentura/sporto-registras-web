@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import { User } from '../types';
-import { RoleType } from './constants';
+import { AdminRoleType } from './constants';
 import { url, validationTexts } from './texts';
 
 export interface Path {
@@ -46,7 +46,7 @@ export const handleSuccessToast = (message: string) => {
   });
 };
 
-export const hasPermission = (user: User, roles: RoleType[]) => {
+export const hasPermission = (user: User, roles: AdminRoleType[]) => {
   return user.type && roles.includes(user.type);
 };
 
@@ -62,7 +62,8 @@ export const canManageGroup = (parent?: string, currentUserRole?: string) => {
   return !!parent || isSuperAdmin(currentUserRole);
 };
 
-export const isSuperAdmin = (currentUserRole?: string) => currentUserRole === RoleType.SUPER_ADMIN;
+export const isSuperAdmin = (currentUserRole?: string) =>
+  currentUserRole === AdminRoleType.SUPER_ADMIN;
 export const handleGenerateBreadcrumbsPath = ({
   item,
   path = [],

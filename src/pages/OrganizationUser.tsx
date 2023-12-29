@@ -54,21 +54,25 @@ export const validateCreateUserForm = Yup.object().shape({
 
 const UserForm = () => {
   const navigate = useNavigate();
-  const { id = '' } = useParams();
+  const { tenantId = '', id = '' } = useParams();
   const currentUser = useAppSelector((state) => state.user.userData);
   const disabled = !isNew(id);
 
   const title = isNew(id) ? pageTitles.newUser : pageTitles.updateUser;
 
-  const { isFetching, data: user } = useQuery(['organizationUser', id], () => Api.getUser({ id }), {
-    onError: () => {
-      navigate(slugs.adminUsers);
+  const { isFetching, data: user } = useQuery(
+    ['organizationUser', id],
+    () => Api.getTenantUser({ tenantId, id }),
+    {
+      onError: () => {
+        navigate(slugs.adminUsers);
+      },
+      onSuccess: () => {
+        if (isCurrentUser(id, currentUser.id)) return navigate(slugs.profile);
+      },
+      enabled: !isNew(id),
     },
-    onSuccess: () => {
-      if (isCurrentUser(id, currentUser.id)) return navigate(slugs.profile);
-    },
-    enabled: !isNew(id),
-  });
+  );
 
   const handleSubmit = async (values: User, { setErrors }) => {
     const { firstName, lastName, email, phone, role } = values;
@@ -79,6 +83,7 @@ const UserForm = () => {
       email: email?.toLowerCase(),
       phone,
       role,
+      tenantId: tenantId,
     };
 
     if (isNew(id)) {
@@ -108,32 +113,36 @@ const UserForm = () => {
         console.log(url.href);
         alert(url.href);
       }
-      navigate(slugs.users);
+      navigate(slugs.organizationUsers(tenantId));
     },
     retry: false,
   });
 
-  const updateUser = useMutation((params: User) => Api.updateUser({ params, id }), {
-    onError: ({ response }) => {
-      handleErrorToastFromServer(response);
+  const updateUser = useMutation(
+    (params: User) => Api.updateTenantUser({ params: { role: params.role }, id, tenantId }),
+    {
+      onError: ({ response }) => {
+        handleErrorToastFromServer(response);
+      },
+      onSuccess: () => {
+        navigate(slugs.organizationUsers(tenantId));
+      },
+      retry: false,
     },
-    onSuccess: () => {
-      navigate(slugs.users);
-    },
-    retry: false,
-  });
+  );
 
   const handleDelete = useMutation(
     () =>
-      Api.deleteUser({
+      Api.deleteTenantUser({
         id,
+        tenantId,
       }),
     {
       onError: () => {
         handleErrorToastFromServer();
       },
       onSuccess: () => {
-        navigate(slugs.users);
+        navigate(slugs.organizationUsers(tenantId));
       },
     },
   );

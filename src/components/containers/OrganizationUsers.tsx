@@ -1,7 +1,6 @@
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { NotFoundInfoProps } from '../../types';
 import api from '../../utils/api';
-import { groupUserLabels } from '../../utils/columns';
 import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
 import { mapGroupUsersList } from '../../utils/mapFunctions';
 import { slugs } from '../../utils/routes';
@@ -9,19 +8,25 @@ import { buttonsTitles, emptyState, emptyStateUrl } from '../../utils/texts';
 import Button from '../buttons/Button';
 import MainTable from '../tables/MainTable';
 
-const GroupUser = () => {
-  const { navigate, page, id } = useGenericTablePageHooks();
-  const newUrl = `${slugs.newAdminUser}?group=${id}`;
+export const columns = {
+  name: { label: 'Naudotojas', show: true },
+  phone: { label: 'Telefonas', show: true },
+  email: { label: 'El. paštas', show: true },
+};
+
+const OrganizationUsers = () => {
+  const { navigate, page, id = '' } = useGenericTablePageHooks();
+  const newUrl = slugs.newUser(id);
 
   const { tableData, loading } = useTableData({
-    name: 'groupUsers',
+    name: 'organizationTenantUsers',
     endpoint: () =>
-      api.getGroupUsers({
+      api.getTenantUsers({
         page,
         id,
       }),
     mapData: (list) => mapGroupUsersList(list),
-    dependencyArray: [page],
+    dependencyArray: [page, id],
   });
 
   const notFound: NotFoundInfoProps = {
@@ -44,14 +49,14 @@ const GroupUser = () => {
       </TableButtonsRow>
       <MainTable
         loading={loading}
-        onClick={(id) => navigate(slugs.adminUser(id))}
+        onClick={(userId) => navigate(slugs.organizationUser(id, userId))}
         isFilterApplied={false}
         notFoundInfo={notFound}
         data={tableData}
-        columns={groupUserLabels}
+        columns={columns}
       />
     </>
   );
 };
 
-export default GroupUser;
+export default OrganizationUsers;

@@ -4,7 +4,7 @@ import { useMutation, useQuery } from 'react-query';
 import { matchPath, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import { Tab } from '../components/other/TabBar';
-import { useAppDispatch } from '../state/hooks';
+import { useAppDispatch, useAppSelector } from '../state/hooks';
 import { actions as userAction } from '../state/user/reducer';
 import { TableData, TableDataProp, User } from '../types';
 import api from './api';
@@ -49,10 +49,15 @@ export const useWindowSize = (width: string) => {
 
   return isInRange;
 };
-
 export const useCheckAuthMutation = () => {
   const dispatch = useAppDispatch();
   const token = cookies.get('token');
+
+  const profileMutation = useMutation(api.getProfiles, {
+    onSuccess: (data) => {
+      handleSetProfile(data);
+    },
+  });
 
   const { isLoading } = useQuery([token], () => api.getUserInfo(), {
     onError: ({ response }: any) => {
@@ -65,16 +70,18 @@ export const useCheckAuthMutation = () => {
 
       return handleErrorToastFromServer(response);
     },
-    onSuccess: (data: User) => {
+    onSuccess: async (data: User) => {
       if (data) {
-        dispatch(userAction.setUser({ userData: data, loggedIn: true }));
+        const profiles = await profileMutation.mutateAsync();
+        dispatch(userAction.setUser({ userData: { ...data, profiles: profiles }, loggedIn: true }));
       }
     },
     retry: false,
+    refetchOnWindowFocus: false,
     enabled: !!token,
   });
 
-  return { isLoading };
+  return { isLoading: isLoading || profileMutation.isLoading };
 };
 
 export const useSetPassword = () => {
@@ -161,4 +168,11 @@ export const useGetCurrentRoute = (tabs: Tab[]) => {
   const currentLocation = useLocation();
 
   return tabs.find((tab) => matchPath({ path: tab.slug, end: false }, currentLocation.pathname));
+};
+
+export const useGetCurrentProfile = () => {
+  const profiles = useAppSelector((state) => state.user.userData.profiles);
+  const profileId = cookies.get('profileId');
+  const currentProfile = profiles?.find((profile) => profile.id == profileId);
+  return currentProfile;
 };

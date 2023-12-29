@@ -1,4 +1,4 @@
-import { RoleType, ServerErrorMessages } from './constants';
+import { AdminRoleType, ServerErrorMessages } from './constants';
 
 export const validationTexts = {
   requireText: 'Privalote įvesti',
@@ -19,6 +19,8 @@ export const validationTexts = {
 
   [ServerErrorMessages.NOT_FOUND]: 'Blogas elektroninis paštas arba slaptažodis',
   [ServerErrorMessages.USER_NOT_FOUND]: 'Sistemoje nėra tokio elektroninio pašto',
+  personalCode: 'Blogas asmens kodas',
+  companyCode: 'Blogas įmonės kodas',
 };
 
 export const descriptions = {
@@ -29,12 +31,16 @@ export const descriptions = {
 export const formLabels = {
   groupInfo: 'Informacija apie grupę',
   userInfo: 'Informacija apie naudotoją',
+  selectProfile: 'Pasirinkite paskyrą',
   profileInfo: 'Profilio informacija',
   roles: 'Rolės',
   moduleAccess: 'Prieiga prie modulių',
   permissions: 'Teisės',
   changePassword: 'Pakeisti slaptažodį',
   groupUsers: 'Grupės naudotojai',
+  infoAboutInstitution: 'Informacija apie įstaigą',
+  infoAboutOrganization: 'Informacija apie organizaciją',
+  infoAboutOwner: 'Atstovo duomenys',
 };
 
 export const deleteTitles = {
@@ -53,6 +59,7 @@ export const deleteDescriptionSecondPart = {
 };
 
 export const inputLabels = {
+  personalCode: 'Asmens kodas',
   name: 'Pavadinimas',
   firstName: 'Vardas',
   lastName: 'Pavardė',
@@ -62,9 +69,21 @@ export const inputLabels = {
   phone: 'Telefonas',
   email: 'El. pašto adresas',
   group: 'Grupė',
+  companyCode: 'Juridinio asmens kodas',
+  organizationType: 'Sporto organizacijos tipas',
+  locationAddress: 'Buveinės adresas',
+  companyPhone: 'Kontaktinis telefonas',
+  companyEmail: 'Kontaktinis el.paštas',
+  foundedAt: 'Steigimo dokumentų sudarymo data',
+  url: 'Internetinės svetainės adresas',
   role: 'Rolė',
   choose: 'Pasirinkite',
   noOptions: 'Nėra pasirinkimų',
+  hasBeneficiaryStatus: 'Turi paramos gavėjo statusą',
+  nonGovernmentalOrganization: 'Atitinka nevyriausybinėms organizacijoms keliamus reikalavimus',
+  nonFormalEducation: 'Gali vykdyti akredituotas neformaliojo vaikų švietimo programas',
+  canHaveChildren: 'Įstaiga yra sporto organizacija, kuriai leidžiama kurti vaikines organizacijas',
+  legalForm: 'Teisinė forma',
 };
 export const pageTitles = {
   users: 'Naudotojai',
@@ -75,11 +94,20 @@ export const pageTitles = {
   updateGroup: 'Redaguoti grupę',
   updateProfile: 'Atnaujinti profilį',
   changePassword: 'Pakeisti slaptažodį',
+  institutions: 'Įstaigos',
+  organizations: 'Sporto organizacijos',
+  newOrganization: 'Nauja organizacija',
+  newInstitution: 'Nauja įstaiga',
+  updateOrganization: 'Atnaujinti organizaciją',
 };
 
 export const buttonsTitles = {
   back: 'Grįžti atgal',
+  group: 'Ištrinti grupę',
   clearAll: 'Išvalyti visus',
+  profile: 'Profilis',
+  logout: 'Atsijungti',
+  profiles: 'Profiliai',
   filter: 'Filtruoti',
   save: 'Išsaugoti',
   newUser: 'Naujas naudotojas',
@@ -87,12 +115,16 @@ export const buttonsTitles = {
   delete: 'Pašalinti',
   cancel: 'Atšaukti',
   newGroups: 'Nauja grupė',
+  newInstitution: 'Nauja įstaiga',
+  newOrganization: 'Nauja organizacija',
 };
 
 export const emptyState = {
   users: 'Jūs neturite Naudotojų. Sukurkite',
   groupUsers: 'Grupė neturi Naudotojų. Sukurkite',
   groups: 'Jūs neturite jokių grupių. Sukurkite',
+  institutions: 'Jūs neturite jokių įstaigų. Sukurkite',
+  organizations: 'Jūs neturite jokių sporto organizacijų. Sukurkite',
   groupGroups: 'Grupė neturi grupių. Sukurkite',
 };
 
@@ -100,12 +132,14 @@ export const emptyStateUrl = {
   user: 'naują naudotoją.',
   groupUser: 'grupei naują naudotoją.',
   group: 'naują grupę.',
+  institution: 'naują įstaigą.',
+  organization: 'naują sporto organizaciją',
 };
 
 export const url = {
   new: 'naujas',
 };
 export const roleLabels = {
-  [RoleType.USER]: 'Naudotojas',
-  [RoleType.ADMIN]: 'Administratorius',
+  [AdminRoleType.USER]: 'Naudotojas',
+  [AdminRoleType.ADMIN]: 'Administratorius',
 };

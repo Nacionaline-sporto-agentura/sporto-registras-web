@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAppSelector } from '../../state/hooks';
 import { useLogoutMutation } from '../../utils/hooks';
-import { routes, slugs } from '../../utils/routes';
+import { slugs, useFilteredRoutes } from '../../utils/routes';
 import Icon, { IconName } from '../other/Icons';
 import Avatar from './Avatar';
 import Logo from './Logo';
@@ -18,6 +18,8 @@ const MobileNavbar = ({ className }: MobileHeaderInterface) => {
   const { mutateAsync } = useLogoutMutation();
 
   const user = useAppSelector((state) => state.user.userData);
+
+  const routes = useFilteredRoutes();
 
   const handleNavigate = (slug: string) => {
     navigate(slug);

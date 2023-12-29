@@ -5,7 +5,6 @@ import Button from '../components/buttons/Button';
 import TablePageLayout from '../components/layouts/TablePageLayout';
 import DynamicFilter from '../components/other/DynamicFilter';
 import { FilterInputTypes } from '../components/other/DynamicFilter/Filter';
-import TabBar from '../components/other/TabBar';
 import RecursiveTable from '../components/tables/RecursiveTable';
 import { actions as filterActions } from '../state/filters/reducer';
 import { useAppSelector } from '../state/hooks';
@@ -13,11 +12,10 @@ import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
 import { NotFoundInfoProps } from '../types';
 import Api from '../utils/api';
 import { groupColumns } from '../utils/columns';
-import { canManageGroup, isSuperAdmin } from '../utils/functions';
+import { TenantTypes } from '../utils/constants';
 import { useGenericTablePageHooks, useTableData } from '../utils/hooks';
 import { mapGroupList } from '../utils/mapFunctions';
 import { slugs } from '../utils/routes';
-import { getInternalTabs } from '../utils/tabs';
 import { buttonsTitles, emptyState, emptyStateUrl, inputLabels, pageTitles } from '../utils/texts';
 
 const filterConfig = () => ({
@@ -30,39 +28,39 @@ const filterConfig = () => ({
 
 const rowConfig = [['name']];
 
-const GroupsList = () => {
+const OrganizationList = () => {
   const { dispatch, navigate, page } = useGenericTablePageHooks();
   const { id } = useParams();
-  const currentUser = useAppSelector((state) => state.user.userData);
 
-  const tabs = getInternalTabs();
+  const newGroupUrl = `${slugs.newOrganization}${id ? `?parent=${id}` : ''}`;
 
-  const showButton = isSuperAdmin(currentUser.type);
-
-  const newGroupUrl = `${slugs.newGroup}${id ? `?parent=${id}` : ''}`;
-
-  const filters = useAppSelector((state) => state.filters.groupFilters);
+  const filters = useAppSelector((state) => state.filters.institutionFilters);
 
   const { tableData, loading } = useTableData({
-    name: 'groups',
-    endpoint: () => Api.getGroups({ page, filter: filters, id }),
+    name: 'organizations',
+    endpoint: () =>
+      Api.getTenants({
+        page,
+        filter: filters,
+        id,
+        query: { tenantType: TenantTypes.ORGANIZATION },
+      }),
     mapData: (list) => mapGroupList(list),
     dependencyArray: [id, filters, page],
   });
 
   const handleSetFilters = (filters) => {
-    dispatch(filterActions.setGroupFilters(filters));
+    dispatch(filterActions.setInstitutionFilters(filters));
   };
 
   const notFoundInfo: NotFoundInfoProps = {
-    text: emptyState.groups,
+    text: emptyState.organizations,
     url: newGroupUrl,
-    urlText: emptyStateUrl.group,
+    urlText: emptyStateUrl.organization,
   };
 
   return (
-    <TablePageLayout title={pageTitles.groups}>
-      <TabBar tabs={tabs} />
+    <TablePageLayout title={pageTitles.organizations}>
       <TableButtonsRow>
         <TableButtonsInnerRow>
           <DynamicFilter
@@ -73,14 +71,12 @@ const GroupsList = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        {showButton && (
-          <Button onClick={() => navigate(newGroupUrl)} disabled={loading}>
-            {buttonsTitles.newGroups}
-          </Button>
-        )}
+        <Button onClick={() => navigate(newGroupUrl)} disabled={loading}>
+          {buttonsTitles.newOrganization}
+        </Button>
       </TableButtonsRow>
       <RecursiveTable
-        onClick={(id) => navigate(slugs.groupUsers(id))}
+        onClick={(id) => navigate(slugs.organizationUsers(id))}
         loading={loading}
         data={tableData}
         columns={groupColumns}
@@ -91,4 +87,4 @@ const GroupsList = () => {
   );
 };
 
-export default GroupsList;
+export default OrganizationList;

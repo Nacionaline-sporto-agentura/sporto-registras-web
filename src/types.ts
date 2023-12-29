@@ -1,13 +1,13 @@
-import { AuthStrategy, RoleType, TableItemWidth } from './utils/constants';
+import { AdminRoleType, AuthStrategy, TableItemWidth } from './utils/constants';
 
 export interface User {
   id?: string;
   firstName?: string;
-  role?: RoleType;
+  role?: AdminRoleType;
   fullName?: string;
   lastName?: string;
   email?: string;
-  type?: RoleType;
+  type?: AdminRoleType;
   phone?: string;
   profiles?: Profile[];
   groups?: Group[];
@@ -22,7 +22,7 @@ export interface Profile {
   freelancer: boolean;
   email?: string;
   code?: string;
-  role: RoleType;
+  role: AdminRoleType;
 }
 
 export type ChildrenType = string | JSX.Element | JSX.Element[] | any;
