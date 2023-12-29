@@ -75,7 +75,7 @@ export interface InstitutionProps {
   };
 }
 
-const UserForm = () => {
+const InstitutionForm = () => {
   const navigate = useNavigate();
   const { id = '' } = useParams();
   const [searchParams] = useSearchParams();
@@ -88,6 +88,7 @@ const UserForm = () => {
       firstName,
       lastName,
       email,
+      address,
       phone,
       companyEmail,
       companyCode,
@@ -107,6 +108,7 @@ const UserForm = () => {
         phone,
         personalCode,
       },
+      address,
       name: companyName,
       code: companyCode,
       phone: companyPhone,
@@ -197,4 +199,4 @@ const UserForm = () => {
   );
 };
 
-export default UserForm;
+export default InstitutionForm;

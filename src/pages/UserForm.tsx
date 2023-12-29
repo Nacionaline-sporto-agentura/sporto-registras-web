@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
+import Cookies from 'universal-cookie';
 import * as Yup from 'yup';
 import SelectField from '../components/fields/SelectField';
 import TextField from '../components/fields/TextField';
@@ -17,6 +18,7 @@ import {
   isCurrentUser,
   isNew,
 } from '../utils/functions';
+import { useIsTenantAdmin } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 import {
   buttonsTitles,
@@ -52,23 +54,33 @@ export const validateCreateUserForm = Yup.object().shape({
   email: Yup.string().email(validationTexts.badEmailFormat).required(validationTexts.requireText),
 });
 
+const cookies = new Cookies();
+
+const profileId = cookies.get('profileId');
+
 const UserForm = () => {
   const navigate = useNavigate();
   const { id = '' } = useParams();
   const currentUser = useAppSelector((state) => state.user.userData);
-  const disabled = !isNew(id);
+  const isTenantAdmin = useIsTenantAdmin();
+
+  const disabled = !isNew(id) || !isTenantAdmin;
 
   const title = isNew(id) ? pageTitles.newUser : pageTitles.updateUser;
 
-  const { isFetching, data: user } = useQuery(['organizationUser', id], () => Api.getUser({ id }), {
-    onError: () => {
-      navigate(slugs.adminUsers);
+  const { isFetching, data: user } = useQuery(
+    ['organizationUser', id],
+    () => Api.getTenantUser({ tenantId: profileId, id }),
+    {
+      onError: () => {
+        navigate(slugs.adminUsers);
+      },
+      onSuccess: () => {
+        if (isCurrentUser(id, currentUser.id)) return navigate(slugs.profile);
+      },
+      enabled: !isNew(id),
     },
-    onSuccess: () => {
-      if (isCurrentUser(id, currentUser.id)) return navigate(slugs.profile);
-    },
-    enabled: !isNew(id),
-  });
+  );
 
   const handleSubmit = async (values: User, { setErrors }) => {
     const { firstName, lastName, email, phone, role } = values;
@@ -113,20 +125,25 @@ const UserForm = () => {
     retry: false,
   });
 
-  const updateUser = useMutation((params: User) => Api.updateUser({ params, id }), {
-    onError: ({ response }) => {
-      handleErrorToastFromServer(response);
+  const updateUser = useMutation(
+    (params: User) =>
+      Api.updateTenantUser({ params: { role: params.role }, id, tenantId: profileId }),
+    {
+      onError: ({ response }) => {
+        handleErrorToastFromServer(response);
+      },
+      onSuccess: () => {
+        navigate(slugs.users);
+      },
+      retry: false,
     },
-    onSuccess: () => {
-      navigate(slugs.users);
-    },
-    retry: false,
-  });
+  );
 
   const handleDelete = useMutation(
     () =>
-      Api.deleteUser({
+      Api.deleteTenantUser({
         id,
+        tenantId: profileId,
       }),
     {
       onError: () => {
@@ -204,6 +221,7 @@ const UserForm = () => {
               name="role"
               value={values.role}
               error={errors.role}
+              disabled={!isTenantAdmin}
               options={Object.keys(UserRoleType)}
               onChange={(role) => handleChange('role', role)}
               getOptionLabel={(option) => roleLabels[option]}

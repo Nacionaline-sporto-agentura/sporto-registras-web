@@ -16,7 +16,7 @@ export const columns = {
 
 const OrganizationUsers = () => {
   const { navigate, page, id = '' } = useGenericTablePageHooks();
-  const newUrl = slugs.newUser(id);
+  const newUrl = slugs.newOrganizationUser(id);
 
   const { tableData, loading } = useTableData({
     name: 'organizationTenantUsers',

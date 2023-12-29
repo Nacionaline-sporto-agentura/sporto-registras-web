@@ -36,7 +36,7 @@ export const handleErrorToastFromServer = (responseError: string = 'error') => {
   handleErrorToast(getErrorMessage(getReactQueryErrorMessage(responseError)));
 };
 
-export const handleSuccessToast = (message: string) => {
+export const handleSuccessToast = (message = 'Atnaujinta') => {
   toast.success(message, {
     position: 'top-center',
     autoClose: 5000,

@@ -162,6 +162,7 @@ const Title = styled.div`
 `;
 
 const ErrorMessage = styled.div`
+  margin-top: 12px;
   background-color: #ffedf0;
   color: #fe1d42;
   border: 1px solid #fe1d42;

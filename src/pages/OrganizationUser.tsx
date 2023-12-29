@@ -83,7 +83,7 @@ const UserForm = () => {
       email: email?.toLowerCase(),
       phone,
       role,
-      tenantId: tenantId,
+      tenantId: parseInt(tenantId),
     };
 
     if (isNew(id)) {

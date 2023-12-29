@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '../state/hooks';
 import { actions as userAction } from '../state/user/reducer';
 import { TableData, TableDataProp, User } from '../types';
 import api from './api';
+import { AdminRoleType } from './constants';
 import { handleErrorToastFromServer } from './functions';
 import { clearCookies, emptyUser, handleSetProfile } from './loginFunctions';
 import { slugs } from './routes';
@@ -175,4 +176,10 @@ export const useGetCurrentProfile = () => {
   const profileId = cookies.get('profileId');
   const currentProfile = profiles?.find((profile) => profile.id == profileId);
   return currentProfile;
+};
+
+export const useIsTenantAdmin = () => {
+  const currentProfile = useGetCurrentProfile();
+
+  return currentProfile?.role === AdminRoleType.ADMIN;
 };
