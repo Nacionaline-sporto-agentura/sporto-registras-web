@@ -1,10 +1,9 @@
 import { useMutation, useQuery } from 'react-query';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import TextField from '../components/fields/TextField';
 import FormPageWrapper from '../components/layouts/FormLayout';
 import FullscreenLoader from '../components/other/FullscreenLoader';
-import GroupsContainer from '../components/other/GroupContainer';
 import SimpleContainer from '../components/other/SimpleContainer';
 import { useAppSelector } from '../state/hooks';
 import { Column, FormRow } from '../styles/CommonStyles';
@@ -48,38 +47,24 @@ export const validateCreateUserForm = Yup.object().shape({
     .trim()
     .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
   email: Yup.string().email(validationTexts.badEmailFormat).required(validationTexts.requireText),
-  groups: Yup.array()
-    .of(
-      Yup.object().shape({
-        id: Yup.string().required(validationTexts.requireText),
-        role: Yup.string().required(validationTexts.requireText),
-      }),
-    )
-    .min(1),
 });
 
 const UserForm = () => {
   const navigate = useNavigate();
-  const { id = '' } = useParams();
+  const { tenantId = '', id = '' } = useParams();
   const currentUser = useAppSelector((state) => state.user.userData);
-  const [searchParams] = useSearchParams();
-  const { group } = Object.fromEntries([...Array.from(searchParams)]);
 
   const title = isNew(id) ? pageTitles.newUser : pageTitles.updateUser;
 
-  const { isFetching, data: user } = useQuery(
-    ['userModuleUser', id],
-    () => Api.getAdminUser({ id }),
-    {
-      onError: () => {
-        navigate(slugs.adminUsers);
-      },
-      onSuccess: () => {
-        if (isCurrentUser(id, currentUser.id)) return navigate(slugs.profile);
-      },
-      enabled: !isNew(id),
+  const { isFetching, data: user } = useQuery(['organizationUser', id], () => Api.getUser({ id }), {
+    onError: () => {
+      navigate(slugs.adminUsers);
     },
-  );
+    onSuccess: () => {
+      if (isCurrentUser(id, currentUser.id)) return navigate(slugs.profile);
+    },
+    enabled: !isNew(id),
+  });
 
   const handleSubmit = async (values: User, { setErrors }) => {
     const { firstName, lastName, email, phone, groups } = values;
@@ -90,6 +75,7 @@ const UserForm = () => {
       email: email?.toLowerCase(),
       phone,
       groups,
+      tenantId: tenantId,
     };
 
     if (isNew(id)) {
@@ -106,7 +92,7 @@ const UserForm = () => {
     return await updateUser.mutateAsync(params);
   };
 
-  const createUser = useMutation((params: User) => Api.createAdminUser({ params }), {
+  const createUser = useMutation((params: User) => Api.createUser({ params }), {
     onError: ({ response }) => {
       handleErrorToastFromServer(response);
     },
@@ -124,7 +110,7 @@ const UserForm = () => {
     retry: false,
   });
 
-  const updateUser = useMutation((params: User) => Api.updateAdminUser({ params, id }), {
+  const updateUser = useMutation((params: User) => Api.updateUser({ params, id }), {
     onError: ({ response }) => {
       handleErrorToastFromServer(response);
     },
@@ -134,19 +120,9 @@ const UserForm = () => {
     retry: false,
   });
 
-  const { data: groupOptions = [] } = useQuery(
-    ['groupOptions', id],
-    async () => (await Api.getGroupsOptions()).rows,
-    {
-      onError: () => {
-        handleErrorToastFromServer();
-      },
-    },
-  );
-
   const handleDelete = useMutation(
     () =>
-      Api.deleteAdminUser({
+      Api.deleteUser({
         id,
       }),
     {
@@ -168,25 +144,11 @@ const UserForm = () => {
     handleDelete: !isNew(id) ? handleDelete.mutateAsync : undefined,
   };
 
-  const getUserGroups = () =>
-    user?.groups?.map((group) => {
-      return {
-        id: group.id,
-        role: group.role,
-      };
-    }) || [
-      {
-        id: group || '',
-        role: '',
-      },
-    ];
-
   const initialValues: User = {
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    groups: getUserGroups(),
   };
 
   const renderForm = (values: User, errors: any, handleChange) => {
@@ -228,14 +190,6 @@ const UserForm = () => {
               onChange={(email) => handleChange('email', email)}
             />
           </FormRow>
-        </SimpleContainer>
-        <SimpleContainer title={formLabels.roles}>
-          <GroupsContainer
-            handleChange={handleChange}
-            values={values}
-            groupOptions={groupOptions}
-            errors={errors}
-          />
         </SimpleContainer>
       </Column>
     );

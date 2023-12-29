@@ -1,4 +1,5 @@
 import Axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { isFinite } from 'lodash';
 import Cookies from 'universal-cookie';
 import { GroupProps } from '../pages/GroupForm';
 import { Group } from '../types';
@@ -9,12 +10,14 @@ export enum Resources {
   REFRESH_TOKEN = '/auth/refresh',
   E_GATES_LOGIN = 'auth/evartai/login',
   E_GATES_SIGN = 'auth/evartai/sign',
-  VERIFY_USER = '/auth/change/verify',
-  SET_PASSWORD = '/auth/change/accept',
+  VERIFY_USER = '/auth/verify',
+  SET_PASSWORD = '/auth/accept',
   REMIND_PASSWORD = '/auth/remind',
   ADMINS = 'api/admins',
+  USERS = 'api/users',
   GROUPS = 'api/groups',
   TENANTS = 'api/tenants',
+  PROFILES = '/api/profiles',
 }
 
 export enum Populations {
@@ -102,8 +105,11 @@ class Api {
           return config;
         }
         const token = cookies.get('token');
+        const profileId = cookies.get('profileId');
         if (token) {
           config.headers!.Authorization = 'Bearer ' + token;
+
+          if (isFinite(parseInt(profileId))) config.headers!['X-Profile'] = profileId;
         }
         config.url = this.proxy + config.url;
 
@@ -242,7 +248,7 @@ class Api {
     });
   };
 
-  getUser = async ({ id }: { id: string }) => {
+  getAdminUser = async ({ id }: { id: string }) => {
     return this.getOne({
       resource: Resources.ADMINS,
       populate: [Populations.GROUPS],
@@ -250,7 +256,7 @@ class Api {
     });
   };
 
-  deleteUser = async ({ id }: { id: string }) => {
+  deleteAdminUser = async ({ id }: { id: string }) => {
     return this.delete({
       resource: Resources.ADMINS,
       id,
@@ -269,6 +275,51 @@ class Api {
   createAdminUser = async ({ params }: { params: any }) => {
     return this.post({
       resource: Resources.ADMINS,
+      params,
+    });
+  };
+
+  updateUser = async ({ params, id }: { params: any; id: string }) => {
+    return this.patch({
+      resource: Resources.USERS,
+      params,
+      id,
+    });
+  };
+
+  getUser = async ({ id }: { id: string }) => {
+    return this.getOne({
+      resource: Resources.USERS,
+      id,
+    });
+  };
+
+  deleteUser = async ({ id }: { id: string }) => {
+    return this.delete({
+      resource: Resources.USERS,
+      id,
+    });
+  };
+
+  getUsers = async ({ filter, page, query }: TableList) => {
+    return this.getList({
+      resource: Resources.USERS,
+      query,
+      page,
+      filter,
+    });
+  };
+
+  getTenantUsers = async ({ page, id }: TableList) => {
+    return this.getList({
+      resource: `${Resources.TENANTS}/${id}/users`,
+      page,
+    });
+  };
+
+  createUser = async ({ params }: { params: any }) => {
+    return this.post({
+      resource: Resources.USERS,
       params,
     });
   };
@@ -340,13 +391,22 @@ class Api {
       sort: [SortFields.NAME],
     });
 
-  getTenantOptions = async () =>
+  getTenantOptions = async ({ query }: TableList) =>
     await this.getList({
       resource: Resources.TENANTS,
       populate: [Populations.CHILDREN],
+      query,
       pageSize: '9999',
       sort: [SortFields.NAME],
     });
+
+  getTenant = async ({ id }: { id: string }): Promise<Group> => {
+    return await this.getOne({
+      resource: Resources.TENANTS,
+      populate: [Populations.CHILDREN],
+      id,
+    });
+  };
 
   createTenant = async ({ params }: { params: GroupProps }) =>
     await this.post({
@@ -364,6 +424,12 @@ class Api {
     await this.getOne({
       id,
       resource: Resources.TENANTS,
+    });
+
+  getProfiles = async () =>
+    await this.getList({
+      pageSize: '99999',
+      resource: Resources.PROFILES,
     });
 }
 

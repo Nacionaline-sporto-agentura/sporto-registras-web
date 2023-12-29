@@ -29,7 +29,7 @@ const UserWithEmailForm = ({
           onChange={(lastName) => handleChange('lastName', lastName)}
         />
       </FormRow>
-      <FormRow columns={3}>
+      <FormRow columns={2}>
         <TextField
           label={inputLabels.phone}
           value={values.phone}
@@ -41,12 +41,6 @@ const UserWithEmailForm = ({
           value={values.email}
           error={errors.email}
           onChange={(email) => handleChange('email', email)}
-        />
-        <TextField
-          label={inputLabels.personalCode}
-          value={values.personalCode}
-          error={errors.personalCode}
-          onChange={(personalCode) => handleChange('personalCode', personalCode)}
         />
       </FormRow>
     </SimpleContainer>

@@ -1,3 +1,4 @@
+import { AiOutlineArrowRight } from 'react-icons/ai';
 import { BiCalendarEvent } from 'react-icons/bi';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { HiOutlineArrowNarrowLeft } from 'react-icons/hi';
@@ -9,6 +10,7 @@ import {
   MdExitToApp,
   MdKeyboardArrowDown,
   MdOutlineEdit,
+  MdOutlinePerson,
   MdOutlineVisibility,
   MdOutlineVisibilityOff,
   MdUnfoldMore,
@@ -37,10 +39,30 @@ export enum IconName {
   back = 'back',
   edit = 'edit',
   forward = 'forward',
+  arrowRight = 'arrowRight',
+  exit = 'exit',
+  person = 'person',
 }
 
 const Icon = ({ name, className }: IconProps) => {
   switch (name) {
+    case IconName.person:
+      return <MdOutlinePerson className={className} />;
+    case IconName.exit:
+      return <MdExitToApp className={className} />;
+    case IconName.arrowRight:
+      return <AiOutlineArrowRight className={className} />;
+    case IconName.forward:
+      return <MdArrowForwardIos className={className} />;
+    case IconName.edit:
+      return <MdOutlineEdit className={className} />;
+    case IconName.back:
+      return <MdArrowBack className={className} />;
+    case IconName.checkmark:
+      return <MdDone className={className} />;
+    case IconName.visibleOn:
+      return <MdOutlineVisibility className={className} />;
+
     case IconName.calendar:
       return <BiCalendarEvent className={className} />;
     case 'forward':

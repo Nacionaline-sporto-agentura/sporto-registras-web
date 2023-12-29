@@ -40,6 +40,28 @@ const OrganizationForm = ({
               handleChange('parent', value.id);
             }}
           />
+          <TextField
+            label={inputLabels.companyCode}
+            value={values.companyCode}
+            error={errors.companyCode}
+            name="companyCode"
+            onChange={(companyCode) => handleChange('companyCode', companyCode)}
+          />
+
+          <TextField
+            label={inputLabels.companyPhone}
+            value={values.companyPhone}
+            error={errors.companyPhone}
+            name="companyPhone"
+            onChange={(companyPhone) => handleChange('companyPhone', companyPhone)}
+          />
+          <TextField
+            label={inputLabels.companyEmail}
+            value={values.companyEmail}
+            error={errors.companyEmail}
+            name="companyEmail"
+            onChange={(companyEmail) => handleChange('companyEmail', companyEmail)}
+          />
         </FormRow>
         <FormRow columns={1}>
           <CheckBox
@@ -53,13 +75,6 @@ const OrganizationForm = ({
       {values.canHaveChildren && (
         <SimpleContainer title={formLabels.infoAboutOrganization}>
           <FormRow columns={2}>
-            <TextField
-              label={inputLabels.companyCode}
-              value={values.companyCode}
-              error={errors.companyCode}
-              name="companyCode"
-              onChange={(companyCode) => handleChange('companyCode', companyCode)}
-            />
             <SelectField
               label={inputLabels.legalForm}
               value={values?.data?.legalForm}
@@ -85,20 +100,7 @@ const OrganizationForm = ({
               name="address"
               onChange={(address) => handleChange('address', address)}
             />
-            <TextField
-              label={inputLabels.companyPhone}
-              value={values.companyPhone}
-              error={errors.companyPhone}
-              name="companyPhone"
-              onChange={(companyPhone) => handleChange('companyPhone', companyPhone)}
-            />
-            <TextField
-              label={inputLabels.companyEmail}
-              value={values.companyEmail}
-              error={errors.companyEmail}
-              name="companyEmail"
-              onChange={(companyEmail) => handleChange('companyEmail', companyEmail)}
-            />
+
             <DateField
               label={inputLabels.foundedAt}
               value={values?.data?.foundedAt}

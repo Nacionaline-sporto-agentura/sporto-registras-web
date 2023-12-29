@@ -26,6 +26,8 @@ import {
   validationTexts,
 } from '../utils/texts';
 
+import { companyCode } from 'lt-codes';
+
 export const validateCreateUserForm = Yup.object().shape({
   firstName: Yup.string()
     .required(validationTexts.requireText)
@@ -46,6 +48,21 @@ export const validateCreateUserForm = Yup.object().shape({
     .trim()
     .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
   email: Yup.string().email(validationTexts.badEmailFormat).required(validationTexts.requireText),
+
+  companyName: Yup.string().required(validationTexts.requireText).trim(),
+  companyCode: Yup.string()
+    .required(validationTexts.requireText)
+    .trim()
+    .test('validateCompanyCode', validationTexts.companyCode, (value) => {
+      return companyCode.validate(value).isValid;
+    }),
+  companyPhone: Yup.string()
+    .required(validationTexts.requireText)
+    .trim()
+    .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
+  companyEmail: Yup.string()
+    .email(validationTexts.badEmailFormat)
+    .required(validationTexts.requireText),
 });
 
 export interface InstitutionProps {
@@ -83,10 +100,10 @@ const UserForm = () => {
 
   const { isFetching, data: institution } = useQuery(
     ['institution', id],
-    () => Api.getUser({ id }),
+    () => Api.getAdminUser({ id }),
     {
       onError: () => {
-        navigate(slugs.users);
+        navigate(slugs.adminUsers);
       },
       onSuccess: () => {
         if (isCurrentUser(id, currentUser.id)) return navigate(slugs.profile);
@@ -111,16 +128,18 @@ const UserForm = () => {
     } = values;
 
     const params = {
-      firstName,
+      user: {
+        firstName,
+        lastName,
+        email: email?.toLowerCase(),
+        phone,
+        personalCode,
+      },
+      name: companyName,
+      code: companyCode,
+      phone: companyPhone,
+      email: companyEmail?.toLowerCase(),
       parent,
-      lastName,
-      email: email?.toLowerCase(),
-      personalCode,
-      phone,
-      companyEmail: companyEmail?.toLowerCase(),
-      companyCode,
-      companyName,
-      companyPhone,
       tenantType: TenantTypes.MUNICIPALITY,
       data,
     };
@@ -139,7 +158,7 @@ const UserForm = () => {
     return await updateTenant.mutateAsync(params);
   };
 
-  const createTenant = useMutation((params: InstitutionProps) => Api.createTenant({ params }), {
+  const createTenant = useMutation((params: any) => Api.createTenant({ params }), {
     onError: ({ response }) => {
       handleErrorToastFromServer(response);
     },
@@ -157,19 +176,20 @@ const UserForm = () => {
     retry: false,
   });
 
-  const updateTenant = useMutation((params: InstitutionProps) => Api.updateTenant({ params, id }), {
+  const updateTenant = useMutation((params: any) => Api.updateTenant({ params, id }), {
     onError: ({ response }) => {
       handleErrorToastFromServer(response);
     },
     onSuccess: () => {
-      navigate(slugs.users);
+      navigate(slugs.adminUsers);
     },
     retry: false,
   });
 
   const { data: groupOptions = [] } = useQuery(
     ['tenantOption', id],
-    async () => (await Api.getTenantOptions()).rows,
+    async () =>
+      (await Api.getTenantOptions({ query: { tenantType: TenantTypes.MUNICIPALITY } })).rows,
     {
       onError: () => {
         handleErrorToastFromServer();
@@ -187,7 +207,7 @@ const UserForm = () => {
         handleErrorToastFromServer();
       },
       onSuccess: () => {
-        navigate(slugs.users);
+        navigate(slugs.adminUsers);
       },
     },
   );

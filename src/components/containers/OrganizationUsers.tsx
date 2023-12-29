@@ -9,19 +9,19 @@ import { buttonsTitles, emptyState, emptyStateUrl } from '../../utils/texts';
 import Button from '../buttons/Button';
 import MainTable from '../tables/MainTable';
 
-const GroupUser = () => {
-  const { navigate, page, id } = useGenericTablePageHooks();
-  const newUrl = `${slugs.newAdminUser}?group=${id}`;
+const OrganizationUsers = () => {
+  const { navigate, page, id = '' } = useGenericTablePageHooks();
+  const newUrl = slugs.newUser(id);
 
   const { tableData, loading } = useTableData({
-    name: 'groupUsers',
+    name: 'organizationTenantUsers',
     endpoint: () =>
-      api.getGroupUsers({
+      api.getTenantUsers({
         page,
         id,
       }),
     mapData: (list) => mapGroupUsersList(list),
-    dependencyArray: [page],
+    dependencyArray: [page, id],
   });
 
   const notFound: NotFoundInfoProps = {
@@ -44,7 +44,7 @@ const GroupUser = () => {
       </TableButtonsRow>
       <MainTable
         loading={loading}
-        onClick={(id) => navigate(slugs.adminUser(id))}
+        onClick={(userId) => navigate(slugs.user(id, userId))}
         isFilterApplied={false}
         notFoundInfo={notFound}
         data={tableData}
@@ -54,4 +54,4 @@ const GroupUser = () => {
   );
 };
 
-export default GroupUser;
+export default OrganizationUsers;

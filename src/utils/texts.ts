@@ -19,6 +19,8 @@ export const validationTexts = {
 
   [ServerErrorMessages.NOT_FOUND]: 'Blogas elektroninis paštas arba slaptažodis',
   [ServerErrorMessages.USER_NOT_FOUND]: 'Sistemoje nėra tokio elektroninio pašto',
+  personalCode: 'Blogas asmens kodas',
+  companyCode: 'Blogas įmonės kodas',
 };
 
 export const descriptions = {
@@ -29,6 +31,7 @@ export const descriptions = {
 export const formLabels = {
   groupInfo: 'Informacija apie grupę',
   userInfo: 'Informacija apie naudotoją',
+  selectProfile: 'Pasirinkite paskyrą',
   profileInfo: 'Profilio informacija',
   roles: 'Rolės',
   moduleAccess: 'Prieiga prie modulių',
@@ -100,6 +103,9 @@ export const pageTitles = {
 export const buttonsTitles = {
   back: 'Grįžti atgal',
   clearAll: 'Išvalyti visus',
+  profile: 'Profilis',
+  logout: 'Atsijungti',
+  profiles: 'Profiliai',
   filter: 'Filtruoti',
   save: 'Išsaugoti',
   newUser: 'Naujas naudotojas',

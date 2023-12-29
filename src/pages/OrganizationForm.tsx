@@ -1,30 +1,17 @@
+import { companyCode, personalCode } from 'lt-codes';
 import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import OrganizationForm from '../components/forms/OrganizationForm';
 import UserWithPersonalCodeForm from '../components/forms/UserWithPersonalCodeForm';
 import FormPageWrapper from '../components/layouts/FormLayout';
-import FullscreenLoader from '../components/other/FullscreenLoader';
-import { useAppSelector } from '../state/hooks';
 import { Column } from '../styles/CommonStyles';
-import { DeleteInfoProps, ReactQueryError } from '../types';
+import { ReactQueryError } from '../types';
 import Api from '../utils/api';
 import { TenantTypes } from '../utils/constants';
-import {
-  getReactQueryErrorMessage,
-  handleErrorToastFromServer,
-  isCurrentUser,
-  isNew,
-} from '../utils/functions';
+import { getReactQueryErrorMessage, handleErrorToastFromServer, isNew } from '../utils/functions';
 import { slugs } from '../utils/routes';
-import {
-  buttonsTitles,
-  deleteDescriptionFirstPart,
-  deleteDescriptionSecondPart,
-  deleteTitles,
-  pageTitles,
-  validationTexts,
-} from '../utils/texts';
+import { pageTitles, validationTexts } from '../utils/texts';
 
 export const validateCreateUserForm = Yup.object().shape({
   firstName: Yup.string()
@@ -45,7 +32,26 @@ export const validateCreateUserForm = Yup.object().shape({
     .required(validationTexts.requireText)
     .trim()
     .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
-  personalCode: Yup.string().required(validationTexts.requireText),
+  personalCode: Yup.string()
+    .required(validationTexts.requireText)
+    .trim()
+    .test('validatePersonalCode', validationTexts.personalCode, (value) => {
+      return personalCode.validate(value).isValid;
+    }),
+  companyName: Yup.string().required(validationTexts.requireText).trim(),
+  companyCode: Yup.string()
+    .required(validationTexts.requireText)
+    .trim()
+    .test('validateCompanyCode', validationTexts.companyCode, (value) => {
+      return companyCode.validate(value).isValid;
+    }),
+  companyPhone: Yup.string()
+    .required(validationTexts.requireText)
+    .trim()
+    .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
+  companyEmail: Yup.string()
+    .email(validationTexts.badEmailFormat)
+    .required(validationTexts.requireText),
 });
 
 export interface InstitutionProps {
@@ -61,6 +67,7 @@ export interface InstitutionProps {
   phone: string;
   canHaveChildren?: boolean;
   parent?: any;
+
   data?: {
     url: string;
     foundedAt: Date;
@@ -75,25 +82,11 @@ export interface InstitutionProps {
 const OrganizationFormPage = () => {
   const navigate = useNavigate();
   const { id = '' } = useParams();
-  const currentUser = useAppSelector((state) => state.user.userData);
+
   const [searchParams] = useSearchParams();
   const { parent } = Object.fromEntries([...Array.from(searchParams)]);
 
   const title = pageTitles.newOrganization;
-
-  const { isFetching, data: institution } = useQuery(
-    ['institution', id],
-    () => Api.getUser({ id }),
-    {
-      onError: () => {
-        navigate(slugs.users);
-      },
-      onSuccess: () => {
-        if (isCurrentUser(id, currentUser.id)) return navigate(slugs.profile);
-      },
-      enabled: !isNew(id),
-    },
-  );
 
   const handleSubmit = async (values: InstitutionProps, { setErrors }) => {
     const {
@@ -111,16 +104,18 @@ const OrganizationFormPage = () => {
     } = values;
 
     const params = {
-      firstName,
+      user: {
+        firstName,
+        lastName,
+        email: email?.toLowerCase(),
+        phone,
+        personalCode,
+      },
+      name: companyName,
+      code: companyCode,
+      phone: companyPhone,
+      email: companyEmail?.toLowerCase(),
       parent,
-      lastName,
-      email: email?.toLowerCase(),
-      personalCode,
-      phone,
-      companyEmail: companyEmail?.toLowerCase(),
-      companyCode,
-      companyName,
-      companyPhone,
       tenantType: TenantTypes.ORGANIZATION,
       data,
     };
@@ -139,7 +134,7 @@ const OrganizationFormPage = () => {
     return await updateTenant.mutateAsync(params);
   };
 
-  const createTenant = useMutation((params: InstitutionProps) => Api.createTenant({ params }), {
+  const createTenant = useMutation((params: any) => Api.createTenant({ params }), {
     onError: ({ response }) => {
       handleErrorToastFromServer(response);
     },
@@ -152,54 +147,31 @@ const OrganizationFormPage = () => {
         console.log(url.href);
         alert(url.href);
       }
-      navigate(slugs.institutions);
+      navigate(slugs.organizations);
     },
     retry: false,
   });
 
-  const updateTenant = useMutation((params: InstitutionProps) => Api.updateTenant({ params, id }), {
+  const updateTenant = useMutation((params: any) => Api.updateTenant({ params, id }), {
     onError: ({ response }) => {
       handleErrorToastFromServer(response);
     },
     onSuccess: () => {
-      navigate(slugs.users);
+      navigate(slugs.organizations);
     },
     retry: false,
   });
 
   const { data: groupOptions = [] } = useQuery(
     ['tenantOption', id],
-    async () => (await Api.getTenantOptions()).rows,
+    async () =>
+      (await Api.getTenantOptions({ query: { tenantType: TenantTypes.ORGANIZATION } })).rows,
     {
       onError: () => {
         handleErrorToastFromServer();
       },
     },
   );
-
-  const handleDelete = useMutation(
-    () =>
-      Api.deleteTenant({
-        id,
-      }),
-    {
-      onError: () => {
-        handleErrorToastFromServer();
-      },
-      onSuccess: () => {
-        navigate(slugs.users);
-      },
-    },
-  );
-
-  const deleteInfo: DeleteInfoProps = {
-    deleteButtonText: buttonsTitles.deleteUser,
-    deleteDescriptionFirstPart: deleteDescriptionFirstPart.group,
-    deleteDescriptionSecondPart: deleteDescriptionSecondPart.group,
-    deleteTitle: deleteTitles.group,
-    deleteName: institution?.name,
-    handleDelete: !isNew(id) ? handleDelete.mutateAsync : undefined,
-  };
 
   const initialValues: InstitutionProps = {
     companyName: '',
@@ -230,10 +202,6 @@ const OrganizationFormPage = () => {
     );
   };
 
-  if (isFetching) {
-    return <FullscreenLoader />;
-  }
-
   return (
     <FormPageWrapper
       title={title}
@@ -241,7 +209,6 @@ const OrganizationFormPage = () => {
       onSubmit={handleSubmit}
       renderForm={renderForm}
       validationSchema={validateCreateUserForm}
-      deleteInfo={deleteInfo}
     />
   );
 };

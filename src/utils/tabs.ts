@@ -7,6 +7,6 @@ export const getInternalTabs = () => [
   },
   {
     label: 'Naudotojai',
-    slug: slugs.users,
+    slug: slugs.adminUsers,
   },
 ];

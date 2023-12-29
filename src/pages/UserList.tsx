@@ -89,7 +89,7 @@ const UserList = () => {
 
   const notFoundInfo: NotFoundInfoProps = {
     text: emptyState.users,
-    url: slugs.newUser,
+    url: slugs.newAdminUser,
     urlText: emptyStateUrl.user,
   };
 
@@ -106,7 +106,7 @@ const UserList = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        <Button onClick={() => navigate(slugs.newUser)}>{buttonsTitles.newUser}</Button>
+        <Button onClick={() => navigate(slugs.newAdminUser)}>{buttonsTitles.newUser}</Button>
       </TableButtonsRow>
       <MainTable
         loading={loading}
@@ -114,7 +114,7 @@ const UserList = () => {
         isFilterApplied={!isEmpty(filters)}
         data={tableData}
         columns={columns}
-        onClick={(id) => navigate(slugs.user(id))}
+        onClick={(id) => navigate(slugs.adminUser(id))}
       />
     </TablePageLayout>
   );

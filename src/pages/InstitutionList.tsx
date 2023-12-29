@@ -76,7 +76,7 @@ const InstitutionList = () => {
         </Button>
       </TableButtonsRow>
       <RecursiveTable
-        onClick={(id) => navigate(slugs.groupUsers(id))}
+        onClick={(id) => navigate(slugs.organizationUsers(id))}
         loading={loading}
         data={tableData}
         columns={groupColumns}

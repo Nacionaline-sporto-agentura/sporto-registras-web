@@ -11,14 +11,16 @@ import FullscreenLoader from './components/other/FullscreenLoader';
 import CreatePassword from './pages/CreatePassword';
 import ForgotPassword from './pages/ForgotPassword';
 import { Login } from './pages/Login';
+import Profiles from './pages/Profiles';
 import ResetPassword from './pages/ResetPassword';
 import { useAppSelector } from './state/hooks';
 import { GlobalStyle, theme } from './styles';
 import api from './utils/api';
+import { RoleType } from './utils/constants';
 import { handleErrorToastFromServer } from './utils/functions';
 import { useCheckAuthMutation } from './utils/hooks';
 import { handleUpdateTokens } from './utils/loginFunctions';
-import { routes, slugs } from './utils/routes';
+import { slugs, useFilteredRoutes } from './utils/routes';
 const cookies = new Cookies();
 
 function App() {
@@ -27,6 +29,8 @@ function App() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const { ticket } = Object.fromEntries([...Array.from(searchParams)]);
+
+  const routes = useFilteredRoutes();
 
   const { isLoading: eGateLoading } = useQuery([ticket], () => api.eGatesLogin({ ticket }), {
     onError: ({ response }: any) => {
@@ -84,6 +88,7 @@ function App() {
         <Routes>
           <Route element={<PublicRoute loggedIn={loggedIn} />} key="root">
             <Route path={slugs.login} element={<Login />} />
+            <Route path={slugs.profiles} element={<Profiles />} />
             <Route path={slugs.forgotPassword} element={<ForgotPassword />} />
             <Route path={slugs.resetPassword} element={<ResetPassword />} />
             <Route path={slugs.invite} element={<CreatePassword />} />
@@ -97,7 +102,7 @@ function App() {
 
           <Route
             path="*"
-            element={<Navigate to={loggedIn ? slugs.users : slugs.login} replace />}
+            element={<Navigate to={loggedIn ? routes[0].slug : slugs.login} replace />}
           />
         </Routes>
       ) : (
@@ -112,8 +117,14 @@ interface ProtectedRouteProps {
 }
 
 const PublicRoute = ({ loggedIn }: ProtectedRouteProps) => {
-  if (loggedIn) {
-    return <Navigate to={slugs.users} replace />;
+  const profileId = cookies.get('profileId');
+
+  const user = useAppSelector((state) => state.user.userData);
+
+  const userWithoutProfile = loggedIn && user.type == RoleType.USER && !profileId;
+
+  if (loggedIn && !userWithoutProfile) {
+    return <Navigate to={'/'} replace />;
   }
 
   return (
@@ -125,7 +136,7 @@ const PublicRoute = ({ loggedIn }: ProtectedRouteProps) => {
 
 const ProtectedRoute = ({ loggedIn }: ProtectedRouteProps) => {
   if (!loggedIn) {
-    return <Navigate to={slugs.login} replace />;
+    return <Navigate to={'/'} replace />;
   }
 
   return (
