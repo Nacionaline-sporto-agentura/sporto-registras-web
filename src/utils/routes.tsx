@@ -71,7 +71,6 @@ export const routes = [
     slug: slugs.newInstitutions,
     component: <InstitutionForm />,
     role: AdminRoleType.ADMIN,
-    appType: Apps.USERS,
   },
   {
     slug: slugs.organizationUser(':tenantId', ':id'),
@@ -85,10 +84,12 @@ export const routes = [
   {
     slug: slugs.institutionUsers(':id'),
     component: <InstitutionPage />,
+    role: AdminRoleType.ADMIN,
   },
   {
     slug: slugs.institutionUser(':tenantId', ':id'),
     component: <OrganizationUser />,
+    role: AdminRoleType.ADMIN,
   },
 
   {
@@ -156,6 +157,7 @@ export const routes = [
   },
   {
     slug: slugs.updateInstitution(':id'),
+    role: AdminRoleType.ADMIN,
     component: <UpdateInstitutionForm />,
   },
   {
