@@ -70,6 +70,7 @@ export const routes = [
     slug: slugs.organizations,
     sidebar: true,
     component: <OrganizationList />,
+    role: AdminRoleType.ADMIN,
     tenantRole: AdminRoleType.ADMIN,
   },
 
@@ -188,12 +189,10 @@ export const useFilteredRoutes = () => {
   return routes.filter((route) => {
     let select = true;
 
-    if (route.role) {
-      select = user.type === route.role;
-    }
-
-    if (select && route.tenantRole) {
-      select = currentProfile?.role === route.tenantRole;
+    if (route.tenantRole || route.role) {
+      select =
+        (!!currentProfile && currentProfile?.role === route.tenantRole) ||
+        (!!user?.type && user?.type === route?.role);
     }
 
     if (select && route.appType) {
