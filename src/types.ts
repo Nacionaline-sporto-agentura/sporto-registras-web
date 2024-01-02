@@ -1,4 +1,4 @@
-import { AdminRoleType, AuthStrategy, TableItemWidth } from './utils/constants';
+import { AdminRoleType, AuthStrategy, TableItemWidth, TenantTypes } from './utils/constants';
 
 export interface User {
   id?: string;
@@ -117,6 +117,13 @@ export interface Group {
   parent?: Group;
   usersCount?: number;
   children?: Group[];
-  error?: string;
   users?: User[];
+}
+
+export interface Tenant {
+  id: string;
+  name?: string;
+  parent?: Tenant;
+  tenantType: TenantTypes;
+  children?: Tenant[];
 }

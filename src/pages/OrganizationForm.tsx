@@ -3,7 +3,7 @@ import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import OrganizationForm from '../components/forms/OrganizationForm';
-import UserWithPersonalCodeForm from '../components/forms/UserWithPersonalCodeForm';
+import OwnerForm from '../components/forms/UserWithPersonalCodeForm';
 import FormPageWrapper from '../components/layouts/FormLayout';
 import { Column } from '../styles/CommonStyles';
 import { ReactQueryError } from '../types';
@@ -32,12 +32,21 @@ export const validateCreateUserForm = Yup.object().shape({
     .required(validationTexts.requireText)
     .trim()
     .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
-  personalCode: Yup.string()
-    .required(validationTexts.requireText)
-    .trim()
-    .test('validatePersonalCode', validationTexts.personalCode, (value) => {
-      return personalCode.validate(value).isValid;
-    }),
+  personalCode: Yup.string().when(['ownerWithPassword'], (items: any, schema) => {
+    if (!items[0]) {
+      return schema
+        .required(validationTexts.requireText)
+        .trim()
+        .test('validatePersonalCode', validationTexts.personalCode, (value) => {
+          return personalCode.validate(value).isValid;
+        });
+    }
+
+    return schema.nullable();
+  }),
+
+  email: Yup.string().email(validationTexts.badEmailFormat).required(validationTexts.requireText),
+
   companyName: Yup.string().required(validationTexts.requireText).trim(),
   companyCode: Yup.string()
     .required(validationTexts.requireText)
@@ -67,6 +76,7 @@ export interface InstitutionProps {
   phone: string;
   canHaveChildren?: boolean;
   parent?: any;
+  ownerWithPassword?: boolean;
 
   data?: {
     url: string;
@@ -100,6 +110,7 @@ const OrganizationFormPage = () => {
       personalCode,
       companyName,
       companyPhone,
+      ownerWithPassword,
       parent,
       data,
     } = values;
@@ -110,7 +121,7 @@ const OrganizationFormPage = () => {
         lastName,
         email: email?.toLowerCase(),
         phone,
-        personalCode,
+        ...(!ownerWithPassword && { personalCode }),
       },
       address,
       name: companyName,
@@ -183,7 +194,8 @@ const OrganizationFormPage = () => {
     lastName: '',
     address: '',
     email: '',
-    canHaveChildren: false,
+    canHaveChildren: true,
+    ownerWithPassword: false,
     phone: '',
     personalCode: '',
     parent: parent || '',
@@ -198,7 +210,7 @@ const OrganizationFormPage = () => {
           handleChange={handleChange}
           groupOptions={groupOptions}
         />
-        <UserWithPersonalCodeForm values={values} errors={errors} handleChange={handleChange} />
+        <OwnerForm values={values} errors={errors} handleChange={handleChange} />
       </Column>
     );
   };

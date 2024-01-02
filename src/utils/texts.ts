@@ -83,6 +83,8 @@ export const inputLabels = {
   nonGovernmentalOrganization: 'Atitinka nevyriausybinėms organizacijoms keliamus reikalavimus',
   nonFormalEducation: 'Gali vykdyti akredituotas neformaliojo vaikų švietimo programas',
   canHaveChildren: 'Įstaiga yra sporto organizacija, kuriai leidžiama kurti vaikines organizacijas',
+  ownerWithPassword: 'Pakviesti vadovą su slaptažodžiu',
+  userWithPassword: 'Pakviesti naudotoją su slaptažodžiu',
   legalForm: 'Teisinė forma',
 };
 export const pageTitles = {

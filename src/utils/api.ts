@@ -2,7 +2,7 @@ import Axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { isFinite } from 'lodash';
 import Cookies from 'universal-cookie';
 import { GroupProps } from '../pages/GroupForm';
-import { Group } from '../types';
+import { Group, Tenant } from '../types';
 const cookies = new Cookies();
 
 export enum Resources {
@@ -420,7 +420,7 @@ class Api {
       sort: [SortFields.NAME],
     });
 
-  getTenantOptions = async () =>
+  getTenantOptions = async (): Promise<GetAllResponse<Tenant>> =>
     await this.getList({
       resource: Resources.TENANTS,
       populate: [Populations.CHILDREN],

@@ -88,3 +88,20 @@ export const handlePagination = ({ data, page = '1', pageSize }: HandlePaginatio
 
   return { totalPages, slicedData };
 };
+
+export const filterOutGroup = (items?: any[], id?: string): any => {
+  if (isNew(id)) return items;
+
+  if (!items) return [];
+
+  items.forEach((group: { id: string; children: any[]; [key: string]: any }, index: number) => {
+    if (group.id == id) {
+      items.splice(index, 1);
+    }
+    if (group.children) {
+      filterOutGroup(group.children, id);
+    }
+  });
+
+  return items;
+};

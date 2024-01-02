@@ -1,6 +1,8 @@
+import { personalCode } from 'lt-codes';
 import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
+import CheckBox from '../components/fields/CheckBox';
 import SelectField from '../components/fields/SelectField';
 import TextField from '../components/fields/TextField';
 import FormPageWrapper from '../components/layouts/FormLayout';
@@ -10,7 +12,7 @@ import { useAppSelector } from '../state/hooks';
 import { Column, FormRow } from '../styles/CommonStyles';
 import { DeleteInfoProps, ReactQueryError, User } from '../types';
 import Api from '../utils/api';
-import { UserRoleType } from '../utils/constants';
+import { AdminRoleType, UserRoleType } from '../utils/constants';
 import {
   getReactQueryErrorMessage,
   handleErrorToastFromServer,
@@ -30,6 +32,18 @@ import {
   validationTexts,
 } from '../utils/texts';
 
+export interface UserProps {
+  id?: string;
+  firstName?: string;
+  role?: AdminRoleType;
+  fullName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  userWithPassword?: boolean;
+  personalCode?: string;
+}
+
 export const validateCreateUserForm = Yup.object().shape({
   firstName: Yup.string()
     .required(validationTexts.requireText)
@@ -45,6 +59,20 @@ export const validateCreateUserForm = Yup.object().shape({
 
       return true;
     }),
+
+  personalCode: Yup.string().when(['userWithPassword'], (items: any, schema) => {
+    if (!items[0]) {
+      return schema
+        .required(validationTexts.requireText)
+        .trim()
+        .test('validatePersonalCode', validationTexts.personalCode, (value) => {
+          return personalCode.validate(value).isValid;
+        });
+    }
+
+    return schema.nullable();
+  }),
+
   phone: Yup.string()
     .required(validationTexts.requireText)
     .trim()
@@ -74,12 +102,13 @@ const UserForm = () => {
     },
   );
 
-  const handleSubmit = async (values: User, { setErrors }) => {
-    const { firstName, lastName, email, phone, role } = values;
+  const handleSubmit = async (values: UserProps, { setErrors }) => {
+    const { firstName, lastName, email, phone, role, userWithPassword, personalCode } = values;
 
     const params = {
       firstName,
       lastName,
+      ...(!userWithPassword && { personalCode }),
       email: email?.toLowerCase(),
       phone,
       role,
@@ -156,15 +185,18 @@ const UserForm = () => {
     handleDelete: disabled ? handleDelete.mutateAsync : undefined,
   };
 
-  const initialValues: User = {
+  const initialValues: UserProps = {
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    role: user?.role || '',
+    role: user?.role || AdminRoleType.USER,
+    userWithPassword: false,
   };
 
-  const renderForm = (values: User, errors: any, handleChange) => {
+  const renderForm = (values: UserProps, errors: any, handleChange) => {
+    const showPersonalCodeField = !disabled && !values.userWithPassword;
+
     return (
       <Column>
         <SimpleContainer title={formLabels.userInfo}>
@@ -186,7 +218,7 @@ const UserForm = () => {
               onChange={(lastName) => handleChange('lastName', lastName?.trim())}
             />
           </FormRow>
-          <FormRow columns={2}>
+          <FormRow columns={showPersonalCodeField ? 3 : 2}>
             <TextField
               label={inputLabels.phone}
               value={values.phone}
@@ -206,6 +238,14 @@ const UserForm = () => {
               error={errors.email}
               onChange={(email) => handleChange('email', email)}
             />
+            {showPersonalCodeField && (
+              <TextField
+                label={inputLabels.personalCode}
+                value={values.personalCode}
+                error={errors.personalCode}
+                onChange={(personalCode) => handleChange('personalCode', personalCode)}
+              />
+            )}
           </FormRow>
           <FormRow columns={1}>
             <SelectField
@@ -218,6 +258,15 @@ const UserForm = () => {
               getOptionLabel={(option) => roleLabels[option]}
             />
           </FormRow>
+          {!disabled && (
+            <FormRow columns={1}>
+              <CheckBox
+                label={inputLabels.userWithPassword}
+                value={values.userWithPassword}
+                onChange={(value) => handleChange('userWithPassword', value)}
+              />
+            </FormRow>
+          )}
         </SimpleContainer>
       </Column>
     );

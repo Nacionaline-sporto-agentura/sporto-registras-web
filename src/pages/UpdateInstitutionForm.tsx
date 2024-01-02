@@ -7,7 +7,12 @@ import FullscreenLoader from '../components/other/FullscreenLoader';
 import { Column } from '../styles/CommonStyles';
 import { DeleteInfoProps, ReactQueryError } from '../types';
 import Api from '../utils/api';
-import { getReactQueryErrorMessage, handleErrorToastFromServer, isNew } from '../utils/functions';
+import {
+  filterOutGroup,
+  getReactQueryErrorMessage,
+  handleErrorToastFromServer,
+  isNew,
+} from '../utils/functions';
 import { slugs } from '../utils/routes';
 import {
   buttonsTitles,
@@ -108,7 +113,7 @@ const UpdateOrganizationForm = () => {
 
   const { data: groupOptions = [] } = useQuery(
     ['tenantOption', id],
-    async () => (await Api.getTenantOptions()).rows,
+    async () => filterOutGroup((await Api.getTenantOptions())?.rows, id),
     {
       onError: () => {
         handleErrorToastFromServer();

@@ -32,7 +32,7 @@ const OrganizationForm = ({
             error={errors.companyName}
             disabled={disabled}
             name="name"
-            onChange={(name) => handleChange('companyName', name?.trim())}
+            onChange={(name) => handleChange('companyName', name)}
           />
           <TreeSelectField
             label={inputLabels.group}

@@ -183,3 +183,4 @@ export const useIsTenantAdmin = () => {
 
   return currentProfile?.role === AdminRoleType.ADMIN;
 };
+
