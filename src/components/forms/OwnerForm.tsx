@@ -1,10 +1,11 @@
 import { InstitutionProps } from '../../pages/InstitutionForm';
 import { Column, FormRow } from '../../styles/CommonStyles';
 import { formLabels, inputLabels } from '../../utils/texts';
+import CheckBox from '../fields/CheckBox';
 import TextField from '../fields/TextField';
 import SimpleContainer from '../other/SimpleContainer';
 
-const UserWithPersonalCodeForm = ({
+const OwnerForm = ({
   values,
   errors,
   handleChange,
@@ -13,6 +14,7 @@ const UserWithPersonalCodeForm = ({
   errors: any;
   handleChange;
 }) => {
+  const showPersonalCodeField = !values.ownerWithPassword;
   return (
     <Column>
       <SimpleContainer title={formLabels.infoAboutOwner}>
@@ -30,7 +32,7 @@ const UserWithPersonalCodeForm = ({
             onChange={(lastName) => handleChange('lastName', lastName)}
           />
         </FormRow>
-        <FormRow columns={2}>
+        <FormRow columns={showPersonalCodeField ? 3 : 2}>
           <TextField
             label={inputLabels.phone}
             value={values.phone}
@@ -38,10 +40,25 @@ const UserWithPersonalCodeForm = ({
             onChange={(phone) => handleChange('phone', phone)}
           />
           <TextField
-            label={inputLabels.personalCode}
-            value={values.personalCode}
-            error={errors.personalCode}
-            onChange={(personalCode) => handleChange('personalCode', personalCode)}
+            label={inputLabels.email}
+            value={values.email}
+            error={errors.email}
+            onChange={(email) => handleChange('email', email)}
+          />
+          {showPersonalCodeField && (
+            <TextField
+              label={inputLabels.personalCode}
+              value={values.personalCode}
+              error={errors.personalCode}
+              onChange={(personalCode) => handleChange('personalCode', personalCode)}
+            />
+          )}
+        </FormRow>
+        <FormRow columns={1}>
+          <CheckBox
+            label={inputLabels.ownerWithPassword}
+            value={values.ownerWithPassword}
+            onChange={(value) => handleChange('ownerWithPassword', value)}
           />
         </FormRow>
       </SimpleContainer>
@@ -49,4 +66,4 @@ const UserWithPersonalCodeForm = ({
   );
 };
 
-export default UserWithPersonalCodeForm;
+export default OwnerForm;

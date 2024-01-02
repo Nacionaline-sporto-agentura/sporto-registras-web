@@ -7,8 +7,9 @@ import TreeSelectField from '../components/fields/TreeSelect';
 import FormPageWrapper from '../components/layouts/FormLayout';
 import FullscreenLoader from '../components/other/FullscreenLoader';
 import SimpleContainer from '../components/other/SimpleContainer';
-import Api from '../utils/api';
-import { handleErrorToastFromServer, isNew } from '../utils/functions';
+import api from '../utils/api';
+
+import { filterOutGroup, handleErrorToastFromServer, isNew } from '../utils/functions';
 import { slugs } from '../utils/routes';
 import { formLabels, inputLabels, pageTitles, validationTexts } from '../utils/texts';
 
@@ -42,7 +43,7 @@ const GroupsFormPage = () => {
 
   const createGroup = useMutation(
     (params: GroupProps) =>
-      isNew(id) ? Api.createGroup({ params }) : Api.updateGroup({ params, id }),
+      isNew(id) ? api.createGroup({ params }) : api.updateGroup({ params, id }),
     {
       onError: ({ response }) => {
         handleErrorToastFromServer(response);
@@ -54,14 +55,14 @@ const GroupsFormPage = () => {
     },
   );
 
-  const {} = useQuery(['parentGroup', id], async () => await Api.getGroup({ id: parent }), {
+  const {} = useQuery(['parentGroup', id], async () => await api.getGroup({ id: parent }), {
     onError: () => {
       navigate(slugs.groups);
     },
     enabled: !!parent,
   });
 
-  const { isLoading, data: group } = useQuery(['formGroup', id], () => Api.getGroup({ id }), {
+  const { isLoading, data: group } = useQuery(['formGroup', id], () => api.getGroup({ id }), {
     onError: () => {
       navigate(slugs.groups);
     },
@@ -75,7 +76,7 @@ const GroupsFormPage = () => {
 
   const { data: groupOptions = [] } = useQuery(
     ['groupOptions', id],
-    async () => (await Api.getGroupsOptions()).rows,
+    async () => filterOutGroup((await api.getGroupsOptions()).rows, id),
     {
       onError: () => {
         handleErrorToastFromServer();

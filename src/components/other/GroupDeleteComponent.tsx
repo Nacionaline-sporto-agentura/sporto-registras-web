@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { device } from '../../styles';
 import { Group } from '../../types';
 import api from '../../utils/api';
-import { handleErrorToastFromServer } from '../../utils/functions';
+import { filterOutGroup, handleErrorToastFromServer } from '../../utils/functions';
 import { slugs } from '../../utils/routes';
 import {
   buttonsTitles,
@@ -27,21 +27,6 @@ import FullscreenLoader from './FullscreenLoader';
 interface AdditionalDeleteGroupComponentInterface {
   group?: Group;
 }
-
-const filterOutGroup = (groups: Group[], id?: string) => {
-  if (!id) return;
-
-  groups.forEach((group: Group, index: number) => {
-    if (group.id == id) {
-      groups.splice(index, 1);
-    }
-    if (group.children) {
-      filterOutGroup(group.children, id);
-    }
-  });
-
-  return groups;
-};
 
 const deleteGroupUsersOptions = [
   {

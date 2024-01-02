@@ -7,6 +7,7 @@ import { Column } from '../styles/CommonStyles';
 import { ReactQueryError } from '../types';
 import Api from '../utils/api';
 import {
+  filterOutGroup,
   getReactQueryErrorMessage,
   handleErrorToastFromServer,
   handleSuccessToast,
@@ -107,7 +108,7 @@ const MyOrganization = () => {
 
   const { data: groupOptions = [] } = useQuery(
     ['tenantOption', profileId],
-    async () => (await Api.getTenantOptions()).rows,
+    async () => filterOutGroup((await Api.getTenantOptions())?.rows, profileId),
     {
       onError: () => {
         handleErrorToastFromServer();

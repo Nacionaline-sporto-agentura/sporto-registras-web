@@ -14,7 +14,7 @@ import OrganizationUser from '../pages/OrganizationUser';
 import Profile from '../pages/Profile';
 import UpdateInstitutionForm from '../pages/UpdateInstitutionForm';
 import UpdateOrganizationForm from '../pages/UpdateOrganizationForm';
-import UserForm from '../pages/UserForm';
+import UserFormPage from '../pages/UserForm';
 import UserList from '../pages/UserList';
 import { useAppSelector } from '../state/hooks';
 import { AdminRoleType, Apps } from './constants';
@@ -169,7 +169,7 @@ export const routes = [
   {
     role: AdminRoleType.USER,
     slug: slugs.user(':id'),
-    component: <UserForm />,
+    component: <UserFormPage />,
   },
   {
     slug: slugs.updateInstitution(':id'),
