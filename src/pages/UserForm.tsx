@@ -190,7 +190,7 @@ const UserForm = () => {
     deleteDescriptionSecondPart: deleteDescriptionSecondPart.user,
     deleteTitle: deleteTitles.user,
     deleteName: user?.fullName,
-    handleDelete: disabled ? handleDelete.mutateAsync : undefined,
+    handleDelete: !isNew(id) && isTenantAdmin ? handleDelete.mutateAsync : undefined,
   };
 
   const initialValues: UserProps = {
@@ -290,6 +290,7 @@ const UserForm = () => {
   return (
     <FormPageWrapper
       title={title}
+      disabled={!isTenantAdmin}
       initialValues={initialValues}
       onSubmit={handleSubmit}
       renderForm={renderForm}
