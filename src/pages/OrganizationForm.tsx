@@ -3,7 +3,7 @@ import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import OrganizationForm from '../components/forms/OrganizationForm';
-import OwnerForm from '../components/forms/UserWithPersonalCodeForm';
+import OwnerForm from '../components/forms/OwnerForm';
 import FormPageWrapper from '../components/layouts/FormLayout';
 import { Column } from '../styles/CommonStyles';
 import { ReactQueryError } from '../types';

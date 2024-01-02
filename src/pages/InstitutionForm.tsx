@@ -12,7 +12,7 @@ import { slugs } from '../utils/routes';
 import { pageTitles, validationTexts } from '../utils/texts';
 
 import { companyCode, personalCode } from 'lt-codes';
-import OwnerForm from '../components/forms/UserWithPersonalCodeForm';
+import OwnerForm from '../components/forms/OwnerForm';
 
 export const validateInstitutionForm = Yup.object().shape({
   firstName: Yup.string()
