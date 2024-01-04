@@ -1,6 +1,7 @@
 import { isEmpty } from 'lodash';
 import TableItem from '../components/tables/TableItem';
 import { Group, TableRow, Tenant, User } from '../types';
+import { TenantTypes } from './constants';
 import { slugs } from './routes';
 import { roleLabels, tenantTypeLabels } from './texts';
 
@@ -35,10 +36,18 @@ export const mapOrganizationList = (tenants: Tenant[]): TableRow[] => {
       code: tenant.code,
       phone: tenant.phone,
       email: tenant.email,
-      parentName: (
+      parentName: tenant?.parent && (
         <TableItem
-          label={tenant?.parent?.name}
-          url={slugs.organizationUsers(tenant?.parent?.id || '')}
+          label={`${tenant?.parent?.name}${
+            tenant?.parent?.tenantType === TenantTypes.MUNICIPALITY
+              ? ` (${tenantTypeLabels.MUNICIPALITY})`
+              : ''
+          }`}
+          url={
+            tenant?.parent?.tenantType === TenantTypes.ORGANIZATION
+              ? slugs.organizationUsers(tenant?.parent?.id || '')
+              : slugs.institutionUsers(tenant?.parent?.id || '')
+          }
         />
       ),
     };

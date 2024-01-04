@@ -1,6 +1,7 @@
 import { companyCode, personalCode } from 'lt-codes';
 import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import Cookies from 'universal-cookie';
 import * as Yup from 'yup';
 import OrganizationForm from '../components/forms/OrganizationForm';
 import OwnerForm from '../components/forms/OwnerForm';
@@ -87,6 +88,10 @@ export interface InstitutionProps {
     type: string;
   };
 }
+
+const cookies = new Cookies();
+
+const profileId = cookies.get('profileId');
 
 const OrganizationFormPage = () => {
   const navigate = useNavigate();
@@ -197,7 +202,7 @@ const OrganizationFormPage = () => {
     ownerWithPassword: false,
     phone: '',
     personalCode: '',
-    parent: parent || '',
+    parent: parent || profileId || '',
   };
 
   const renderForm = (values: InstitutionProps, errors: any, handleChange) => {

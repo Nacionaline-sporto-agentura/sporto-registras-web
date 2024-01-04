@@ -70,8 +70,6 @@ export const routes = [
     slug: slugs.organizations,
     sidebar: true,
     component: <OrganizationList />,
-    role: AdminRoleType.ADMIN,
-    tenantRole: AdminRoleType.ADMIN,
   },
 
   {

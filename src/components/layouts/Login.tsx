@@ -53,8 +53,11 @@ const LayoutImage = styled.img`
   top: 0;
   position: sticky;
   object-fit: cover;
+  @media ${device.tablet} {
+    min-width: 60%;
+  }
   @media ${device.mobileXL} {
-    width: 45%;
+    min-width: 45%;
   }
   @media ${device.mobileL} {
     display: none;
