@@ -40,7 +40,7 @@ export const slugs = {
   institutions: `/istaigos`,
   institution: (id: string) => `/istaigos/${id}`,
   institutionUsers: (id: string) => `/istaigos/${id}/nariai`,
-  institutionUser: (tenantId: string, id: string) => `/organizacijos/${tenantId}/nariai/${id}`,
+  institutionUser: (tenantId: string, id: string) => `/istaigos/${tenantId}/nariai/${id}`,
   updateInstitution: (id: string) => `/istaigos/${id}/atnaujinti`,
   newInstitutions: `/istaigos/naujas`,
   organizations: `/organizacijos`,

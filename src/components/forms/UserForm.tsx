@@ -217,7 +217,7 @@ const UserForm = ({
               error={errors.firstName}
               name="firstName"
               disabled={disabled}
-              onChange={(firstName) => handleChange('firstName', firstName?.trim())}
+              onChange={(firstName) => handleChange('firstName', firstName)}
             />
             <TextField
               label={inputLabels.lastName}
@@ -225,7 +225,7 @@ const UserForm = ({
               value={values.lastName}
               error={errors.lastName}
               disabled={disabled}
-              onChange={(lastName) => handleChange('lastName', lastName?.trim())}
+              onChange={(lastName) => handleChange('lastName', lastName)}
             />
           </FormRow>
           <FormRow columns={showPersonalCodeField ? 3 : 2}>

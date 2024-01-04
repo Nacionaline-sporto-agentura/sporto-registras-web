@@ -17,6 +17,8 @@ export enum Resources {
   USERS = 'api/users',
   GROUPS = 'api/groups',
   TENANTS = 'api/tenants',
+  ORGANIZATIONS = 'api/tenants/organizations',
+  INSTITUTIONS = 'api/tenants/institutions',
   PROFILES = '/api/profiles',
 }
 
@@ -26,8 +28,15 @@ export enum Populations {
   GROUPS = 'groups',
 }
 
-export enum SortFields {
+export enum SortAscFields {
   NAME = `name`,
+  FIRST_NAME = 'firstName',
+  LAST_NAME = 'lastName',
+}
+export enum SortDescFields {
+  NAME = `-name`,
+  FIRST_NAME = '-firstName',
+  LAST_NAME = '-lastName',
 }
 
 interface TableList<T = any> {
@@ -48,7 +57,7 @@ interface GetAllProps {
   page?: string;
   populate?: string[];
   filter?: string;
-  query?: string;
+  query?: any;
   pageSize?: string;
   search?: string;
   searchFields?: string[];
@@ -266,6 +275,8 @@ class Api {
   getAdminUsers = async ({ filter, page }: TableList) => {
     return this.getList({
       resource: Resources.ADMINS,
+      populate: [Populations.GROUPS],
+      sort: [SortAscFields.FIRST_NAME, SortAscFields.LAST_NAME],
       page,
       filter,
     });
@@ -340,6 +351,7 @@ class Api {
   getUsers = async ({ filter, page, query }: TableList) => {
     return this.getList({
       resource: Resources.USERS,
+      sort: [SortAscFields.FIRST_NAME, SortAscFields.LAST_NAME],
       query,
       page,
       filter,
@@ -349,6 +361,7 @@ class Api {
   getTenantUsers = async ({ page, id }: TableList) => {
     return this.getList({
       resource: `${Resources.TENANTS}/${id}/users`,
+      sort: [SortAscFields.FIRST_NAME, SortAscFields.LAST_NAME],
       page,
     });
   };
@@ -358,7 +371,7 @@ class Api {
       resource: Resources.GROUPS,
       populate: [Populations.CHILDREN],
       pageSize: '9999',
-      sort: [SortFields.NAME],
+      sort: [SortAscFields.NAME],
     });
 
   getGroups = async ({ page, filter, id }: TableList) =>
@@ -368,7 +381,7 @@ class Api {
       filter,
       query: JSON.stringify({ parent: id }),
       populate: [Populations.CHILDREN],
-      sort: [SortFields.NAME],
+      sort: [SortAscFields.NAME],
     });
 
   getGroup = async ({ id }: { id: string }): Promise<Group> => {
@@ -407,6 +420,7 @@ class Api {
   getGroupUsers = async ({ id, page }) =>
     await this.getList({
       page,
+      sort: [SortAscFields.FIRST_NAME, SortAscFields.LAST_NAME],
       resource: `${Resources.GROUPS}/${id}/users`,
     });
 
@@ -417,7 +431,25 @@ class Api {
       query,
       page,
       filter,
-      sort: [SortFields.NAME],
+      sort: [SortAscFields.NAME],
+    });
+
+  getOrganizations = async ({ page, filter }: TableList) =>
+    await this.getList({
+      resource: Resources.ORGANIZATIONS,
+      populate: [Populations.PARENT],
+      page,
+      filter,
+      sort: [SortAscFields.NAME],
+    });
+
+  getInstitutions = async ({ page, filter }: TableList) =>
+    await this.getList({
+      resource: Resources.INSTITUTIONS,
+      populate: [Populations.PARENT],
+      page,
+      filter,
+      sort: [SortAscFields.NAME],
     });
 
   getTenantOptions = async (): Promise<GetAllResponse<Tenant>> =>
@@ -425,7 +457,7 @@ class Api {
       resource: Resources.TENANTS,
       populate: [Populations.CHILDREN],
       pageSize: '9999',
-      sort: [SortFields.NAME],
+      sort: [SortAscFields.NAME],
     });
 
   getTenant = async ({ id }: { id: string }): Promise<any> => {

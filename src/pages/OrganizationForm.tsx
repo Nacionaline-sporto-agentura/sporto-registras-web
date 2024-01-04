@@ -74,10 +74,9 @@ export interface InstitutionProps {
   email?: string;
   personalCode?: string;
   phone: string;
-  canHaveChildren?: boolean;
   parent?: any;
   ownerWithPassword?: boolean;
-
+  tenantType?: TenantTypes;
   data?: {
     url: string;
     foundedAt: Date;
@@ -194,7 +193,7 @@ const OrganizationFormPage = () => {
     lastName: '',
     address: '',
     email: '',
-    canHaveChildren: true,
+    tenantType: TenantTypes.ORGANIZATION,
     ownerWithPassword: false,
     phone: '',
     personalCode: '',

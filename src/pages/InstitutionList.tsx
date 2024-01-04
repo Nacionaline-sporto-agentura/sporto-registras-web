@@ -11,10 +11,9 @@ import { useAppSelector } from '../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
 import { NotFoundInfoProps } from '../types';
 import Api from '../utils/api';
-import { groupColumns } from '../utils/columns';
-import { TenantTypes } from '../utils/constants';
+import { institutionColumns } from '../utils/columns';
 import { useGenericTablePageHooks, useTableData } from '../utils/hooks';
-import { mapGroupList } from '../utils/mapFunctions';
+import { mapInstitutionList } from '../utils/mapFunctions';
 import { slugs } from '../utils/routes';
 import { buttonsTitles, emptyState, emptyStateUrl, inputLabels, pageTitles } from '../utils/texts';
 
@@ -39,13 +38,12 @@ const InstitutionList = () => {
   const { tableData, loading } = useTableData({
     name: 'institutions',
     endpoint: () =>
-      Api.getTenants({
+      Api.getInstitutions({
         page,
         filter: filters,
         id,
-        query: { tenantType: TenantTypes.MUNICIPALITY },
       }),
-    mapData: (list) => mapGroupList(list),
+    mapData: (list) => mapInstitutionList(list),
     dependencyArray: [id, filters, page],
   });
 
@@ -76,10 +74,10 @@ const InstitutionList = () => {
         </Button>
       </TableButtonsRow>
       <RecursiveTable
-        onClick={(id) => navigate(slugs.organizationUsers(id))}
+        onClick={(id) => navigate(slugs.institutionUsers(id))}
         loading={loading}
         data={tableData}
-        columns={groupColumns}
+        columns={institutionColumns}
         isFilterApplied={!isEmpty(filters)}
         notFoundInfo={notFoundInfo}
       />

@@ -1,5 +1,6 @@
 import { useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
+import Cookies from 'universal-cookie';
 
 import BackButton from '../components/buttons/BackButton';
 import OrganizationUsers from '../components/containers/OrganizationUsers';
@@ -21,9 +22,13 @@ import { slugs } from '../utils/routes';
 export const getTabs = (id: string) => [
   {
     label: 'Nariai',
-    slug: slugs.updateInstitution(id),
+    slug: slugs.institutionUsers(id),
   },
 ];
+
+const cookies = new Cookies();
+
+const profileId = cookies.get('profileId');
 
 const InstitutionPage = () => {
   const navigate = useNavigate();
@@ -32,6 +37,11 @@ const InstitutionPage = () => {
   const { isLoading, data: group } = useQuery(['institution', id], () => Api.getTenant({ id }), {
     onError: () => {
       navigate(slugs.groups);
+    },
+    onSuccess: (data) => {
+      if (profileId && data.id === profileId) {
+        navigate(slugs.myOrganization);
+      }
     },
   });
 
@@ -44,7 +54,9 @@ const InstitutionPage = () => {
   }
 
   const containers = {
-    [slugs.updateInstitution(id)]: <OrganizationUsers />,
+    [slugs.institutionUsers(id)]: (
+      <OrganizationUsers onClickRow={(userId) => navigate(slugs.institutionUser(id, userId))} />
+    ),
   };
 
   return (

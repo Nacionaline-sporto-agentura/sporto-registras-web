@@ -1,4 +1,4 @@
-import { AdminRoleType, ServerErrorMessages } from './constants';
+import { AdminRoleType, ServerErrorMessages, TenantTypes } from './constants';
 
 export const validationTexts = {
   requireText: 'Privalote įvesti',
@@ -60,6 +60,7 @@ export const deleteDescriptionSecondPart = {
 
 export const inputLabels = {
   personalCode: 'Asmens kodas',
+  parentOrganization: 'Tėvinė organizacija',
   name: 'Pavadinimas',
   firstName: 'Vardas',
   lastName: 'Pavardė',
@@ -146,4 +147,9 @@ export const url = {
 export const roleLabels = {
   [AdminRoleType.USER]: 'Naudotojas',
   [AdminRoleType.ADMIN]: 'Administratorius',
+};
+
+export const tenantTypeLabels = {
+  [TenantTypes.MUNICIPALITY]: 'Savivaldybė',
+  [TenantTypes.ORGANIZATION]: 'Organizacija',
 };

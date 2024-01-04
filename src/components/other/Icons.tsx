@@ -1,4 +1,4 @@
-import { AiOutlineArrowRight } from 'react-icons/ai';
+import { AiOutlineArrowRight, AiOutlineEye } from 'react-icons/ai';
 import { BiCalendarEvent } from 'react-icons/bi';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { HiOutlineArrowNarrowLeft } from 'react-icons/hi';
@@ -42,10 +42,13 @@ export enum IconName {
   arrowRight = 'arrowRight',
   exit = 'exit',
   person = 'person',
+  eye = 'eye',
 }
 
 const Icon = ({ name, className }: IconProps) => {
   switch (name) {
+    case IconName.eye:
+      return <AiOutlineEye className={className} />;
     case IconName.person:
       return <MdOutlinePerson className={className} />;
     case IconName.exit:

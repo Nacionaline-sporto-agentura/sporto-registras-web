@@ -1,20 +1,18 @@
 import { isEmpty } from 'lodash';
-import { useParams } from 'react-router-dom';
 
 import Button from '../components/buttons/Button';
 import TablePageLayout from '../components/layouts/TablePageLayout';
 import DynamicFilter from '../components/other/DynamicFilter';
 import { FilterInputTypes } from '../components/other/DynamicFilter/Filter';
-import RecursiveTable from '../components/tables/RecursiveTable';
+import MainTable from '../components/tables/MainTable';
 import { actions as filterActions } from '../state/filters/reducer';
 import { useAppSelector } from '../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
 import { NotFoundInfoProps } from '../types';
 import Api from '../utils/api';
-import { groupColumns } from '../utils/columns';
-import { TenantTypes } from '../utils/constants';
+import { organizationColumns } from '../utils/columns';
 import { useGenericTablePageHooks, useTableData } from '../utils/hooks';
-import { mapGroupList } from '../utils/mapFunctions';
+import { mapOrganizationList } from '../utils/mapFunctions';
 import { slugs } from '../utils/routes';
 import { buttonsTitles, emptyState, emptyStateUrl, inputLabels, pageTitles } from '../utils/texts';
 
@@ -30,23 +28,18 @@ const rowConfig = [['name']];
 
 const OrganizationList = () => {
   const { dispatch, navigate, page } = useGenericTablePageHooks();
-  const { id } = useParams();
-
-  const newGroupUrl = `${slugs.newOrganization}${id ? `?parent=${id}` : ''}`;
 
   const filters = useAppSelector((state) => state.filters.institutionFilters);
 
   const { tableData, loading } = useTableData({
     name: 'organizations',
     endpoint: () =>
-      Api.getTenants({
+      Api.getOrganizations({
         page,
         filter: filters,
-        id,
-        query: { tenantType: TenantTypes.ORGANIZATION },
       }),
-    mapData: (list) => mapGroupList(list),
-    dependencyArray: [id, filters, page],
+    mapData: (list) => mapOrganizationList(list),
+    dependencyArray: [filters, page],
   });
 
   const handleSetFilters = (filters) => {
@@ -55,7 +48,7 @@ const OrganizationList = () => {
 
   const notFoundInfo: NotFoundInfoProps = {
     text: emptyState.organizations,
-    url: newGroupUrl,
+    url: slugs.newOrganization,
     urlText: emptyStateUrl.organization,
   };
 
@@ -71,15 +64,15 @@ const OrganizationList = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        <Button onClick={() => navigate(newGroupUrl)} disabled={loading}>
+        <Button onClick={() => navigate(slugs.newOrganization)} disabled={loading}>
           {buttonsTitles.newOrganization}
         </Button>
       </TableButtonsRow>
-      <RecursiveTable
+      <MainTable
         onClick={(id) => navigate(slugs.organizationUsers(id))}
         loading={loading}
         data={tableData}
-        columns={groupColumns}
+        columns={organizationColumns}
         isFilterApplied={!isEmpty(filters)}
         notFoundInfo={notFoundInfo}
       />

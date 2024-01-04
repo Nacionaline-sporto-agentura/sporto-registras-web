@@ -123,7 +123,10 @@ export interface Group {
 export interface Tenant {
   id: string;
   name?: string;
+  code?: string;
   parent?: Tenant;
+  email?: string;
+  phone?: string;
   tenantType: TenantTypes;
   children?: Tenant[];
 }
