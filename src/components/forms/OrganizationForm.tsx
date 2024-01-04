@@ -78,7 +78,7 @@ const OrganizationForm = ({
           <FormRow columns={1}>
             <CheckBox
               label={inputLabels.canHaveChildren}
-              value={values.tenantType}
+              value={values.tenantType === TenantTypes.ORGANIZATION}
               disabled={disabled}
               onChange={(value) =>
                 handleChange(
