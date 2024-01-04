@@ -18,7 +18,6 @@ import UserFormPage from '../pages/UserForm';
 import UserList from '../pages/UserList';
 import { useAppSelector } from '../state/hooks';
 import { AdminRoleType, Apps } from './constants';
-import { useGetCurrentProfile } from './hooks';
 import { pageTitles } from './texts';
 
 export const slugs = {
@@ -182,15 +181,12 @@ export const routes = [
 
 export const useFilteredRoutes = () => {
   const user = useAppSelector((state) => state.user.userData);
-  const currentProfile = useGetCurrentProfile();
 
   return routes.filter((route) => {
     let select = true;
 
-    if (route.tenantRole || route.role) {
-      select =
-        (!!currentProfile && currentProfile?.role === route.tenantRole) ||
-        (!!user?.type && user?.type === route?.role);
+    if (route.role) {
+      select = !!user?.type && user?.type === route?.role;
     }
 
     if (select && route.appType) {
