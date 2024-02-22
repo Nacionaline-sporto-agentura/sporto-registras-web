@@ -1,26 +1,29 @@
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import Icon, { IconName } from './Icons';
 
-const Logo = ({ className }: any) => {
+const AppLogo = ({ className, isWhite = false }: any) => {
   const navigate = useNavigate();
 
+  const logo = isWhite ? IconName.logoWhite : IconName.logoGreen;
+
   return (
-    <Container onClick={() => navigate('/')} className={className}>
-      <Title>Sporto registras</Title>
-    </Container>
+    <LogoContainer className={className} onClick={() => navigate('/')}>
+      <Logo name={logo} />
+    </LogoContainer>
   );
 };
-const Container = styled.div`
+const LogoContainer = styled.div`
   display: flex;
-  gap: 4px;
-  flex-direction: column;
-  margin-bottom: 20px;
-`;
-
-const Title = styled.div`
-  font-size: 3.2rem;
+  align-items: center;
+  gap: 11px;
+  cursor: pointer;
+  font-size: 2rem;
   font-weight: bold;
-  color: white;
 `;
 
-export default Logo;
+const Logo = styled(Icon)`
+  width: 100px;
+`;
+
+export default AppLogo;
