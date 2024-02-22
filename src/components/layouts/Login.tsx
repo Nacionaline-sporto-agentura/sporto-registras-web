@@ -29,8 +29,14 @@ const Container = styled.div`
 `;
 
 const StyledLogo = styled(Logo)`
-  div {
-    color: ${({ theme }) => theme.colors.text.secondary};
+  rect {
+    width: 200px;
+    height: 100px;
+  }
+
+  svg {
+    width: 200px;
+    height: 100px;
   }
 `;
 

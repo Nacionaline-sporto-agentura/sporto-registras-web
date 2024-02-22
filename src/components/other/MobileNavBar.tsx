@@ -39,7 +39,7 @@ const MobileNavbar = ({ className }: MobileHeaderInterface) => {
         <Container>
           <div>
             <SecondRow>
-              <Logo />
+              <Logo isWhite={true} />
               <div onClick={() => setShowMenu(false)}>
                 <ExitIcon name={IconName.close} />
               </div>
