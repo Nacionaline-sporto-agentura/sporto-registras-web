@@ -45,8 +45,8 @@ export interface InstitutionProps {
   companyCode?: string;
   companyPhone?: string;
   address?: string;
-  canHaveChildren: boolean;
   companyEmail: string;
+  tenantType?: TenantTypes;
   parent?: any;
   data?: {
     url: string;
@@ -123,7 +123,7 @@ const MyOrganization = () => {
     companyEmail: institution?.email || '',
     address: institution?.address || '',
     parent: institution?.parent || parent || '',
-    canHaveChildren: institution?.tenantType === TenantTypes.ORGANIZATION,
+    tenantType: institution?.tenantType || '',
     data: { ...institution?.data },
   };
 
@@ -132,6 +132,7 @@ const MyOrganization = () => {
       <Column>
         <OrganizationForm
           disabled={disabled}
+          treeSelectDisabled={true}
           values={values}
           errors={errors}
           handleChange={handleChange}

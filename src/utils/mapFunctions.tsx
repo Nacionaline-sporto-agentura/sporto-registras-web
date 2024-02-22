@@ -1,6 +1,9 @@
 import { isEmpty } from 'lodash';
-import { Group, TableRow, User } from '../types';
-import { roleLabels } from './texts';
+import TableItem from '../components/tables/TableItem';
+import { Group, TableRow, Tenant, User } from '../types';
+import { TenantTypes } from './constants';
+import { slugs } from './routes';
+import { roleLabels, tenantTypeLabels } from './texts';
 
 export const mapGroupList = (groups: Group[]): TableRow[] => {
   return groups.map((group: Group) => {
@@ -24,3 +27,43 @@ export const mapGroupUsersList = (users: User[]): TableRow[] =>
       email: user.email,
     };
   });
+
+export const mapOrganizationList = (tenants: Tenant[]): TableRow[] => {
+  return tenants.map((tenant: Tenant) => {
+    return {
+      id: tenant.id,
+      name: tenant.name,
+      code: tenant.code,
+      phone: tenant.phone,
+      email: tenant.email,
+      parentName: tenant?.parent && (
+        <TableItem
+          label={`${tenant?.parent?.name}${
+            tenant?.parent?.tenantType === TenantTypes.MUNICIPALITY
+              ? ` (${tenantTypeLabels.MUNICIPALITY})`
+              : ''
+          }`}
+          url={
+            tenant?.parent?.tenantType === TenantTypes.ORGANIZATION
+              ? slugs.organizationUsers(tenant?.parent?.id || '')
+              : slugs.institutionUsers(tenant?.parent?.id || '')
+          }
+        />
+      ),
+    };
+  });
+};
+
+export const mapInstitutionList = (tenants: Tenant[]): TableRow[] => {
+  return tenants.map((tenant: Tenant) => {
+    return {
+      id: tenant.id,
+      name: tenant.name,
+      code: tenant.code,
+      phone: tenant.phone,
+      email: tenant.email,
+
+      type: tenantTypeLabels[tenant?.tenantType],
+    };
+  });
+};

@@ -199,14 +199,14 @@ const AdminUserForm = () => {
               value={values.firstName}
               error={errors.firstName}
               name="firstName"
-              onChange={(firstName) => handleChange('firstName', firstName?.trim())}
+              onChange={(firstName) => handleChange('firstName', firstName)}
             />
             <TextField
               label={inputLabels.lastName}
               name="lastName"
               value={values.lastName}
               error={errors.lastName}
-              onChange={(lastName) => handleChange('lastName', lastName?.trim())}
+              onChange={(lastName) => handleChange('lastName', lastName)}
             />
           </FormRow>
           <FormRow columns={2}>

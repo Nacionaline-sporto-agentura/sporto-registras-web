@@ -8,3 +8,19 @@ export const groupUserLabels = {
   phone: { label: 'Telefonas', show: true },
   email: { label: 'El. paštas', show: true },
 };
+
+export const organizationColumns = {
+  name: { label: 'Sporto organizacijos pavadinimas', show: true },
+  code: { label: 'Kodas', show: true },
+  email: { label: 'El. paštas', show: true },
+  phone: { label: 'Telefonas', show: true },
+  parentName: { label: 'Tėvinė organizacija', show: true },
+};
+
+export const institutionColumns = {
+  name: { label: 'Įstaigos pavadinimas', show: true },
+  code: { label: 'Kodas', show: true },
+  email: { label: 'El. paštas', show: true },
+  phone: { label: 'Telefonas', show: true },
+  type: { label: 'Tipas', show: true },
+};
