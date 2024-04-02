@@ -15,7 +15,7 @@ export const columns = {
   email: { label: 'El. paštas', show: true },
 };
 
-const OrganizationUsers = () => {
+const OrganizationUsers = ({ onClickRow }) => {
   const { navigate, page, id = '' } = useGenericTablePageHooks();
   const newUrl = slugs.newOrganizationUser(id);
 
@@ -50,7 +50,7 @@ const OrganizationUsers = () => {
       </TableButtonsRow>
       <MainTable
         loading={loading}
-        onClick={(userId) => navigate(slugs.organizationUser(id, userId))}
+        onClick={onClickRow}
         isFilterApplied={false}
         notFoundInfo={notFound}
         data={tableData}

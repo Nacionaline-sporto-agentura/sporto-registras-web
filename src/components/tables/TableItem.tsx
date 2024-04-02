@@ -1,34 +1,47 @@
-import { isEmpty } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import Icon, { IconName } from '../other/Icons';
 
 export interface TableItemProps {
-  items?: { label?: string; url: string }[];
+  label?: string;
+  url?: string;
+  leftIconName?: string;
+  rightIcon?: JSX.Element;
+  leftIcon?: JSX.Element;
+  showLeftIcon?: boolean;
 }
 
-const TableItem = ({ items }: TableItemProps) => {
+const TableItem = ({
+  label = '',
+  url,
+  leftIconName = IconName.eye,
+  rightIcon,
+  leftIcon,
+}: TableItemProps) => {
   const navigate = useNavigate();
 
-  if (!items || isEmpty(items)) {
+  if (!label) {
     return <>-</>;
   }
 
-  const handleNavigate = (e: any, url: string) => {
+  const handleClick = (e) => {
+    if (!url) return;
+
     e.stopPropagation();
 
     navigate(url);
   };
 
   return (
-    <Row>
-      {items.map((item) => {
-        return (
-          <Container key={JSON.stringify(item)} onClick={(e) => handleNavigate(e, item.url)}>
-            <Label>{item.label}</Label>
-          </Container>
-        );
-      })}
-    </Row>
+    <>
+      <Container onClick={handleClick}>
+        {(url || leftIcon) && (
+          <IconContainer>{leftIcon || <StyledIcons name={leftIconName} />}</IconContainer>
+        )}
+        <Label>{label}</Label>
+        {rightIcon && <IconContainer>{rightIcon}</IconContainer>}
+      </Container>
+    </>
   );
 };
 
@@ -39,7 +52,7 @@ const Container = styled.div`
   cursor: pointer;
 `;
 
-const Row = styled.div`
+const IconContainer = styled.div`
   display: flex;
   align-items: center;
 `;
@@ -47,7 +60,16 @@ const Row = styled.div`
 const Label = styled.div`
   font-size: 1.3rem;
   color: #121926;
+  opacity: 1;
   white-space: nowrap;
+`;
+
+const StyledIcons = styled(Icon)`
+  font-size: 1.6rem;
+  vertical-align: middle;
+  &:hover {
+    opacity: 50%;
+  }
 `;
 
 export default TableItem;

@@ -36,7 +36,7 @@ const SideBar = ({ className }: ModuleMenuProps) => {
     <Header className={className}>
       <div>
         <TitleRow>
-          <Logo />
+          <Logo isWhite={true} />
         </TitleRow>
         <Column>{renderTabs()}</Column>
       </div>

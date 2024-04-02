@@ -30,10 +30,7 @@ const MobileNavbar = ({ className }: MobileHeaderInterface) => {
     <>
       {!showMenu ? (
         <Header className={className}>
-          <Row>
-            <Title>{'Sporto'}</Title>
-            <Description>{'registras'}</Description>
-          </Row>
+          <StyledLogo />
           <div onClick={() => setShowMenu(true)}>
             <StyledIcon name={IconName.burger} />
           </div>
@@ -42,7 +39,7 @@ const MobileNavbar = ({ className }: MobileHeaderInterface) => {
         <Container>
           <div>
             <SecondRow>
-              <Logo />
+              <Logo isWhite={true} />
               <div onClick={() => setShowMenu(false)}>
                 <ExitIcon name={IconName.close} />
               </div>
@@ -189,11 +186,11 @@ const Row = styled.div`
   align-items: center;
 `;
 
-const Title = styled.div`
-  font-size: 2.3rem;
-  font-weight: bold;
-  color: #231f20;
-  margin-right: 11px;
+const StyledLogo = styled(Logo)`
+  div {
+    color: #231f20;
+    margin-bottom: 0;
+  }
 `;
 
 const StyledIcon = styled(Icon)`
@@ -201,12 +198,6 @@ const StyledIcon = styled(Icon)`
   font-size: 2rem;
   vertical-align: middle;
   color: #231f20;
-`;
-
-const Description = styled.div`
-  font-size: 1rem;
-  color: #231f20;
-  width: 90px;
 `;
 
 export default MobileNavbar;

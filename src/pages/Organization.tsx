@@ -1,5 +1,6 @@
 import { useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
+import Cookies from 'universal-cookie';
 
 import BackButton from '../components/buttons/BackButton';
 import OrganizationUsers from '../components/containers/OrganizationUsers';
@@ -25,6 +26,10 @@ export const getTabs = (id: string) => [
   },
 ];
 
+const cookies = new Cookies();
+
+const profileId = cookies.get('profileId');
+
 const OrganizationPage = () => {
   const navigate = useNavigate();
   const { id = '' } = useParams();
@@ -32,6 +37,11 @@ const OrganizationPage = () => {
   const { isLoading, data: group } = useQuery(['organization', id], () => Api.getTenant({ id }), {
     onError: () => {
       navigate(slugs.groups);
+    },
+    onSuccess: (data) => {
+      if (profileId && data.id === profileId) {
+        navigate(slugs.myOrganization);
+      }
     },
   });
 
@@ -44,7 +54,9 @@ const OrganizationPage = () => {
   }
 
   const containers = {
-    [slugs.organizationUsers(id)]: <OrganizationUsers />,
+    [slugs.organizationUsers(id)]: (
+      <OrganizationUsers onClickRow={(userId) => navigate(slugs.organizationUser(id, userId))} />
+    ),
   };
 
   return (

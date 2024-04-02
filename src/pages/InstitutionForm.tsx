@@ -6,13 +6,13 @@ import FormPageWrapper from '../components/layouts/FormLayout';
 import { Column } from '../styles/CommonStyles';
 import { ReactQueryError } from '../types';
 import Api from '../utils/api';
-import { TenantTypes } from '../utils/constants';
 import { getReactQueryErrorMessage, handleErrorToastFromServer, isNew } from '../utils/functions';
 import { slugs } from '../utils/routes';
 import { pageTitles, validationTexts } from '../utils/texts';
 
 import { companyCode, personalCode } from 'lt-codes';
 import OwnerForm from '../components/forms/OwnerForm';
+import { TenantTypes } from '../utils/constants';
 
 export const validateInstitutionForm = Yup.object().shape({
   firstName: Yup.string()
@@ -75,7 +75,7 @@ export interface InstitutionProps {
   personalCode?: string;
   ownerWithPassword?: boolean;
   phone: string;
-  canHaveChildren?: boolean;
+  tenantType?: TenantTypes;
   parent?: any;
   data?: {
     url: string;
@@ -109,7 +109,7 @@ const InstitutionForm = () => {
       companyName,
       companyPhone,
       parent,
-      canHaveChildren,
+      tenantType,
       ownerWithPassword,
       data,
     } = values;
@@ -128,7 +128,7 @@ const InstitutionForm = () => {
       phone: companyPhone,
       email: companyEmail?.toLowerCase(),
       ...(!!parent && { parent: parseInt(parent) }),
-      tenantType: canHaveChildren ? TenantTypes.ORGANIZATION : TenantTypes.MUNICIPALITY,
+      tenantType: tenantType,
       data,
     };
 
@@ -181,7 +181,7 @@ const InstitutionForm = () => {
     lastName: '',
     address: '',
     email: '',
-    canHaveChildren: false,
+    tenantType: TenantTypes.MUNICIPALITY,
     phone: '',
     personalCode: '',
     parent: parent || '',

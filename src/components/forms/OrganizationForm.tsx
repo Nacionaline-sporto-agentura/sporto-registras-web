@@ -1,4 +1,5 @@
 import { FormRow } from '../../styles/CommonStyles';
+import { TenantTypes } from '../../utils/constants';
 import { formLabels, inputLabels } from '../../utils/texts';
 import DateField from '../DateField';
 import CheckBox from '../fields/CheckBox';
@@ -14,6 +15,7 @@ const OrganizationForm = ({
   groupOptions,
   toggleCanHaveChildren = false,
   disabled,
+  treeSelectDisabled = false,
 }: {
   values: any;
   errors: any;
@@ -21,6 +23,7 @@ const OrganizationForm = ({
   toggleCanHaveChildren?: boolean;
   groupOptions;
   disabled?: boolean;
+  treeSelectDisabled?: boolean;
 }) => {
   return (
     <>
@@ -35,11 +38,11 @@ const OrganizationForm = ({
             onChange={(name) => handleChange('companyName', name)}
           />
           <TreeSelectField
-            label={inputLabels.group}
-            name={`group`}
+            label={inputLabels.parentOrganization}
+            name={`parentOrganization`}
             error={errors?.parent}
             groupOptions={groupOptions}
-            disabled={disabled}
+            disabled={treeSelectDisabled}
             value={values.parent}
             onChange={(value) => {
               handleChange('parent', value.id);
@@ -75,15 +78,20 @@ const OrganizationForm = ({
           <FormRow columns={1}>
             <CheckBox
               label={inputLabels.canHaveChildren}
-              value={values.canHaveChildren}
+              value={values.tenantType === TenantTypes.ORGANIZATION}
               disabled={disabled}
-              onChange={(value) => handleChange('canHaveChildren', value)}
+              onChange={(value) =>
+                handleChange(
+                  'tenantType',
+                  value ? TenantTypes.ORGANIZATION : TenantTypes.MUNICIPALITY,
+                )
+              }
             />
           </FormRow>
         )}
       </SimpleContainer>
 
-      {values.canHaveChildren && (
+      {values.tenantType === TenantTypes.ORGANIZATION && (
         <SimpleContainer title={formLabels.infoAboutOrganization}>
           <FormRow columns={2}>
             <SelectField

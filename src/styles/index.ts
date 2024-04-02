@@ -128,4 +128,5 @@ export const device = {
   mobileM: `(max-width: 425px)`,
   mobileL: `(max-width: 788px)`,
   mobileXL: `(max-width: 1025px)`,
+  tablet: `(max-width: 1400px)`,
 };

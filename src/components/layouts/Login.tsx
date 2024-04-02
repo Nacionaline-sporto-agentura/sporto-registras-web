@@ -29,8 +29,14 @@ const Container = styled.div`
 `;
 
 const StyledLogo = styled(Logo)`
-  div {
-    color: ${({ theme }) => theme.colors.text.secondary};
+  rect {
+    width: 200px;
+    height: 100px;
+  }
+
+  svg {
+    width: 200px;
+    height: 100px;
   }
 `;
 
@@ -53,8 +59,11 @@ const LayoutImage = styled.img`
   top: 0;
   position: sticky;
   object-fit: cover;
+  @media ${device.tablet} {
+    min-width: 60%;
+  }
   @media ${device.mobileXL} {
-    width: 45%;
+    min-width: 45%;
   }
   @media ${device.mobileL} {
     display: none;

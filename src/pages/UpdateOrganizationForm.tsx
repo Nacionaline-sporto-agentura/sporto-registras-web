@@ -48,7 +48,7 @@ export interface InstitutionProps {
   companyCode?: string;
   companyPhone?: string;
   address?: string;
-  canHaveChildren: boolean;
+  tenantType: TenantTypes;
   companyEmail: string;
   parent?: any;
   data?: {
@@ -81,10 +81,11 @@ const UpdateOrganizationForm = () => {
   );
 
   const handleSubmit = async (values: InstitutionProps, { setErrors }) => {
-    const { companyEmail, companyCode, companyName, companyPhone, parent, data } = values;
+    const { companyEmail, companyCode, companyName, companyPhone, parent, data, address } = values;
 
     const params = {
       name: companyName,
+      address,
       code: companyCode,
       phone: companyPhone,
       email: companyEmail?.toLowerCase(),
@@ -152,7 +153,7 @@ const UpdateOrganizationForm = () => {
     companyEmail: institution?.email || '',
     address: institution?.address || '',
     parent: institution?.parent || parent || '',
-    canHaveChildren: institution?.tenantType === TenantTypes.ORGANIZATION,
+    tenantType: institution?.tenantType,
     data: { ...institution?.data },
   };
 
