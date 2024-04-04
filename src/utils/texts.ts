@@ -168,6 +168,7 @@ export const pageTitles = {
 
 export const buttonsTitles = {
   edit: 'Redaguoti',
+  view: 'Peržiūrėti',
   approve: 'Tvirtinti',
   returnToCorrect: 'Grąžinti taisymui',
   reject: 'Atmesti',
@@ -183,6 +184,7 @@ export const buttonsTitles = {
   profiles: 'Profiliai',
   filter: 'Filtruoti',
   save: 'Išsaugoti',
+  saveAsDraft: 'Išsaugoti kaip juodraštį',
   newUser: 'Naujas naudotojas',
   deleteUser: 'Ištrinti naudotoją',
   delete: 'Ištrinti',
@@ -196,6 +198,8 @@ export const buttonsTitles = {
 };
 
 export const emptyState = {
+  sportBases: 'Nėra sukurtų sporto infrastruktūrų',
+  unConfirmedSportBases: 'Nėra sukurtų nepatvirtintų sporto infrastruktūrų',
   users: 'Jūs neturite Naudotojų. Sukurkite',
   groupUsers: 'Grupė neturi Naudotojų. Sukurkite',
   groups: 'Jūs neturite jokių grupių. Sukurkite',

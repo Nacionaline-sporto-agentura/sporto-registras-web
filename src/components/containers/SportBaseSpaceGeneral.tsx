@@ -17,6 +17,7 @@ const SportBaseSpaceGeneralContainer = ({
   handleChange,
   setCounter,
   counter,
+  disabled,
 }: {
   sportBaseTypeId: number;
   sportBaseSpace: SportBaseSpace;
@@ -24,12 +25,14 @@ const SportBaseSpaceGeneralContainer = ({
   handleChange: any;
   counter: number;
   setCounter: (num: number) => void;
+  disabled: boolean;
 }) => {
   const sportTypes = sportBaseSpace?.sportTypes || {};
   const sportValues = Object.values(sportTypes || {});
   return (
     <FormRow columns={2}>
       <TextField
+        disabled={disabled}
         label={inputLabels.name}
         value={sportBaseSpace?.name}
         error={errors?.name}
@@ -39,6 +42,7 @@ const SportBaseSpaceGeneralContainer = ({
         }}
       />
       <AsyncSelectField
+        disabled={disabled}
         label={inputLabels.type}
         value={sportBaseSpace?.type}
         error={errors?.type}
@@ -51,6 +55,7 @@ const SportBaseSpaceGeneralContainer = ({
         loadOptions={(input, page, id) => getSportBaseSpaceTypesList(input, page, id)}
       />
       <AsyncMultiSelect
+        disabled={disabled}
         label={inputLabels.sportTypes}
         values={sportValues}
         error={errors?.sportTypes}
@@ -79,6 +84,7 @@ const SportBaseSpaceGeneralContainer = ({
         loadOptions={(input, page) => getSportBaseSpaceSportTypesList(input, page)}
       />
       <AsyncSelectField
+        disabled={disabled}
         label={inputLabels.technicalCondition}
         value={sportBaseSpace?.technicalCondition}
         error={errors?.technicalCondition}

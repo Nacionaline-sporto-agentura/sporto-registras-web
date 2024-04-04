@@ -1,12 +1,13 @@
 import { Photo } from '../../types';
 import PhotoUploadField from '../fields/PhotoUploadField';
 
-const PhotosContainer = ({ photos, errors, handleChange, counter, setCounter }: any) => {
+const PhotosContainer = ({ photos, errors, handleChange, counter, setCounter, disabled }: any) => {
   const ObjectPhotos = photos || {};
   const photoValues = Object.values(ObjectPhotos) as any;
 
   return (
     <PhotoUploadField
+      disabled={disabled}
       name={'photos'}
       error={errors}
       photos={photoValues}

@@ -2,7 +2,7 @@ import * as Yup from 'yup';
 import { Row, TitleColumn } from '../styles/CommonStyles';
 
 import { applyPatch, compare, Operation } from 'fast-json-patch';
-import { Formik } from 'formik';
+import { Formik, yupToFormErrors } from 'formik';
 import { isEmpty } from 'lodash';
 import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
@@ -29,44 +29,25 @@ import { isNew } from '../utils/functions';
 import { slugs } from '../utils/routes';
 import { buttonsTitles, validationTexts } from '../utils/texts';
 
-const validateCreateUserForm = Yup.object().shape({
+const generalSchema = Yup.object().shape({
   address: Yup.string().required(validationTexts.requireText),
-  spaces: Yup.object().test(
-    'at-least-one-property',
-    validationTexts.requireSelect,
-    (obj) => !isEmpty(obj),
-  ),
   name: Yup.string().required(validationTexts.requireText),
-  owners: Yup.object().test(
-    'at-least-one-property',
-    validationTexts.requireText,
-    (obj) => !isEmpty(obj),
-  ),
-  photos: Yup.object().test(
-    'at-least-one-property',
-    'Privalo būti bent viena reprezentuojanti nuotrauka',
-    (obj = {}) => Object.keys(obj).some((key) => obj?.[key]?.representative === true),
-  ),
-  organizations: Yup.object().test(
-    'at-least-one-property',
-    validationTexts.requireText,
-    (obj) => !isEmpty(obj),
-  ),
-
-  investments: Yup.object().test(
-    'at-least-one-property',
-    validationTexts.requireText,
-    (obj) => !isEmpty(obj),
-  ),
-
   type: Yup.object().required(validationTexts.requireText),
+  webPage: Yup.string().required(validationTexts.requireText),
   level: Yup.object().required(validationTexts.requireText),
   technicalCondition: Yup.object().required(validationTexts.requireText),
   coordinates: Yup.object().shape({
     x: Yup.string().required(validationTexts.requireText),
     y: Yup.string().required(validationTexts.requireText),
   }),
-  webPage: Yup.string().required(validationTexts.requireText),
+  photos: Yup.object().test(
+    'at-least-one-property',
+    'Privalo būti bent viena reprezentuojanti nuotrauka',
+    (obj = {}) => Object.keys(obj).some((key) => obj?.[key]?.representative === true),
+  ),
+});
+
+const specificationSxhema = Yup.object().shape({
   plotNumber: Yup.string().required(validationTexts.requireText),
   plotArea: Yup.string().required(validationTexts.requireText),
   builtPlotArea: Yup.string().required(validationTexts.requireText),
@@ -76,12 +57,21 @@ const validateCreateUserForm = Yup.object().shape({
   saunas: Yup.string().required(validationTexts.requireText),
   accommodationPlaces: Yup.string().required(validationTexts.requireText),
   diningPlaces: Yup.string().required(validationTexts.requireText),
-  plans: Yup.object().test(
+});
+
+const spacesSchema = Yup.object().shape({
+  spaces: Yup.object().test(
     'at-least-one-property',
     validationTexts.requireSelect,
     (obj) => !isEmpty(obj),
   ),
 });
+
+const sportBaseSchema = Yup.object()
+  .shape({})
+  .concat(generalSchema)
+  .concat(specificationSxhema)
+  .concat(spacesSchema);
 
 export const sportBaseTabTitles = {
   generalInfo: 'Bendra informacija',
@@ -95,11 +85,13 @@ export const sportBaseTabTitles = {
 export const tabs = [
   {
     label: sportBaseTabTitles.generalInfo,
+    validation: generalSchema,
   },
   {
     label: sportBaseTabTitles.specification,
+    validation: specificationSxhema,
   },
-  { label: sportBaseTabTitles.spaces },
+  { label: sportBaseTabTitles.spaces, validation: spacesSchema },
   { label: sportBaseTabTitles.owners },
   { label: sportBaseTabTitles.organizations },
   { label: sportBaseTabTitles.investments },
@@ -107,11 +99,12 @@ export const tabs = [
 
 const SportBasePage = () => {
   const navigate = useNavigate();
-  const [currentTab, setTab] = useState(0);
+  const [currentTab, setCurrentTab] = useState(0);
   const { id = '' } = useParams();
   const [searchParams] = useSearchParams();
   const title = isNew(id) ? 'Įregistruoti naują sporto bazę' : 'Atnaujinti sporto bazę';
-  const { prasymas } = Object.fromEntries([...Array.from(searchParams)]);
+  const { prasymas: queryStringRequestId } = Object.fromEntries([...Array.from(searchParams)]);
+  const backUrl = isNew(id) ? slugs.unConfirmedSportBases : slugs.sportBases;
 
   const { isLoading, data: sportBase } = useQuery(['sportBase', id], () => api.getSportBase(id), {
     onError: () => {
@@ -121,20 +114,24 @@ const SportBasePage = () => {
   });
 
   const { isLoading: requestLoading, data: request } = useQuery(
-    ['request', prasymas],
-    () => api.getRequest(prasymas),
+    ['request', queryStringRequestId],
+    () => api.getRequest(queryStringRequestId),
     {
       onError: () => {
-        navigate(slugs.sportBases);
+        navigate(slugs.unConfirmedSportBases);
       },
-      enabled: !!prasymas,
+      enabled: !!queryStringRequestId,
     },
   );
 
-  const requestId = sportBase?.lastRequest?.id || prasymas;
+  const requestId = sportBase?.lastRequest?.id || request?.id;
 
   const canValidate = sportBase?.lastRequest?.canValidate || request?.canValidate;
-  const canEdit = (isNew(id) && !prasymas) || sportBase?.lastRequest?.canEdit || request?.canEdit;
+  const canEdit =
+    (isNew(id) && !queryStringRequestId) ||
+    sportBase?.lastRequest?.canEdit ||
+    request?.canEdit ||
+    sportBase?.canCreateRequest;
 
   const createRequest = useMutation(
     (params: any) =>
@@ -143,7 +140,17 @@ const SportBasePage = () => {
         : api.updateRequest({ ...params, status: StatusTypes.SUBMITTED }, requestId),
     {
       onSuccess: () => {
-        navigate(slugs.sportBases);
+        navigate(backUrl);
+      },
+      retry: false,
+    },
+  );
+
+  const createDraftRequest = useMutation(
+    (params: any) => api.createRequests({ ...params, status: StatusTypes.DRAFT }),
+    {
+      onSuccess: () => {
+        navigate(backUrl);
       },
       retry: false,
     },
@@ -155,6 +162,10 @@ const SportBasePage = () => {
     },
     retry: false,
   });
+
+  const handleDraft = async (values: any) => {
+    createDraftRequest.mutateAsync({ changes: values });
+  };
 
   const handleSubmit = async (values: any) => {
     const params = {
@@ -213,16 +224,18 @@ const SportBasePage = () => {
   const initialValues: any = getFormValues();
   const disabled = !canEdit;
 
+  const showDraftButton =
+    (isNew(id) && !queryStringRequestId) ||
+    [request?.status, sportBase?.lastRequest?.status].includes(StatusTypes.DRAFT);
+
   return (
     <Formik
       enableReinitialize={false}
       initialValues={initialValues}
       validateOnChange={false}
       onSubmit={handleSubmit}
-      validationSchema={validateCreateUserForm}
     >
-      {({ values, errors, setFieldValue, validateForm }) => {
-        const show = !isNew(id) && !prasymas;
+      {({ values, errors, setFieldValue, setErrors }) => {
         const spaceTypeIds = (Object.values(values?.spaces || {}) as SportBase[])?.map(
           (space) => space?.type?.id,
         );
@@ -361,6 +374,8 @@ const SportBasePage = () => {
         const hasNext = tabs[currentTab + 1];
         const hasPrevious = tabs[currentTab - 1];
 
+        const preprocessedJsonPatch = preprocessJsonPatch(mergedDiffs);
+
         return (
           <>
             <Container>
@@ -368,6 +383,15 @@ const SportBasePage = () => {
                 <BackButton />
                 <Row>
                   <Title>{title}</Title>
+                  {showDraftButton && (
+                    <Button
+                      onClick={() => {
+                        handleDraft(preprocessedJsonPatch);
+                      }}
+                    >
+                      {buttonsTitles.saveAsDraft}
+                    </Button>
+                  )}
                   {canValidate && (
                     <AdditionalButtons
                       handleChange={(status) => response.mutateAsync({ status })}
@@ -375,12 +399,11 @@ const SportBasePage = () => {
                   )}
                 </Row>
               </TitleColumn>
-              {show}
 
               <Column>
                 <TabBar
                   tabs={tabs}
-                  onClick={(_, index) => setTab(index || 0)}
+                  onClick={(_, index) => setCurrentTab(index || 0)}
                   isActive={(_, index) => currentTab == index}
                 />
                 {containers[tabs[currentTab]?.label]}
@@ -389,7 +412,7 @@ const SportBasePage = () => {
                   {hasPrevious && (
                     <Button
                       onClick={async () => {
-                        setTab(currentTab - 1);
+                        setCurrentTab(currentTab - 1);
                       }}
                     >
                       {buttonsTitles.back}
@@ -399,7 +422,15 @@ const SportBasePage = () => {
                   {hasNext && (
                     <Button
                       onClick={async () => {
-                        setTab(currentTab + 1);
+                        const partialValidationSchema = tabs[currentTab]?.validation;
+                        if (!partialValidationSchema) return setCurrentTab(currentTab + 1);
+
+                        partialValidationSchema
+                          .validate(values, { abortEarly: false })
+                          .then(() => setCurrentTab(currentTab + 1))
+                          .catch((error) => {
+                            setErrors(yupToFormErrors(error));
+                          });
                       }}
                     >
                       {buttonsTitles.next}
@@ -409,18 +440,22 @@ const SportBasePage = () => {
                   {!disabled && !hasNext && (
                     <Button
                       onClick={async () => {
-                        const errors = await validateForm(values);
+                        let errors: any = {};
+
+                        try {
+                          await sportBaseSchema.validate(values, { abortEarly: false });
+                        } catch (e) {
+                          errors = yupToFormErrors(e);
+                        }
 
                         if (isEmpty(errors)) {
-                          handleSubmit(preprocessJsonPatch(mergedDiffs));
+                          handleSubmit(preprocessedJsonPatch);
                         }
                       }}
                     >
                       {buttonsTitles.save}
                     </Button>
                   )}
-
-                  {!isNew(id) && !prasymas}
                 </ButtonRow>
               </Column>
             </Container>
@@ -428,7 +463,7 @@ const SportBasePage = () => {
               disabled={disabled}
               handleChange={setFieldValue}
               spaceTypeIds={spaceTypeIds}
-              diff={preprocessJsonPatch(mergedDiffs) as any}
+              diff={preprocessedJsonPatch as any}
               data={values}
             />
           </>
@@ -458,12 +493,6 @@ const Column = styled.div`
   display: flex;
   gap: 12px;
   flex-direction: column;
-`;
-
-const InnerRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
 `;
 
 const Title = styled.div`

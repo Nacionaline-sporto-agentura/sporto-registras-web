@@ -12,15 +12,13 @@ const BuildingParametersContainer = ({
   sportBaseSpace,
   errors,
   handleChange,
+  disabled,
 }: {
   sportBaseSpace: SportBaseSpace;
   errors: any;
   handleChange: any;
+  disabled: boolean;
 }) => {
-  const handleUpload = async (files: File[]) => {
-    handleChange('plans', [files]);
-  };
-
   return (
     <>
       <FormRow columns={2}>
@@ -29,12 +27,14 @@ const BuildingParametersContainer = ({
           value={sportBaseSpace?.buildingNumber}
           error={errors?.buildingNumber}
           name="buildingNumber"
+          disabled={disabled}
           onChange={(buildingNumber) => {
             handleChange(`buildingNumber`, buildingNumber);
           }}
         />
         <NumericTextField
           label={inputLabels.buildingArea}
+          disabled={disabled}
           value={sportBaseSpace?.buildingArea}
           digitsAfterComma={3}
           error={errors?.buildingArea}
@@ -46,6 +46,7 @@ const BuildingParametersContainer = ({
       </FormRow>
       <FormRow columns={1}>
         <TextField
+          disabled={disabled}
           label={inputLabels.energyClass}
           value={sportBaseSpace?.energyClass}
           error={errors?.energyClass}
@@ -55,6 +56,7 @@ const BuildingParametersContainer = ({
           }}
         />
         <DragAndDropUploadField
+          disabled={disabled}
           onChange={(files: any) => handleChange('energyClassCertificate', files[0])}
           multiple={false}
           files={[sportBaseSpace?.energyClassCertificate]}
@@ -64,9 +66,10 @@ const BuildingParametersContainer = ({
       </FormRow>
       <FormRow columns={2}>
         <AsyncSelectField
+          disabled={disabled}
           label={inputLabels.buildingType}
           value={sportBaseSpace?.buildingType}
-          error={errors?.type}
+          error={errors?.buildingType}
           name="type"
           onChange={(type: SportsBasesType) => {
             handleChange(`buildingType`, type);
@@ -85,6 +88,7 @@ const BuildingParametersContainer = ({
         />
 
         <DateField
+          disabled={disabled}
           name={'constructionDate'}
           label={inputLabels.constructionDate}
           value={sportBaseSpace?.constructionDate}
@@ -93,6 +97,7 @@ const BuildingParametersContainer = ({
           onChange={(constructionDate) => handleChange(`constructionDate`, constructionDate)}
         />
         <DateField
+          disabled={disabled}
           name={'latestRenovationDate'}
           label={inputLabels.latestRenovationDate}
           value={sportBaseSpace?.latestRenovationDate}

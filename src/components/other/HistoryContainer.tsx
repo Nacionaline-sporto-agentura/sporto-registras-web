@@ -214,7 +214,7 @@ const HistoryContainer = ({
     },
   };
 
-  const [spreadOut, setSpreadOut] = useState(false);
+  const [spreadOut, setSpreadOut] = useState(true);
 
   if (!spreadOut) {
     return (

@@ -120,7 +120,7 @@ interface AuthApiProps {
 
 class Api {
   private axios: AxiosInstance;
-  private readonly proxy: string = '/api/';
+  private readonly proxy: string = '/api';
   constructor() {
     this.axios = Axios.create();
 
@@ -442,6 +442,7 @@ class Api {
         'investments',
         'owners',
         'canEdit',
+        'canCreateRequest',
         'canValidate',
       ],
       id,

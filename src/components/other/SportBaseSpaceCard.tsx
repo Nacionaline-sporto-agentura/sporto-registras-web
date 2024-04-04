@@ -46,12 +46,10 @@ const SportBaseSpaceCard = ({
             color={nameToColor[technicalCondition?.name]}
           />
         </TitleRow>
-        {!disabled && (
-          <TitleRow>
-            <Action onClick={onEdit}>{buttonsTitles.edit}</Action>
-            <Action onClick={onDelete}>{buttonsTitles.delete}</Action>
-          </TitleRow>
-        )}
+        <TitleRow>
+          {!disabled && <Action onClick={onDelete}>{buttonsTitles.delete}</Action>}
+          <Action onClick={onEdit}>{disabled ? buttonsTitles.view : buttonsTitles.view}</Action>
+        </TitleRow>
       </Row>
       <Type>{type?.name}</Type>
       <Line />

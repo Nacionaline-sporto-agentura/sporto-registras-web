@@ -93,6 +93,7 @@ export interface SportBaseSpace {
 export interface SportBase {
   id?: number;
   name: string;
+  canCreateRequest: boolean;
   type?: SportsBasesType;
   level?: SportsBasesLevel;
   technicalCondition?: SportsBasesCondition;

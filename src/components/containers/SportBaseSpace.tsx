@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 
-import { Formik } from 'formik';
+import { Formik, yupToFormErrors } from 'formik';
 import { isEmpty, omit } from 'lodash';
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
@@ -19,21 +19,19 @@ import PhotosContainer from './Photos';
 import SportBaseSpaceAdditionalFields from './SportBaseSpaceAdditionalFields';
 import SportBaseSpaceGeneral from './SportBaseSpaceGeneral';
 
-const validateSportBaseSpace = Yup.object().shape({
+const generalSchema = Yup.object().shape({
   name: Yup.string().required(validationTexts.requireText),
-  photos: Yup.object().test(
-    'at-least-one-property',
-    'Privalo būti bent viena reprezentuojanti nuotrauka',
-    (obj = {}) => Object.keys(obj).some((key) => obj?.[key]?.representative === true),
-  ),
   type: Yup.object().required(validationTexts.requireText),
   sportTypes: Yup.object().test(
     'at-least-one-property',
     validationTexts.requireSelect,
     (obj) => !isEmpty(obj),
   ),
-  buildingType: Yup.object().required(validationTexts.requireText),
   technicalCondition: Yup.object().required(validationTexts.requireText),
+});
+
+const buildingParametersSchema = Yup.object().shape({
+  buildingType: Yup.object().required(validationTexts.requireText),
   buildingNumber: Yup.string().required(validationTexts.requireText),
   buildingPurpose: Yup.string().required(validationTexts.requireText),
   buildingArea: Yup.string().required(validationTexts.requireText),
@@ -42,6 +40,20 @@ const validateSportBaseSpace = Yup.object().shape({
   latestRenovationDate: Yup.date().required(validationTexts.requireText),
   energyClassCertificate: Yup.object().required(validationTexts.requireText),
 });
+
+const photosSchema = Yup.object().shape({
+  photos: Yup.object().test(
+    'at-least-one-property',
+    'Privalo būti bent viena reprezentuojanti nuotrauka',
+    (obj = {}) => Object.keys(obj).some((key) => obj?.[key]?.representative === true),
+  ),
+});
+
+const sportBaseSpaceSchema = Yup.object()
+  .shape({})
+  .concat(generalSchema)
+  .concat(buildingParametersSchema)
+  .concat(photosSchema);
 
 export const sportBaseSpaceTabTitles = {
   generalInfo: 'Bendra informacija',
@@ -53,12 +65,14 @@ export const sportBaseSpaceTabTitles = {
 export const tabs = [
   {
     label: sportBaseSpaceTabTitles.generalInfo,
+    validation: generalSchema,
   },
   {
     label: sportBaseSpaceTabTitles.buildingParameters,
+    validation: buildingParametersSchema,
   },
   { label: sportBaseSpaceTabTitles.additionalFields },
-  { label: sportBaseSpaceTabTitles.photos },
+  { label: sportBaseSpaceTabTitles.photos, validation: photosSchema },
 ];
 
 const SportBaseSpaceContainer = ({
@@ -80,11 +94,17 @@ const SportBaseSpaceContainer = ({
   handleChange: any;
 }) => {
   const title = 'Pridėti sporto erdvę';
+  const [currentTabs, setCurrentTabs] = useState(
+    tabs.filter((tabs) => {
+      return tabs.label !== sportBaseSpaceTabTitles.additionalFields;
+    }),
+  );
 
   const [open, setOpen] = useState(false);
+
   const [current, setCurrent] = useState<SportBaseSpace>();
 
-  const [currentTab, setTab] = useState(0);
+  const [currentTab, setCurrentTab] = useState(0);
 
   const onSubmit = async (values: any) => {
     if (typeof values?.index !== 'undefined') {
@@ -139,8 +159,8 @@ const SportBaseSpaceContainer = ({
       <Popup title={title} visible={open} onClose={() => setOpen(false)}>
         <Container>
           <TabBar
-            tabs={tabs}
-            onClick={(_, index) => setTab(index || 0)}
+            tabs={currentTabs}
+            onClick={(_, index) => setCurrentTab(index || 0)}
             isActive={(_, index) => currentTab == index}
           />
           <Formik
@@ -148,7 +168,7 @@ const SportBaseSpaceContainer = ({
             enableReinitialize={false}
             initialValues={initialValues}
             onSubmit={onSubmit}
-            validationSchema={validateSportBaseSpace}
+            validationSchema={sportBaseSpaceSchema}
           >
             {({ values, errors, setFieldValue, validateForm, setErrors }) => {
               const sportBaseSpaceTypeId = values.type?.id;
@@ -162,7 +182,11 @@ const SportBaseSpaceContainer = ({
 
               const { data: additionalFields = [] } = useQuery(
                 ['additionalFields', sportBaseSpaceTypeId],
-                async () => api.getFields({ query: { type: sportBaseSpaceTypeId } }),
+                async () => {
+                  setCurrentTabs(tabs);
+
+                  return api.getFields({ query: { type: sportBaseSpaceTypeId } });
+                },
                 {
                   enabled: !!sportBaseSpaceTypeId,
                 },
@@ -177,6 +201,7 @@ const SportBaseSpaceContainer = ({
                     handleChange={setFieldValue}
                     setCounter={setSportTypeCounter}
                     counter={sportTypesCounter}
+                    disabled={disabled}
                   />
                 ),
                 [sportBaseSpaceTabTitles.additionalFields]: (
@@ -185,6 +210,7 @@ const SportBaseSpaceContainer = ({
                     additionalFields={additionalFields}
                     errors={errors.additionalValues}
                     handleChange={setFieldValue}
+                    disabled={disabled}
                   />
                 ),
                 [sportBaseSpaceTabTitles.buildingParameters]: (
@@ -192,6 +218,7 @@ const SportBaseSpaceContainer = ({
                     sportBaseSpace={values}
                     errors={errors}
                     handleChange={setFieldValue}
+                    disabled={disabled}
                   />
                 ),
                 [sportBaseSpaceTabTitles.photos]: (
@@ -201,6 +228,7 @@ const SportBaseSpaceContainer = ({
                     photos={values.photos}
                     errors={errors.photos}
                     handleChange={setFieldValue}
+                    disabled={disabled}
                   />
                 ),
               };
@@ -216,7 +244,7 @@ const SportBaseSpaceContainer = ({
                     {hasPrevious && (
                       <Button
                         onClick={async () => {
-                          setTab(currentTab - 1);
+                          setCurrentTab(currentTab - 1);
                         }}
                       >
                         {buttonsTitles.back}
@@ -226,7 +254,33 @@ const SportBaseSpaceContainer = ({
                     {hasNext && (
                       <Button
                         onClick={async () => {
-                          setTab(currentTab + 1);
+                          {
+                            const partialValidationSchema = tabs[currentTab]?.validation;
+                            if (!partialValidationSchema) {
+                              const errors: any = {};
+
+                              additionalFields.forEach((item) => {
+                                if (typeof values?.additionalValues?.[item?.id] === 'undefined') {
+                                  errors.additionalValues = errors.additionalValues || {};
+
+                                  errors.additionalValues[item?.id] = validationTexts.requireText;
+                                }
+                              });
+
+                              if (isEmpty(errors)) {
+                                setCurrentTab(currentTab + 1);
+                              }
+
+                              return setErrors(errors);
+                            }
+
+                            partialValidationSchema
+                              .validate(values, { abortEarly: false })
+                              .then(() => setCurrentTab(currentTab + 1))
+                              .catch((error) => {
+                                setErrors(yupToFormErrors(error));
+                              });
+                          }
                         }}
                       >
                         {buttonsTitles.next}

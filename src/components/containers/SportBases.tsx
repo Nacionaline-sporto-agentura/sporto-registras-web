@@ -1,9 +1,9 @@
-import { SportBase, TableRow } from '../../types';
+import { NotFoundInfoProps, SportBase, TableRow } from '../../types';
 import api from '../../utils/api';
 import { colorsByStatus } from '../../utils/constants';
 import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
-import { requestStatusLabels } from '../../utils/texts';
+import { emptyState, requestStatusLabels } from '../../utils/texts';
 import StatusTag from '../other/StatusTag';
 import MainTable from '../tables/MainTable';
 
@@ -41,10 +41,14 @@ const SportBases = () => {
     dependencyArray: [page],
   });
 
+  const notFound: NotFoundInfoProps = {
+    text: emptyState.sportBases,
+  };
+
   return (
     <MainTable
       loading={loading}
-      notFoundInfo={{}}
+      notFoundInfo={notFound}
       isFilterApplied={false}
       data={tableData}
       columns={sportBaseLabels}

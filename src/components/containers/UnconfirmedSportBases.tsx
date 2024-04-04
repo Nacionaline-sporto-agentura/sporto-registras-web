@@ -1,10 +1,10 @@
 import { applyPatch } from 'fast-json-patch';
-import { Request, TableRow } from '../../types';
+import { NotFoundInfoProps, Request, TableRow } from '../../types';
 import api from '../../utils/api';
 import { colorsByStatus } from '../../utils/constants';
 import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
-import { requestStatusLabels } from '../../utils/texts';
+import { emptyState, requestStatusLabels } from '../../utils/texts';
 import StatusTag from '../other/StatusTag';
 import MainTable from '../tables/MainTable';
 
@@ -44,10 +44,14 @@ const UnconfirmedSportBases = () => {
     dependencyArray: [page],
   });
 
+  const notFound: NotFoundInfoProps = {
+    text: emptyState.unConfirmedSportBases,
+  };
+
   return (
     <MainTable
       loading={loading}
-      notFoundInfo={{}}
+      notFoundInfo={notFound}
       isFilterApplied={false}
       data={tableData}
       columns={sportBaseLabels}
