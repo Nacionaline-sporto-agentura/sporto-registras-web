@@ -106,24 +106,22 @@ const DynamicFilter = ({
         </Wrapper>
       </Container>
       <Popup visible={showFilters} onClose={() => setShowFilters(false)}>
-        <FilterWraper>
-          <Filter
-            values={filters}
-            filters={filterConfig}
-            rowConfig={rowConfig}
-            onSubmit={(values) => {
-              const copy = { ...values };
-              Object.keys(copy).forEach((key) => {
-                if (copy?.[key] && typeof copy[key] == 'string') {
-                  copy[key] = copy?.[key]?.trim();
-                }
-              });
+        <Filter
+          values={filters}
+          filters={filterConfig}
+          rowConfig={rowConfig}
+          onSubmit={(values) => {
+            const copy = { ...values };
+            Object.keys(copy).forEach((key) => {
+              if (copy?.[key] && typeof copy[key] == 'string') {
+                copy[key] = copy?.[key]?.trim();
+              }
+            });
 
-              onSetFilters(copy);
-              setShowFilters(false);
-            }}
-          />
-        </FilterWraper>
+            onSetFilters(copy);
+            setShowFilters(false);
+          }}
+        />
       </Popup>
     </>
   );
@@ -208,10 +206,6 @@ const Tag = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-`;
-
-const FilterWraper = styled.div`
-  padding: 0 24px 24px 24px;
 `;
 
 DynamicFilter.map = mapFilters;

@@ -1,31 +1,46 @@
 import Axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { isFinite } from 'lodash';
+import { isEmpty, isFinite } from 'lodash';
 import Cookies from 'universal-cookie';
 import { GroupProps } from '../pages/GroupForm';
-import { Group, Tenant } from '../types';
+import { Group, Request, SportBase, Tenant, TypesAndFields } from '../types';
 const cookies = new Cookies();
 
 export enum Resources {
-  LOGIN = '/auth/login',
-  REFRESH_TOKEN = '/auth/refresh',
+  LOGIN = 'auth/login',
+  FILES_UPLOAD = 'api/files/upload',
+  REFRESH_TOKEN = 'auth/refresh',
   E_GATES_LOGIN = 'auth/evartai/login',
   E_GATES_SIGN = 'auth/evartai/sign',
-  VERIFY_USER = '/auth/verify',
-  SET_PASSWORD = '/auth/accept',
-  REMIND_PASSWORD = '/auth/remind',
+  VERIFY_USER = 'auth/verify',
+  SET_PASSWORD = 'auth/accept',
+  REMIND_PASSWORD = 'auth/remind',
+  REQUESTS = 'api/requests',
+  SPORT_BASES = 'api/sportsBases',
+  SOURCES = 'api/sportsBases/investments/sources',
+  LEVELS = 'api/sportsBases/levels',
+  TECHNICAL_CONDITIONS = 'api/sportsBases/technicalConditions',
+  TYPES = 'api/sportsBases/types',
+  SPORT_TYPES = 'api/sportsBases/spaces/sportTypes',
+  SPACE_TYPES = 'api/sportsBases/spaces/types',
+  BUILDING_TYPES = 'api/sportsBases/buildingTypes',
+  FIELDS = 'api/sportsBases/spaces/typesAndFields',
   ADMINS = 'api/admins',
   USERS = 'api/users',
   GROUPS = 'api/groups',
   TENANTS = 'api/tenants',
   ORGANIZATIONS = 'api/tenants/organizations',
   INSTITUTIONS = 'api/tenants/institutions',
-  PROFILES = '/api/profiles',
+  PROFILES = 'api/profiles',
 }
 
 export enum Populations {
   CHILDREN = 'children',
   PARENT = 'parent',
   GROUPS = 'groups',
+  FIELD = 'field',
+  ENTITY = 'entity',
+  TYPE = 'type',
+  LAST_REQUEST = 'lastRequest',
 }
 
 export enum SortAscFields {
@@ -37,6 +52,7 @@ export enum SortDescFields {
   NAME = `-name`,
   FIRST_NAME = '-firstName',
   LAST_NAME = '-lastName',
+  ID = '-id',
 }
 
 interface TableList<T = any> {
@@ -104,7 +120,7 @@ interface AuthApiProps {
 
 class Api {
   private axios: AxiosInstance;
-  private readonly proxy: string = '/api';
+  private readonly proxy: string = '/api/';
   constructor() {
     this.axios = Axios.create();
 
@@ -183,6 +199,36 @@ class Api {
   post = async ({ resource, params }: Create) => {
     return this.errorWrapper(() => this.axios.post(`/${resource}`, params));
   };
+
+  uploadFiles = async (files: File[] = []): Promise<any> => {
+    if (isEmpty(files)) return [];
+
+    const config = {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    };
+
+    try {
+      const data = await Promise.all(
+        files?.map(async (file) => {
+          const formData = new FormData();
+          formData.append('file', file);
+          const { data } = await this.axios.post(`/${Resources.FILES_UPLOAD}`, formData, config);
+          return data;
+        }),
+      );
+
+      return data?.map((file) => {
+        return {
+          name: file.filename,
+          size: file.size,
+          url: file?.url,
+        };
+      });
+    } catch (e: any) {
+      return { error: e.response.data.message };
+    }
+  };
+
   authApi = async ({ resource, params }: AuthApiProps) => {
     return this.errorWrapper(() => this.axios.post(resource, params || {}));
   };
@@ -366,6 +412,66 @@ class Api {
     });
   };
 
+  getSportBases = async ({ page, filter }: TableList) =>
+    await this.getList({
+      resource: Resources.SPORT_BASES,
+      populate: [Populations.TYPE, Populations.LAST_REQUEST],
+      sort: [SortDescFields.ID],
+      page,
+      filter,
+    });
+
+  getNewRequests = async ({ page, filter }: TableList) =>
+    await this.getList({
+      resource: Resources.REQUESTS + '/new',
+      populate: [Populations.ENTITY],
+      sort: [SortDescFields.ID],
+      page,
+      filter,
+    });
+
+  getSportBase = async (id: string): Promise<SportBase> =>
+    await this.getOne({
+      resource: Resources.SPORT_BASES,
+      populate: [
+        Populations.LAST_REQUEST,
+        'type',
+        'level',
+        'technicalCondition',
+        'spaces',
+        'investments',
+        'owners',
+        'canEdit',
+        'canValidate',
+      ],
+      id,
+    });
+
+  getRequest = async (id: string): Promise<Request> =>
+    await this.getOne({
+      resource: Resources.REQUESTS,
+      populate: ['canEdit', 'canValidate'],
+      id,
+    });
+
+  createRequests = async (params) =>
+    await this.post({
+      resource: Resources.REQUESTS,
+      params,
+    });
+
+  updateRequest = async (params, id: any) =>
+    await this.patch({
+      resource: Resources.REQUESTS,
+      params,
+      id,
+    });
+
+  approveRequest = async (id: string) =>
+    await this.post({
+      resource: `${Resources.REQUESTS}/${id}/approve`,
+    });
+
   getGroupsOptions = async () =>
     await this.getList({
       resource: Resources.GROUPS,
@@ -490,6 +596,68 @@ class Api {
     await this.getList({
       pageSize: '99999',
       resource: Resources.PROFILES,
+    });
+
+  getSources = async ({ filter, page }) =>
+    await this.getList({
+      filter,
+      page,
+      fields: ['id', 'name'],
+      resource: Resources.SOURCES,
+    });
+  getSportBaseLevels = async ({ filter, page }) =>
+    await this.getList({
+      filter,
+      page,
+      fields: ['id', 'name'],
+      resource: Resources.LEVELS,
+    });
+  getSportBaseTechnicalConditions = async ({ filter, page }) =>
+    await this.getList({
+      filter,
+      page,
+      fields: ['id', 'name'],
+      resource: Resources.TECHNICAL_CONDITIONS,
+    });
+
+  getSportBaseTypes = async ({ filter, page }) =>
+    await this.getList({
+      filter,
+      page,
+      fields: ['id', 'name'],
+      resource: Resources.TYPES,
+    });
+
+  getSportBaseSpaceBuildingTypes = async ({ filter, page }) =>
+    await this.getList({
+      filter,
+      page,
+      fields: ['id', 'name'],
+      resource: Resources.BUILDING_TYPES,
+    });
+
+  getSportBaseSpaceSportTypes = async ({ filter, page }) =>
+    await this.getList({
+      filter,
+      page,
+      fields: ['id', 'name'],
+      resource: Resources.SPORT_TYPES,
+    });
+
+  getSportBaseSpaceTypes = async ({ page, filter, query }) =>
+    await this.getList({
+      page,
+      fields: ['id', 'name'],
+      query,
+      filter,
+      resource: Resources.SPACE_TYPES,
+    });
+
+  getFields = async ({ query }): Promise<TypesAndFields[]> =>
+    await this.getAll({
+      query,
+      resource: Resources.FIELDS,
+      populate: [Populations.FIELD],
     });
 }
 

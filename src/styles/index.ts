@@ -36,6 +36,7 @@ export interface Theme {
     light: string;
     white: string;
     grey: string;
+    background: string;
     [key: string]: any;
   };
 }
@@ -45,6 +46,7 @@ export const theme: Theme = {
     primary: '#003D2B',
     secondary: '#ADE6B9',
     tertiary: '#7A7E9F',
+    background: '#F8FAFC',
     transparent: 'transparent',
     danger: '#FE5B78',
     success: '#4FB922',
@@ -94,7 +96,7 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    background-color: #f8fafc;
+    background-color: ${theme.colors.background};
     font-size: 1.6rem;
     overflow:hidden;
     min-height:100vh;

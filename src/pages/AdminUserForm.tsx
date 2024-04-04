@@ -2,12 +2,12 @@ import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import TextField from '../components/fields/TextField';
-import FormPageWrapper from '../components/layouts/FormLayout';
+import FormikFormLayout from '../components/layouts/FormikFormLayout';
 import FullscreenLoader from '../components/other/FullscreenLoader';
 import GroupsContainer from '../components/other/GroupContainer';
 import SimpleContainer from '../components/other/SimpleContainer';
 import { useAppSelector } from '../state/hooks';
-import { Column, FormRow } from '../styles/CommonStyles';
+import { FormRow, TitleColumn } from '../styles/CommonStyles';
 import { DeleteInfoProps, ReactQueryError, User } from '../types';
 import Api from '../utils/api';
 import {
@@ -191,7 +191,7 @@ const AdminUserForm = () => {
 
   const renderForm = (values: User, errors: any, handleChange) => {
     return (
-      <Column>
+      <TitleColumn>
         <SimpleContainer title={formLabels.userInfo}>
           <FormRow columns={2}>
             <TextField
@@ -237,7 +237,7 @@ const AdminUserForm = () => {
             errors={errors}
           />
         </SimpleContainer>
-      </Column>
+      </TitleColumn>
     );
   };
 
@@ -246,7 +246,7 @@ const AdminUserForm = () => {
   }
 
   return (
-    <FormPageWrapper
+    <FormikFormLayout
       title={title}
       initialValues={initialValues}
       onSubmit={handleSubmit}

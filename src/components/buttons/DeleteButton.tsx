@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { device } from '../../styles';
 import { useWindowSize } from '../../utils/hooks';
 import { buttonsTitles } from '../../utils/texts';
-import Icon from '../other/Icons';
+import Icon, { IconName } from '../other/Icons';
 import Button, { ButtonColors } from './Button';
 
 const DeleteButton = ({ onClick }) => {
@@ -13,7 +13,7 @@ const DeleteButton = ({ onClick }) => {
       onClick={onClick}
       variant={ButtonColors.TRANSPARENT}
       type="button"
-      leftIcon={<StyledIcon name="deleteItem" />}
+      leftIcon={<StyledIcon name={IconName.deleteItem} />}
       buttonPadding="6px 8px"
     >
       {!isMobile ? buttonsTitles.delete : ''}

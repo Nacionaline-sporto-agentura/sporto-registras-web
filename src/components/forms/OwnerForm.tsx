@@ -1,5 +1,5 @@
 import { InstitutionProps } from '../../pages/InstitutionForm';
-import { Column, FormRow } from '../../styles/CommonStyles';
+import { FormRow, TitleColumn } from '../../styles/CommonStyles';
 import { formLabels, inputLabels } from '../../utils/texts';
 import CheckBox from '../fields/CheckBox';
 import TextField from '../fields/TextField';
@@ -16,7 +16,7 @@ const OwnerForm = ({
 }) => {
   const showPersonalCodeField = !values.ownerWithPassword;
   return (
-    <Column>
+    <TitleColumn>
       <SimpleContainer title={formLabels.infoAboutOwner}>
         <FormRow columns={2}>
           <TextField
@@ -62,7 +62,7 @@ const OwnerForm = ({
           />
         </FormRow>
       </SimpleContainer>
-    </Column>
+    </TitleColumn>
   );
 };
 

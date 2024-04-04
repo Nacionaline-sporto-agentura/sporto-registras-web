@@ -1,9 +1,9 @@
 import { useMutation, useQuery } from 'react-query';
 import * as Yup from 'yup';
 import OrganizationForm from '../components/forms/OrganizationForm';
-import FormPageWrapper from '../components/layouts/FormLayout';
+import FormikFormLayout from '../components/layouts/FormikFormLayout';
 import FullscreenLoader from '../components/other/FullscreenLoader';
-import { Column } from '../styles/CommonStyles';
+import { TitleColumn } from '../styles/CommonStyles';
 import { ReactQueryError } from '../types';
 import Api from '../utils/api';
 import {
@@ -129,7 +129,7 @@ const MyOrganization = () => {
 
   const renderForm = (values: InstitutionProps, errors: any, handleChange) => {
     return (
-      <Column>
+      <TitleColumn>
         <OrganizationForm
           disabled={disabled}
           treeSelectDisabled={true}
@@ -138,7 +138,7 @@ const MyOrganization = () => {
           handleChange={handleChange}
           groupOptions={groupOptions}
         />
-      </Column>
+      </TitleColumn>
     );
   };
 
@@ -147,7 +147,7 @@ const MyOrganization = () => {
   }
 
   return (
-    <FormPageWrapper
+    <FormikFormLayout
       back={false}
       title={title}
       initialValues={initialValues}

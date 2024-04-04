@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
 import TableItem from '../components/tables/TableItem';
-import { Group, TableRow, Tenant, User } from '../types';
+import { Group, SportBase, TableRow, Tenant, User } from '../types';
 import { TenantTypes } from './constants';
 import { slugs } from './routes';
 import { roleLabels, tenantTypeLabels } from './texts';

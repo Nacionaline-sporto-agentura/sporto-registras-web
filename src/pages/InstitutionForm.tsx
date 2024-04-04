@@ -2,8 +2,8 @@ import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import OrganizationForm from '../components/forms/OrganizationForm';
-import FormPageWrapper from '../components/layouts/FormLayout';
-import { Column } from '../styles/CommonStyles';
+import FormikFormLayout from '../components/layouts/FormikFormLayout';
+import { TitleColumn } from '../styles/CommonStyles';
 import { ReactQueryError } from '../types';
 import Api from '../utils/api';
 import { getReactQueryErrorMessage, handleErrorToastFromServer, isNew } from '../utils/functions';
@@ -189,7 +189,7 @@ const InstitutionForm = () => {
 
   const renderForm = (values: InstitutionProps, errors: any, handleChange) => {
     return (
-      <Column>
+      <TitleColumn>
         <OrganizationForm
           toggleCanHaveChildren={true}
           values={values}
@@ -198,12 +198,12 @@ const InstitutionForm = () => {
           groupOptions={groupOptions}
         />
         <OwnerForm values={values} errors={errors} handleChange={handleChange} />
-      </Column>
+      </TitleColumn>
     );
   };
 
   return (
-    <FormPageWrapper
+    <FormikFormLayout
       title={title}
       initialValues={initialValues}
       onSubmit={handleSubmit}

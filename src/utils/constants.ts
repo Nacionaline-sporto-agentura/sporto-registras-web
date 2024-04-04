@@ -35,3 +35,39 @@ export enum Apps {
   USERS = 'USERS',
   REGISTRAS = 'REGISTRAS',
 }
+
+export enum FieldTypes {
+  SELECT = 'SELECT',
+  TEXT = 'TEXT',
+  BOOLEAN = 'BOOLEAN',
+  NUMBER = 'NUMBER',
+  DECIMAL = 'DECIMAL',
+}
+
+export enum TagColors {
+  BLUE = 'blue',
+  BROWN = 'brown',
+  GREEN = 'green',
+  PINK = 'pink',
+  VIOLET = 'violet',
+  ORANGE = 'orange',
+  SKYBLUE = 'skyblue',
+  GREY = 'grey',
+}
+
+export enum StatusTypes {
+  CREATED = 'CREATED',
+  SUBMITTED = 'SUBMITTED',
+  APPROVED = 'APPROVED',
+  RETURNED = 'RETURNED',
+  REJECTED = 'REJECTED',
+  DRAFT = 'DRAFT',
+}
+
+export const colorsByStatus = {
+  [StatusTypes.CREATED]: TagColors.BLUE,
+  [StatusTypes.SUBMITTED]: TagColors.VIOLET,
+  [StatusTypes.APPROVED]: TagColors.GREEN,
+  [StatusTypes.RETURNED]: TagColors.ORANGE,
+  [StatusTypes.REJECTED]: TagColors.PINK,
+};

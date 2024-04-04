@@ -1,6 +1,8 @@
-import { AdminRoleType, ServerErrorMessages, TenantTypes } from './constants';
+import { AdminRoleType, ServerErrorMessages, StatusTypes, TenantTypes } from './constants';
 
 export const validationTexts = {
+  badFileTypes: 'Blogi failų tipai',
+  fileSizesExceeded: 'Viršyti failų dydžiai',
   requireText: 'Privalote įvesti',
   validFirstName: 'Įveskite taisyklingą vardą',
   validLastName: 'Įveskite taisyklingą pavardę',
@@ -26,6 +28,11 @@ export const validationTexts = {
 export const descriptions = {
   tableNotFound: 'Atsiprašome nieko neradome pagal pasirinktus filtrus',
   deleteUsersWithGroup: 'Ką reikėtų daryti su šiai grupei priskirtais naudotojais?',
+  disabledAccessible: 'Sporto bazė pritaikyta žmonėms su judėjimo negalia',
+  blindAccessible: 'Sporto bazė pritaikyta žmonėms su regėjimo negalia',
+  publicWifi: 'Yra Public WiFi internetas',
+  plans: 'Pridėti sporto bazės planus geoerdviniais formatais (2D ir 3D)',
+  energyClassCertificate: 'Energetinės klasės pažymėjimas',
 };
 
 export const formLabels = {
@@ -41,6 +48,10 @@ export const formLabels = {
   infoAboutInstitution: 'Informacija apie įstaigą',
   infoAboutOrganization: 'Informacija apie organizaciją',
   infoAboutOwner: 'Atstovo duomenys',
+  investments: 'Investicijos',
+  sportOrganizations: 'Sporto organizacjos',
+  sportBaseInfo: 'Sporto bazės informacija',
+  technicalSportBaseParameters: 'Techniniai sporto bazės parametrai',
 };
 
 export const deleteTitles = {
@@ -59,7 +70,51 @@ export const deleteDescriptionSecondPart = {
 };
 
 export const inputLabels = {
+  spaces: 'Erdvės',
+  owners: 'Savininkai',
+  photos: 'Nuotraukos',
+  buildingNumber: 'Unikalus statinio numeris',
+  buildingArea: 'Bendrasis pastato plotas',
+  energyClass: 'Energetinė klasė',
+  buildingType: 'Pastato ar inžinerinio statinio rūšis',
+  buildingPurpose: 'Statinio pagrindinė tikslinė naudojimo paskirtis',
+  constructionDate: 'Pastatymo data',
+  latestRenovationDate: 'Paskutinė renovacijos data',
+  isPublic: 'Skelbiama viešai',
+  makePublic: 'Padaryti skelbiama viešai',
+  description: 'Aprašymas',
+  isRepresentative: 'Reprezentuojanti nuotrauka',
+  makeRepresentative: 'Padaryti reprezentuojančia nuotrauka',
+  public: 'Vieša',
+  representative: 'Reprezentuojanti',
+  pressToWant: 'Paspauskite norėdami',
+  uploadPhotos: 'Pridėti nuotrauką / -as',
+  uploadOrDragFilesHere: 'įkelti arba įtempkite failus čia',
+  fileTypesAndMaxSize: 'PDF, PNG, JPEG, JPG (maks. 2MB)',
+  methodicalClasses: 'Metodinių klasių skaičius',
+  diningPlaces: 'Maitinimo vietų skaičius',
+  accommodationPlaces: 'Apgyvendinimo vietų skaičius',
+  audienceSeats: 'Žiūrovų vietų skaičius',
+  saunas: 'Pirties patalpų skaičius',
+  parkingPlaces: 'Automobilių aikštelės vietų skaičius',
+  dressingRooms: 'Persirengimo patalpų skaičius',
+  plotNumber: 'Unikalus žemės sklypo numeris',
+  plotArea: 'Žemės sklypo plotas',
+  builtPlotArea: 'Žemės sklypo užstatytos teritorijos plotas',
+  level: 'Sporto bazės lygmuo',
+  technicalCondition: 'Techninė bazės būklė',
+  type: 'Sporto bazės rūšis',
+  sportTypes: 'Kultivuojamos sporto šakos',
+  address: 'Adresas',
+  jarName: 'JAR Pavadinimas',
+  code: 'JAR Kodas',
+  website: 'Svetainės adresas',
+  source: 'Investicijų šaltinis',
+  startAt: 'Pradžia',
+  endAt: 'Pabaiga',
+  fundsAmount: 'Lėšų dydis',
   personalCode: 'Asmens kodas',
+  appointedAt: 'Skyrimo data',
   parentOrganization: 'Tėvinė organizacija',
   name: 'Pavadinimas',
   firstName: 'Vardas',
@@ -87,6 +142,10 @@ export const inputLabels = {
   ownerWithPassword: 'Pakviesti vadovą su slaptažodžiu',
   userWithPassword: 'Pakviesti naudotoją su slaptažodžiu',
   legalForm: 'Teisinė forma',
+  sportBaseName: 'Sporto bazės pavadinimas',
+  coordinates: 'Koordinatės',
+  coordinateX: 'Koordinatė x',
+  coordinateY: 'Koordinatė y',
 };
 export const pageTitles = {
   users: 'Naudotojai',
@@ -104,10 +163,19 @@ export const pageTitles = {
   updateOrganization: 'Atnaujinti organizaciją',
   updateInstitution: 'Atnaujinti instituciją',
   myOrganization: 'Mano organizacija',
+  sportBases: 'Sporto infrastruktūra',
 };
 
 export const buttonsTitles = {
-  back: 'Grįžti atgal',
+  edit: 'Redaguoti',
+  approve: 'Tvirtinti',
+  returnToCorrect: 'Grąžinti taisymui',
+  reject: 'Atmesti',
+  addInvestment: 'Pridėti investiciją',
+  addOrganization: 'Pridėti organizaciją',
+  addSportBaseSpace: '+ Pridėti erdvę',
+  addOwner: 'Pridėti savininką',
+  goToBack: 'Grįžti atgal',
   group: 'Ištrinti grupę',
   clearAll: 'Išvalyti visus',
   profile: 'Profilis',
@@ -117,11 +185,14 @@ export const buttonsTitles = {
   save: 'Išsaugoti',
   newUser: 'Naujas naudotojas',
   deleteUser: 'Ištrinti naudotoją',
-  delete: 'Pašalinti',
+  delete: 'Ištrinti',
   cancel: 'Atšaukti',
   newGroups: 'Nauja grupė',
   newInstitution: 'Nauja įstaiga',
   newOrganization: 'Nauja organizacija',
+  registerSportBase: 'Įregistruoti sporto bazę',
+  back: 'Atgal',
+  next: 'Kitas',
 };
 
 export const emptyState = {
@@ -152,4 +223,13 @@ export const roleLabels = {
 export const tenantTypeLabels = {
   [TenantTypes.MUNICIPALITY]: 'Savivaldybė',
   [TenantTypes.ORGANIZATION]: 'Organizacija',
+};
+
+export const requestStatusLabels = {
+  [StatusTypes.CREATED]: 'Pateiktas',
+  [StatusTypes.SUBMITTED]: 'Pateiktas pakartotinai ',
+  [StatusTypes.RETURNED]: 'Grąžintas taisymui',
+  [StatusTypes.REJECTED]: 'Atmestas',
+  [StatusTypes.APPROVED]: 'Patvirtintas',
+  [StatusTypes.DRAFT]: 'Juodraštis',
 };
