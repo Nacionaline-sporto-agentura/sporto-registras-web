@@ -230,7 +230,7 @@ class Api {
   };
 
   authApi = async ({ resource, params }: AuthApiProps) => {
-    return this.errorWrapper(() => this.axios.post(resource, params || {}));
+    return this.errorWrapper(() => this.axios.post(`/${resource}`, params || {}));
   };
 
   getUserInfo = async () => {
