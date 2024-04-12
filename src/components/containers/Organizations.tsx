@@ -81,7 +81,6 @@ const OrganizationsContainer = ({ organizations, handleChange, counter, setCount
           validationSchema={organizationsSchema}
         >
           {({ values, errors, setFieldValue }) => {
-            console.log(errors, 'errors');
             return (
               <Form>
                 <FormRow columns={1}>
