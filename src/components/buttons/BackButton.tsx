@@ -17,7 +17,7 @@ const BackButton = () => {
       type="button"
       height={32}
     >
-      {buttonsTitles.back}
+      {buttonsTitles.goToBack}
     </StyledButton>
   );
 };

@@ -25,6 +25,7 @@ const cookies = new Cookies();
 
 function App() {
   const loggedIn = useAppSelector((state) => state.user.loggedIn);
+  //const loggedIn = true;
   const location = useLocation();
   const [initialLoading, setInitialLoading] = useState(true);
   const [searchParams] = useSearchParams();
@@ -96,7 +97,7 @@ function App() {
 
           <Route element={<ProtectedRoute loggedIn={loggedIn} />} key="root">
             {routes.map((route) => (
-              <Route path={route.slug} element={route.component} />
+              <Route key={JSON.stringify(route)} path={route.slug} element={route.component} />
             ))}
           </Route>
 

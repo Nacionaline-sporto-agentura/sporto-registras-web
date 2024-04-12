@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import * as Yup from 'yup';
 import TextField from '../components/fields/TextField';
 import TreeSelectField from '../components/fields/TreeSelect';
-import FormPageWrapper from '../components/layouts/FormLayout';
+import FormikFormLayout from '../components/layouts/FormikFormLayout';
 import FullscreenLoader from '../components/other/FullscreenLoader';
 import SimpleContainer from '../components/other/SimpleContainer';
 import api from '../utils/api';
@@ -115,7 +115,7 @@ const GroupsFormPage = () => {
   }
 
   return (
-    <FormPageWrapper
+    <FormikFormLayout
       title={title}
       initialValues={initialValues}
       onSubmit={handleSubmit}

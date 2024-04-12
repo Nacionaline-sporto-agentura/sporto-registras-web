@@ -5,8 +5,8 @@ import Cookies from 'universal-cookie';
 import * as Yup from 'yup';
 import OrganizationForm from '../components/forms/OrganizationForm';
 import OwnerForm from '../components/forms/OwnerForm';
-import FormPageWrapper from '../components/layouts/FormLayout';
-import { Column } from '../styles/CommonStyles';
+import FormikFormLayout from '../components/layouts/FormikFormLayout';
+import { TitleColumn } from '../styles/CommonStyles';
 import { ReactQueryError } from '../types';
 import Api from '../utils/api';
 import { TenantTypes } from '../utils/constants';
@@ -207,7 +207,7 @@ const OrganizationFormPage = () => {
 
   const renderForm = (values: InstitutionProps, errors: any, handleChange) => {
     return (
-      <Column>
+      <TitleColumn>
         <OrganizationForm
           values={values}
           errors={errors}
@@ -215,12 +215,12 @@ const OrganizationFormPage = () => {
           groupOptions={groupOptions}
         />
         <OwnerForm values={values} errors={errors} handleChange={handleChange} />
-      </Column>
+      </TitleColumn>
     );
   };
 
   return (
-    <FormPageWrapper
+    <FormikFormLayout
       title={title}
       initialValues={initialValues}
       onSubmit={handleSubmit}

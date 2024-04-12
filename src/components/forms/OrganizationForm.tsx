@@ -1,8 +1,8 @@
 import { FormRow } from '../../styles/CommonStyles';
 import { TenantTypes } from '../../utils/constants';
 import { formLabels, inputLabels } from '../../utils/texts';
-import DateField from '../DateField';
 import CheckBox from '../fields/CheckBox';
+import DateField from '../fields/DateField';
 import SelectField from '../fields/SelectField';
 import TextField from '../fields/TextField';
 import TreeSelectField from '../fields/TreeSelect';

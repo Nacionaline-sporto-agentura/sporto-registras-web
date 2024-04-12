@@ -3,9 +3,9 @@ import Button from '../components/buttons/Button';
 import TablePageLayout from '../components/layouts/TablePageLayout';
 import DynamicFilter from '../components/other/DynamicFilter';
 import { FilterInputTypes } from '../components/other/DynamicFilter/Filter';
-import TabBar from '../components/other/TabBar';
 import MainTable from '../components/tables/MainTable';
 import TableListItem from '../components/tables/TableListItem';
+import NavigateTabBar from '../components/Tabs/NavigateTabBar';
 import { actions as filterActions } from '../state/filters/reducer';
 import { useAppSelector } from '../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
@@ -95,7 +95,7 @@ const AdminUserList = () => {
 
   return (
     <TablePageLayout title={pageTitles.users}>
-      <TabBar tabs={tabs} />
+      <NavigateTabBar tabs={tabs} />
       <TableButtonsRow>
         <TableButtonsInnerRow>
           <DynamicFilter

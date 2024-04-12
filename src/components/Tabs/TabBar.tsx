@@ -1,28 +1,30 @@
 import { map } from 'lodash';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { useGetCurrentRoute } from '../../utils/hooks';
 
 export interface Tab {
   label: string;
-  slug: string;
+  slug?: string;
 }
 
-const TabBar = ({ tabs, className }: { tabs: Tab[]; className?: string }) => {
-  const navigate = useNavigate();
-  const currentTab = useGetCurrentRoute(tabs);
-  const handleClick = (tab: Tab) => {
-    navigate(tab.slug);
-  };
-
+const TabBar = ({
+  tabs,
+  className,
+  onClick,
+  isActive,
+}: {
+  tabs: Tab[];
+  onClick: (tab: Tab, index?: number) => void;
+  isActive: (tab: Tab, index?: number) => boolean;
+  className?: string;
+}) => {
   return (
     <Container className={className}>
-      {map(tabs, (tab: Tab) => (
+      {map(tabs, (tab: Tab, index) => (
         <TabButton
-          key={`${tab.slug}`}
-          isActive={currentTab?.slug === tab.slug}
+          key={`tab-${index}`}
+          isActive={isActive(tab, index)}
           onClick={() => {
-            handleClick(tab);
+            onClick(tab, index);
           }}
         >
           <TabLabel>{tab.label}</TabLabel>
@@ -37,7 +39,6 @@ const Container = styled.div`
   flex: 1;
   white-space: nowrap;
   overflow-x: auto;
-  border-bottom: 1px #c4c4c4 solid;
 `;
 
 const TabButton = styled.div<{ isActive: boolean }>`

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { device } from '.';
-import TabBar from '../components/other/TabBar';
+import NavigateTabBar from '../components/Tabs/NavigateTabBar';
 
 export const FormRow = styled.div<{ columns?: number }>`
   display: grid;
@@ -65,13 +65,21 @@ export const TableButtonsInnerRow = styled.div`
   flex-wrap: wrap;
 `;
 
-export const Column = styled.div`
+export const TitleColumn = styled.div`
   display: flex;
   gap: 16px;
   flex-direction: column;
 `;
 
-export const StyledTabBar = styled(TabBar)`
+export const Row = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  gap: 16px;
+`;
+
+export const StyledTabBar = styled(NavigateTabBar)`
   margin: -8px -16px 16px -16px;
   padding: 0 16px;
 `;

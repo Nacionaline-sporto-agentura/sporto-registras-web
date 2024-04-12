@@ -240,10 +240,10 @@ const MainTR = styled.tr<{
   border-bottom: ${({ $hide_border }) => ($hide_border ? 'none' : '1px solid #cdd5df')} !important;
   cursor: ${({ $pointer }) => ($pointer ? 'pointer' : 'default')};
 
-  ${({ index }) =>
+  ${({ index, theme }) =>
     index % 2 !== 0 &&
     `
-    background-color: #F8FAFC;
+    background-color: ${theme.colors.background};
   `}
 `;
 
@@ -270,10 +270,11 @@ const TR = styled.tr<{
   border-bottom: ${({ $hide_border }) => ($hide_border ? 'none' : '1px solid #cdd5df')} !important;
   cursor: ${({ $pointer }) => ($pointer ? 'pointer' : 'default')};
 
-  ${({ index }) =>
+  ${({ index, theme }) =>
     index % 2 !== 0 &&
     `
-    background-color: #F8FAFC;
+    
+    background-color: ${theme.colors.background};
   `}
 `;
 

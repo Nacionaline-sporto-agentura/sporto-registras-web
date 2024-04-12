@@ -2,9 +2,9 @@ import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import OrganizationForm from '../components/forms/OrganizationForm';
-import FormPageWrapper from '../components/layouts/FormLayout';
+import FormikFormLayout from '../components/layouts/FormikFormLayout';
 import FullscreenLoader from '../components/other/FullscreenLoader';
-import { Column } from '../styles/CommonStyles';
+import { TitleColumn } from '../styles/CommonStyles';
 import { DeleteInfoProps, ReactQueryError } from '../types';
 import Api from '../utils/api';
 import {
@@ -159,14 +159,14 @@ const UpdateOrganizationForm = () => {
 
   const renderForm = (values: InstitutionProps, errors: any, handleChange) => {
     return (
-      <Column>
+      <TitleColumn>
         <OrganizationForm
           values={values}
           errors={errors}
           handleChange={handleChange}
           groupOptions={groupOptions}
         />
-      </Column>
+      </TitleColumn>
     );
   };
 
@@ -175,7 +175,7 @@ const UpdateOrganizationForm = () => {
   }
 
   return (
-    <FormPageWrapper
+    <FormikFormLayout
       title={title}
       initialValues={initialValues}
       onSubmit={handleSubmit}
