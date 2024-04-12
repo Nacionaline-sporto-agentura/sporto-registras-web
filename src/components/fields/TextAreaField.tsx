@@ -31,7 +31,7 @@ const TextAreaField = (props: TextFieldProps) => {
     className,
     onChange,
     onClick,
-    rows = 5,
+    rows = 3,
     placeholder,
     padding,
     disabled = false,

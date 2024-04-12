@@ -5,15 +5,15 @@ import Button from '../components/buttons/Button';
 import TablePageLayout from '../components/layouts/TablePageLayout';
 import DynamicFilter from '../components/other/DynamicFilter';
 import { FilterInputTypes } from '../components/other/DynamicFilter/Filter';
-import TabBar from '../components/other/TabBar';
 import RecursiveTable from '../components/tables/RecursiveTable';
+import NavigateTabBar from '../components/Tabs/NavigateTabBar';
 import { actions as filterActions } from '../state/filters/reducer';
 import { useAppSelector } from '../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
 import { NotFoundInfoProps } from '../types';
 import Api from '../utils/api';
 import { groupColumns } from '../utils/columns';
-import { canManageGroup, isSuperAdmin } from '../utils/functions';
+import { isSuperAdmin } from '../utils/functions';
 import { useGenericTablePageHooks, useTableData } from '../utils/hooks';
 import { mapGroupList } from '../utils/mapFunctions';
 import { slugs } from '../utils/routes';
@@ -62,7 +62,7 @@ const GroupsList = () => {
 
   return (
     <TablePageLayout title={pageTitles.groups}>
-      <TabBar tabs={tabs} />
+      <NavigateTabBar tabs={tabs} />
       <TableButtonsRow>
         <TableButtonsInnerRow>
           <DynamicFilter

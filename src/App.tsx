@@ -1,13 +1,20 @@
-import { isEqual } from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
-import { Navigate, Outlet, Route, Routes, useLocation, useSearchParams } from 'react-router-dom';
+import { useQuery } from 'react-query';
+import {
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProvider } from 'styled-components';
 import Cookies from 'universal-cookie';
 import DefaultLayout from './components/layouts/Default';
 import LoginLayout from './components/layouts/Login';
 import FullscreenLoader from './components/other/FullscreenLoader';
+import { CantLogin } from './pages/CantLogin';
 import CreatePassword from './pages/CreatePassword';
 import ForgotPassword from './pages/ForgotPassword';
 import { Login } from './pages/Login';
@@ -17,8 +24,7 @@ import { useAppSelector } from './state/hooks';
 import { GlobalStyle, theme } from './styles';
 import api from './utils/api';
 import { AdminRoleType } from './utils/constants';
-import { handleErrorToastFromServer } from './utils/functions';
-import { useCheckAuthMutation } from './utils/hooks';
+import { useCheckUserInfo } from './utils/hooks';
 import { handleUpdateTokens } from './utils/loginFunctions';
 import { slugs, useFilteredRoutes } from './utils/routes';
 const cookies = new Cookies();
@@ -26,15 +32,17 @@ const cookies = new Cookies();
 function App() {
   const loggedIn = useAppSelector((state) => state.user.loggedIn);
   const location = useLocation();
-  const [initialLoading, setInitialLoading] = useState(true);
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { ticket } = Object.fromEntries([...Array.from(searchParams)]);
+  const token = cookies.get('token');
+  const refreshToken = cookies.get('refreshToken');
 
   const routes = useFilteredRoutes();
 
   const { isLoading: eGateLoading } = useQuery([ticket], () => api.eGatesLogin({ ticket }), {
-    onError: ({ response }: any) => {
-      handleErrorToastFromServer(response);
+    onError: () => {
+      navigate(slugs.cantLogin);
     },
     onSuccess: (data) => {
       if (data) {
@@ -45,41 +53,24 @@ function App() {
     enabled: !!ticket,
   });
 
-  const updateTokensMutation = useMutation(api.refreshToken, {
-    onError: ({ response }: any) => {
-      if (isEqual(response.status, 401)) {
+  const { isLoading: updateTokensLoading } = useQuery(
+    [token, 'refreshToken'],
+    () => api.refreshToken(),
+    {
+      onError: () => {
         cookies.remove('refreshToken', { path: '/' });
-      }
+      },
+      onSuccess: (data) => {
+        handleUpdateTokens(data);
+      },
+      retry: false,
+      enabled: !token && !!refreshToken,
     },
-    onSuccess: (data) => {
-      handleUpdateTokens(data);
-    },
-  });
+  );
 
-  const updateTokensMutationMutateAsyncFunction = updateTokensMutation.mutateAsync;
+  const { isLoading: userInfoLoading } = useCheckUserInfo();
 
-  const shouldUpdateTokens = useCallback(async () => {
-    if (!cookies.get('token') && cookies.get('refreshToken')) {
-      await updateTokensMutationMutateAsyncFunction();
-    }
-  }, [updateTokensMutationMutateAsyncFunction]);
-
-  const { isLoading: checkAuthLoading } = useCheckAuthMutation();
-
-  useEffect(() => {
-    (async () => {
-      await shouldUpdateTokens();
-
-      setInitialLoading(false);
-    })();
-  }, [location.pathname, shouldUpdateTokens]);
-
-  const isLoading = [
-    initialLoading,
-    updateTokensMutation.isLoading,
-    checkAuthLoading,
-    eGateLoading,
-  ].some((loading) => loading);
+  const isLoading = [updateTokensLoading, userInfoLoading, eGateLoading].some((loading) => loading);
 
   return (
     <ThemeProvider theme={theme}>
@@ -87,6 +78,7 @@ function App() {
       {!isLoading ? (
         <Routes>
           <Route element={<PublicRoute loggedIn={loggedIn} />} key="root">
+            <Route path={slugs.cantLogin} element={<CantLogin />} />
             <Route path={slugs.login} element={<Login />} />
             <Route path={slugs.profiles} element={<Profiles />} />
             <Route path={slugs.forgotPassword} element={<ForgotPassword />} />
@@ -96,7 +88,7 @@ function App() {
 
           <Route element={<ProtectedRoute loggedIn={loggedIn} />} key="root">
             {routes.map((route) => (
-              <Route path={route.slug} element={route.component} />
+              <Route key={JSON.stringify(route)} path={route.slug} element={route.component} />
             ))}
           </Route>
 

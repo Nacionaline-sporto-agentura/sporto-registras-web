@@ -57,6 +57,7 @@ export interface ButtonProps {
   color?: string;
   fontWeight?: string;
   radius?: string;
+  borderType?: string;
 }
 
 const Button = ({
@@ -70,11 +71,12 @@ const Button = ({
   buttonPadding,
   rightIcon,
   color,
-  type,
+  type = 'button',
   loading = false,
   className,
   disabled = false,
   fontWeight = '500',
+  borderType = 'solid',
   ...rest
 }: ButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
   return (
@@ -83,10 +85,11 @@ const Button = ({
       padding={padding}
       fontWeight={fontWeight}
       variant={variant}
-      height={height || 40}
+      height={height}
       type={type}
       disabled={disabled}
       $radius={radius}
+      $borderType={borderType}
       {...rest}
     >
       {leftIcon && <IconContainer>{leftIcon}</IconContainer>}
@@ -102,6 +105,7 @@ const StyledButton = styled.button<{
   padding?: string;
   fontWeight?: string;
   $radius?: string;
+  $borderType?: string;
 }>`
   display: flex;
   justify-content: center;
@@ -112,11 +116,14 @@ const StyledButton = styled.button<{
   padding: ${({ padding }) => padding};
   background-color: ${({ variant }) => buttonColors[variant]};
   color: ${({ variant }) => buttonTextColors[variant]};
-  border: 1px solid
-    ${({ variant }) =>
-      variant !== ButtonColors.TRANSPARENT
-        ? buttonBorderColor[variant] || 'transparent'
-        : ' rgb(35, 31, 32)'};
+  border: 1px
+    ${({ variant, $borderType }) =>
+      `${$borderType}
+    ${
+      variant !== ButtonColors.TRANSPARENT ? buttonBorderColor[variant] || 'transparent' : '#4B5565'
+    }
+    
+    `};
   font-weight: ${({ fontWeight }) => fontWeight};
   font-size: 1.6rem;
   :hover {

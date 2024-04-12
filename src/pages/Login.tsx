@@ -10,7 +10,7 @@ import TextField from '../components/fields/TextField';
 import Icon, { IconName } from '../components/other/Icons';
 import { device } from '../styles';
 import api from '../utils/api';
-import { useCheckAuthMutation, useEGatesSign } from '../utils/hooks';
+import { useCheckUserInfo, useEGatesSign } from '../utils/hooks';
 import { handleUpdateTokens } from '../utils/loginFunctions';
 import { slugs } from '../utils/routes';
 import { validationTexts } from '../utils/texts';
@@ -51,11 +51,11 @@ export const Login = () => {
     retry: false,
   });
 
-  const { isLoading: checkAuthLoading } = useCheckAuthMutation();
+  const { isLoading: userInfoLoading } = useCheckUserInfo();
 
   const { mutateAsync: eGatesMutation, isLoading: eGatesSignLoading } = useEGatesSign();
 
-  const loading = [loginMutation.isLoading, checkAuthLoading].some((loading) => loading);
+  const loading = [loginMutation.isLoading, userInfoLoading].some((loading) => loading);
 
   const { values, errors, setFieldValue, handleSubmit, setErrors } = useFormik({
     initialValues: {

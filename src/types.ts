@@ -1,4 +1,12 @@
-import { AdminRoleType, AuthStrategy, TableItemWidth, TenantTypes } from './utils/constants';
+import { Operation } from 'fast-json-patch';
+import {
+  AdminRoleType,
+  AuthStrategy,
+  FieldTypes,
+  StatusTypes,
+  TableItemWidth,
+  TenantTypes,
+} from './utils/constants';
 
 export interface User {
   id?: string;
@@ -13,6 +21,117 @@ export interface User {
   groups?: Group[];
   authStrategy?: AuthStrategy;
   permissions?: { [key: string]: { accesses: string[]; features: string[] } };
+}
+
+export interface SportsBasesLevel {
+  id: any;
+  name: string;
+}
+
+export interface SportsBasesType {
+  id: any;
+  name: string;
+}
+
+export interface SportsBasesCondition {
+  id: any;
+  name: string;
+}
+
+export interface Source {
+  id: number;
+  name: string;
+}
+
+export type FileProps = {
+  url: string;
+  name: string;
+  size: number;
+};
+
+export type Photo = {
+  id?: any;
+  url: string;
+  description: string;
+  representative: boolean;
+  public: boolean;
+};
+
+export interface SportsBasesBuildingType {
+  id: any;
+  name: string;
+}
+
+export interface SportBaseSpaceSportType {
+  id: any;
+  name: string;
+}
+
+export interface SportBaseSpace {
+  id?: number;
+  name: string;
+  type?: SportsBasesType;
+  sportTypes?: SportBaseSpaceSportType[];
+  sportBase?: SportBase;
+  buildingType?: SportsBasesBuildingType;
+  technicalCondition?: SportsBasesCondition;
+  buildingNumber?: string;
+  buildingPurpose?: string;
+  buildingArea?: number;
+  energyClass?: number;
+  constructionDate?: string;
+  latestRenovationDate?: string;
+  photos: Photo[];
+  additionalValues: { [key: string]: any };
+  energyClassCertificate?: {
+    url: string;
+    name: string;
+    size: number;
+  };
+}
+
+export interface SportBase {
+  id?: number;
+  name: string;
+  canCreateRequest: boolean;
+  type?: SportsBasesType;
+  level?: SportsBasesLevel;
+  technicalCondition?: SportsBasesCondition;
+  address: string;
+  coordinates: { x: string; y: string };
+  webPage: string;
+  photos: Photo[];
+  plotNumber: string;
+  disabledAccessible: boolean;
+  blindAccessible: boolean;
+  plotArea?: number;
+  builtPlotArea?: number;
+  audienceSeats?: number;
+  parkingPlaces?: number;
+  dressingRooms?: number;
+  methodicalClasses?: number;
+  saunas?: number;
+  diningPlaces?: number;
+  accommodationPlaces?: number;
+  publicWifi: boolean;
+  lastRequest: Request;
+  spaces: SportBaseSpace[];
+  owners: { name: string; code: string; website: string }[];
+  organizations: {
+    name: string;
+    startAt: string;
+    endAt: string;
+  }[];
+  investments: {
+    source: any;
+    fundsAmount: string;
+    appointedAt: string;
+  }[];
+  plans: Array<{
+    url: string;
+    name?: string;
+    size?: number;
+  }>;
 }
 
 export type ProfileId = 'freelancer' | string;
@@ -129,4 +248,29 @@ export interface Tenant {
   phone?: string;
   tenantType: TenantTypes;
   children?: Tenant[];
+}
+
+export interface Field {
+  id: number;
+  title: string;
+  precision?: number;
+  scale?: number;
+  options: any[];
+  type: FieldTypes;
+}
+
+export interface TypesAndFields {
+  id: number;
+  type: SportsBasesType;
+  field: Field;
+}
+
+export interface Request {
+  id: number;
+  canValidate: boolean;
+  canEdit: boolean;
+  status: StatusTypes;
+  field: Field;
+  changes: Operation[];
+  entity: any;
 }

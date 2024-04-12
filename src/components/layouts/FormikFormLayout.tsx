@@ -23,7 +23,6 @@ interface FormPageWrapperProps {
   title?: string;
   validationSchema: any;
   back?: boolean;
-  canSubmit?: boolean;
   enableReinitialize?: boolean;
   handleEdit?: () => void;
   disabled?: boolean;
@@ -33,7 +32,7 @@ interface FormPageWrapperProps {
   showFormError?: boolean;
 }
 
-const FormPageWrapper = ({
+const FormikFormLayout = ({
   renderForm,
   title = '',
   initialValues,
@@ -42,7 +41,6 @@ const FormPageWrapper = ({
   validationSchema,
   back = true,
   deleteInfo,
-  canSubmit = true,
   enableReinitialize = true,
   twoColumn = false,
   disabled,
@@ -72,6 +70,7 @@ const FormPageWrapper = ({
     }
   };
 
+  //TODO: refactor
   return (
     <Container>
       <Formik
@@ -98,18 +97,11 @@ const FormPageWrapper = ({
               {showFormError && !isEmpty(errors) ? (
                 <ErrorMessage>{errors.form || 'Užpildykite formą teisingai'}</ErrorMessage>
               ) : null}
-              {!disabled && canSubmit && (
+              {!disabled && (
                 <ButtonRow>
-                  {onSubmit && (
-                    <Button
-                      onClick={handleSubmit}
-                      type="button"
-                      loading={loading}
-                      disabled={loading}
-                    >
-                      {submitButtonText}
-                    </Button>
-                  )}
+                  <Button onClick={handleSubmit} loading={loading} disabled={loading}>
+                    {submitButtonText}
+                  </Button>
                 </ButtonRow>
               )}
             </StyledForm>
@@ -172,4 +164,4 @@ const ErrorMessage = styled.div`
   align-items: center;
 `;
 
-export default FormPageWrapper;
+export default FormikFormLayout;

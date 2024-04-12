@@ -14,14 +14,21 @@ export interface TableLayoutProps {
   pageName?: string;
   loading?: boolean;
   children: ChildrenType;
+  hidePagination?: boolean;
 }
 
-const TableLayout = ({ data, pageName = 'page', loading, children }: TableLayoutProps) => {
+const TableLayout = ({
+  data,
+  pageName = 'page',
+  loading,
+  children,
+  hidePagination,
+}: TableLayoutProps) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const params = Object.fromEntries([...Array.from(searchParams)]);
   const totalPages = data?.totalPages || 0;
-  const showPagination = !isEmpty(data?.data);
+  const showPagination = !hidePagination || !isEmpty(data?.data);
   const isMobile = useWindowSize(device.mobileL);
   const pageRange = isMobile ? 1 : 3;
   const pageMargin = isMobile ? 1 : 3;

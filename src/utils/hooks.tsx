@@ -1,9 +1,9 @@
-import { isEqual } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { matchPath, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import { Tab } from '../components/other/TabBar';
+import { Tab } from '../components/Tabs/TabBar';
+
 import { useAppDispatch, useAppSelector } from '../state/hooks';
 import { actions as userAction } from '../state/user/reducer';
 import { TableData, TableDataProp, User } from '../types';
@@ -24,6 +24,7 @@ export const useLogoutMutation = () => {
     },
     onSuccess: () => {
       clearCookies();
+      cookies.remove('refreshToken', { path: '/' });
       dispatch(userAction.setUser(emptyUser));
     },
   });
@@ -50,7 +51,7 @@ export const useWindowSize = (width: string) => {
 
   return isInRange;
 };
-export const useCheckAuthMutation = () => {
+export const useCheckUserInfo = () => {
   const dispatch = useAppDispatch();
   const token = cookies.get('token');
 
@@ -62,12 +63,8 @@ export const useCheckAuthMutation = () => {
 
   const { isLoading } = useQuery([token], () => api.getUserInfo(), {
     onError: ({ response }: any) => {
-      if (isEqual(response.status, 401)) {
-        clearCookies();
-        dispatch(userAction.setUser(emptyUser));
-
-        return;
-      }
+      clearCookies();
+      dispatch(userAction.setUser(emptyUser));
 
       return handleErrorToastFromServer(response);
     },
@@ -168,7 +165,9 @@ export const useGenericTablePageHooks = () => {
 export const useGetCurrentRoute = (tabs: Tab[]) => {
   const currentLocation = useLocation();
 
-  return tabs.find((tab) => matchPath({ path: tab.slug, end: false }, currentLocation.pathname));
+  return tabs.find((tab) =>
+    matchPath({ path: tab.slug || '', end: false }, currentLocation.pathname),
+  );
 };
 
 export const useGetCurrentProfile = () => {
@@ -183,4 +182,3 @@ export const useIsTenantAdmin = () => {
 
   return currentProfile?.role === AdminRoleType.ADMIN;
 };
-

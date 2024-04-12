@@ -71,7 +71,7 @@ const OrganizationPage = () => {
       </ViewRow>
       <SimpleContainer>
         <StyledTabBar tabs={tabs} />
-        {currentTab && containers[currentTab?.slug]}
+        {currentTab && containers[currentTab?.slug as any]}
       </SimpleContainer>
     </ViewContainer>
   );

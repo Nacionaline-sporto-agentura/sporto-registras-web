@@ -12,6 +12,8 @@ import OrganizationForm from '../pages/OrganizationForm';
 import OrganizationList from '../pages/OrganizationList';
 import OrganizationUser from '../pages/OrganizationUser';
 import Profile from '../pages/Profile';
+import SportBase from '../pages/SportBase';
+import SportBaseList from '../pages/SportBaseList';
 import UpdateInstitutionForm from '../pages/UpdateInstitutionForm';
 import UpdateOrganizationForm from '../pages/UpdateOrganizationForm';
 import UserFormPage from '../pages/UserForm';
@@ -21,6 +23,7 @@ import { AdminRoleType, Apps } from './constants';
 import { pageTitles } from './texts';
 
 export const slugs = {
+  cantLogin: '/negalima_jungtis',
   login: '/login',
   forgotPassword: '/pamirsau',
   resetPassword: '/atstatyti',
@@ -53,6 +56,10 @@ export const slugs = {
   newOrganizationUser: (tenantId: string) => `/organizacijos/${tenantId}/nariai/naujas`,
   organizationUser: (tenantId: string, id: string) => `/organizacijos/${tenantId}/nariai/${id}`,
   user: (id: string) => `/naudotojai/${id}`,
+  sportBases: '/sporto-infrastruktura',
+  unConfirmedSportBases: '/nepatvirtinta-sporto-infrastruktura',
+  newSportBase: '/sporto-bazes/naujas',
+  sportBase: (id: string) => `/sporto-bazes/${id}`,
 };
 
 export const routes = [
@@ -162,7 +169,20 @@ export const routes = [
     slug: slugs.profile,
     component: <Profile />,
   },
-
+  {
+    slug: slugs.sportBase(':id'),
+    component: <SportBase />,
+  },
+  {
+    name: pageTitles.sportBases,
+    sidebar: true,
+    slug: slugs.sportBases,
+    component: <SportBaseList />,
+  },
+  {
+    slug: slugs.unConfirmedSportBases,
+    component: <SportBaseList />,
+  },
   {
     role: AdminRoleType.USER,
     slug: slugs.user(':id'),
@@ -184,7 +204,6 @@ export const useFilteredRoutes = () => {
 
   return routes.filter((route) => {
     let select = true;
-
     if (route.role) {
       select = !!user?.type && user?.type === route?.role;
     }

@@ -3,7 +3,7 @@ import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useAppSelector } from '../../state/hooks';
-import { Column, FormRow } from '../../styles/CommonStyles';
+import { FormRow, TitleColumn } from '../../styles/CommonStyles';
 import { DeleteInfoProps, ReactQueryError, User } from '../../types';
 import api from '../../utils/api';
 import { AdminRoleType, UserRoleType } from '../../utils/constants';
@@ -28,7 +28,7 @@ import {
 import CheckBox from '../fields/CheckBox';
 import SelectField from '../fields/SelectField';
 import TextField from '../fields/TextField';
-import FormPageWrapper from '../layouts/FormLayout';
+import FormikFormLayout from '../layouts/FormikFormLayout';
 import FullscreenLoader from '../other/FullscreenLoader';
 import SimpleContainer from '../other/SimpleContainer';
 
@@ -208,7 +208,7 @@ const UserForm = ({
     const showPersonalCodeField = !disabled && !values.userWithPassword;
 
     return (
-      <Column>
+      <TitleColumn>
         <SimpleContainer title={formLabels.userInfo}>
           <FormRow columns={2}>
             <TextField
@@ -279,7 +279,7 @@ const UserForm = ({
             </FormRow>
           )}
         </SimpleContainer>
-      </Column>
+      </TitleColumn>
     );
   };
 
@@ -288,7 +288,7 @@ const UserForm = ({
   }
 
   return (
-    <FormPageWrapper
+    <FormikFormLayout
       title={title}
       disabled={!canSubmit}
       initialValues={initialValues}

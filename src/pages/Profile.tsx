@@ -2,11 +2,11 @@ import { useMutation } from 'react-query';
 import * as Yup from 'yup';
 import PasswordField from '../components/fields/PasswordField';
 import TextField from '../components/fields/TextField';
-import FormPageWrapper from '../components/layouts/FormLayout';
+import FormikFormLayout from '../components/layouts/FormikFormLayout';
 import PasswordCheckListContainer from '../components/other/PasswordCheckListContainer';
 import SimpleContainer from '../components/other/SimpleContainer';
 import { useAppSelector } from '../state/hooks';
-import { Column, FormColumn, FormRow } from '../styles/CommonStyles';
+import { FormColumn, FormRow, TitleColumn } from '../styles/CommonStyles';
 import { ReactQueryError } from '../types';
 import Api from '../utils/api';
 import { AuthStrategy } from '../utils/constants';
@@ -133,7 +133,7 @@ const Profile = () => {
 
   const renderProfileForm = (values: UserProps, errors: any, handleChange) => {
     return (
-      <Column>
+      <TitleColumn>
         <SimpleContainer title={formLabels.profileInfo}>
           <FormRow columns={2}>
             <TextField
@@ -209,12 +209,12 @@ const Profile = () => {
             </FormRow>
           </SimpleContainer>
         )}
-      </Column>
+      </TitleColumn>
     );
   };
 
   return (
-    <FormPageWrapper
+    <FormikFormLayout
       back={false}
       title={pageTitles.updateProfile}
       initialValues={initialProfileValues}

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import styled from "styled-components";
+import { useState } from 'react';
+import styled from 'styled-components';
 export interface TextFieldProps {
   value?: string | number;
   name?: string;
@@ -14,11 +14,13 @@ export interface TextFieldProps {
   placeholder?: string;
   type?: string;
   selectedValue?: boolean;
+  inputMode?: any;
   onBlur?: () => void;
+  onFocus?: any;
 }
 
 const TextFieldInput = ({
-  value,
+  value = '',
   name,
   error,
   readOnly = false,
@@ -27,11 +29,14 @@ const TextFieldInput = ({
   rightIcon,
   onChange,
   placeholder,
-  type = "text",
+  type = 'text',
+  inputMode = 'text',
   disabled,
   height,
   selectedValue = false,
   onInputClick,
+  onFocus = () => {},
+
   ...rest
 }: TextFieldProps) => {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -51,7 +56,7 @@ const TextFieldInput = ({
     setDelayHandler(
       setTimeout(() => {
         setShowTooltip(false);
-      }, 500)
+      }, 500),
     );
 
     clearTimeout(delayHandler);
@@ -67,6 +72,7 @@ const TextFieldInput = ({
       >
         {leftIcon}
         <TextInput
+          inputMode={inputMode}
           selectedValue={selectedValue}
           onClick={() => (onInputClick ? onInputClick() : null)}
           readOnly={readOnly}
@@ -74,9 +80,10 @@ const TextFieldInput = ({
           name={name}
           autoComplete="off"
           value={value}
-          onChange={(e) => onChange && onChange(e?.target?.value || "")}
+          onChange={(e) => onChange && onChange(e?.target?.value || '')}
           placeholder={placeholder}
           disabled={disabled}
+          onFocus={onFocus}
           {...rest}
         />
         {rightIcon}
@@ -99,7 +106,7 @@ export const TooltipBox = styled.div`
   word-break: break-all;
   opacity: 1 !important;
   &:before {
-    content: "";
+    content: '';
     z-index: 38;
     width: 0;
     height: 0;
@@ -135,10 +142,9 @@ const InputContainer = styled.div<{
   align-items: center;
   border-radius: 4px;
   overflow: hidden;
-  border: 1px solid
-    ${({ theme, error }) => (error ? theme.colors.error : theme.colors.border)};
+  border: 1px solid ${({ theme, error }) => (error ? theme.colors.error : theme.colors.border)};
 
-  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "text")};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'text')};
   :focus-within {
     border-color: ${({ theme }) => theme.colors.primary};
     box-shadow: 0 0 0 4px ${({ theme }) => `${theme.colors.primary}33`};
@@ -153,7 +159,7 @@ const TextInput = styled.input<{ readOnly: boolean; selectedValue: boolean }>`
   width: 100%;
   height: 100%;
 
-  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "text")};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'text')};
 
   background-color: white;
   font-size: 1.6rem;
@@ -163,7 +169,7 @@ const TextInput = styled.input<{ readOnly: boolean; selectedValue: boolean }>`
     outline: none;
   }
 
-  [type="number"] {
+  [type='number'] {
     -moz-appearance: textfield;
   }
   ::-webkit-inner-spin-button,
@@ -172,20 +178,16 @@ const TextInput = styled.input<{ readOnly: boolean; selectedValue: boolean }>`
     margin: 0;
   }
   ::-webkit-input-placeholder {
-    color: ${({ theme, selectedValue }) =>
-      theme.colors.label + `${!selectedValue ? "8F" : ""}`};
+    color: ${({ theme, selectedValue }) => theme.colors.label + `${!selectedValue ? '8F' : ''}`};
   }
   ::-moz-placeholder {
-    color: ${({ theme, selectedValue }) =>
-      theme.colors.label + `${!selectedValue ? "8F" : ""}`};
+    color: ${({ theme, selectedValue }) => theme.colors.label + `${!selectedValue ? '8F' : ''}`};
   }
   ::-ms-placeholder {
-    color: ${({ theme, selectedValue }) =>
-      theme.colors.label + `${!selectedValue ? "8F" : ""}`};
+    color: ${({ theme, selectedValue }) => theme.colors.label + `${!selectedValue ? '8F' : ''}`};
   }
   ::placeholder {
-    color: ${({ theme, selectedValue }) =>
-      theme.colors.label + `${!selectedValue ? "8F" : ""}`};
+    color: ${({ theme, selectedValue }) => theme.colors.label + `${!selectedValue ? '8F' : ''}`};
   }
 `;
 

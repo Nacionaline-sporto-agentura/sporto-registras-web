@@ -182,7 +182,7 @@ const ProfileContainer = styled.div<{ selected: boolean }>`
   display: flex;
   justify-content: space-between;
   :hover {
-    background-color: #f8fafc;
+    background-color: ${({ theme }) => theme.colors.background};
     cursor: pointer;
   }
 `;
@@ -194,7 +194,7 @@ const Tab = styled.div`
   display: flex;
   align-items: center;
   :hover {
-    background-color: #f8fafc;
+    background-color: ${({ theme }) => theme.colors.background};
     cursor: pointer;
   }
 `;
