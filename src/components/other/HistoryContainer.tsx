@@ -27,7 +27,6 @@ export interface Diff {
 
 const getLabel = (diff: Diff, titles) => {
   let arr = diff.path.split('/').slice(1);
-
   if (diff.op == ActionTypes.REMOVE) {
     arr = arr.slice(0, -1);
   }

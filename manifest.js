@@ -2,7 +2,7 @@ export const manifestForPlugIn = {
   registerType: 'prompt',
   includeAssests: ['favicon.ico', 'apple-touc-icon.png', 'masked-icon.svg'],
   workbox: {
-    navigateFallbackDenylist: [/^\/api\/.*/],
+    navigateFallbackDenylist: [/^\/(api|auth)\/.*/],
   },
   manifest: {
     name: 'Sporto Registras',
