@@ -23,6 +23,7 @@ import { AdminRoleType, Apps } from './constants';
 import { pageTitles } from './texts';
 
 export const slugs = {
+  cantLogin: '/negalima_jungtis',
   login: '/login',
   forgotPassword: '/pamirsau',
   resetPassword: '/atstatyti',

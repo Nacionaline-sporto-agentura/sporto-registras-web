@@ -24,6 +24,7 @@ export const useLogoutMutation = () => {
     },
     onSuccess: () => {
       clearCookies();
+      cookies.remove('refreshToken', { path: '/' });
       dispatch(userAction.setUser(emptyUser));
     },
   });
@@ -50,7 +51,7 @@ export const useWindowSize = (width: string) => {
 
   return isInRange;
 };
-export const useCheckAuthMutation = () => {
+export const useCheckUserInfo = () => {
   const dispatch = useAppDispatch();
   const token = cookies.get('token');
 

@@ -1,7 +1,7 @@
-export enum ServerErrorMessages {
-  USER_NOT_FOUND = `Email not found.`,
-  WRONG_PASSWORD = 'Wrong password.',
-  USER_EXIST = 'User already exists.',
+export enum ServerErrorTypes {
+  EMAIL_NOT_FOUND = `EMAIL_NOT_FOUND`,
+  WRONG_PASSWORD = 'WRONG_PASSWORD',
+  USER_EXISTS = 'USER_EXISTS',
   NOT_FOUND = 'NOT_FOUND',
 }
 

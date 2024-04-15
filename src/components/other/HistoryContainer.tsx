@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { get, isEmpty } from 'lodash';
 import { useState } from 'react';
 import { useQuery } from 'react-query';
@@ -7,6 +8,8 @@ import api from '../../utils/api';
 import { descriptions, inputLabels } from '../../utils/texts';
 import { sportBaseSpaceTabTitles } from '../containers/SportBaseSpace';
 import Icon, { IconName } from './Icons';
+
+const dateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
 
 export enum ActionTypes {
   REPLACE = 'replace',
@@ -54,7 +57,17 @@ const getLabel = (diff: Diff, titles) => {
     Object.keys(obj).every((key) => !isNaN(parseFloat(key)) && isFinite(key as any));
 
   const extractValue = (obj, labelField = '') => {
-    return get(obj, labelField) || JSON.stringify(obj);
+    if (labelField) return get(obj, labelField);
+
+    if (dateTimeRegex.test(obj) && new Date(obj).toString() !== 'Invalid Date') {
+      return format(new Date(obj), 'yyyy-MM-dd');
+    }
+
+    if (typeof obj === 'object') {
+      return JSON.stringify(obj);
+    }
+
+    return obj;
   };
 
   const extractValues = (obj = {}, labelField) => {
@@ -160,7 +173,7 @@ const HistoryContainer = ({
       name: sportBaseTabTitles.owners,
       children: {
         name: { name: inputLabels.jarName },
-        code: { name: inputLabels.code },
+        companyCode: { name: inputLabels.code },
         website: { name: inputLabels.website },
       },
     },

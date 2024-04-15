@@ -20,7 +20,7 @@ export interface TextFieldProps {
 }
 
 const TextFieldInput = ({
-  value,
+  value = '',
   name,
   error,
   readOnly = false,

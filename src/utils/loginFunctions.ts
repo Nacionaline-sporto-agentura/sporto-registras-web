@@ -37,7 +37,6 @@ export const handleSetProfile = (profiles?: Profile[]) => {
 
 export const clearCookies = () => {
   cookies.remove('token', { path: '/' });
-  cookies.remove('refreshToken', { path: '/' });
   cookies.remove('profileId', { path: '/' });
 };
 

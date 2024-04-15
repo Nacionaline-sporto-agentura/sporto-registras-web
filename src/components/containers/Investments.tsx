@@ -1,101 +1,171 @@
+import { format } from 'date-fns';
+import { Form, Formik } from 'formik';
 import { omit } from 'lodash';
+import { useState } from 'react';
 import styled from 'styled-components';
-import { FormRow } from '../../styles/CommonStyles';
-import { Source } from '../../types';
+import * as Yup from 'yup';
+import { sportBaseTabTitles } from '../../pages/SportBase';
+import { FormRow, TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
+import { Source, SportBase } from '../../types';
 import { getSourcesList } from '../../utils/functions';
-import { buttonsTitles, formLabels, inputLabels } from '../../utils/texts';
+import { buttonsTitles, formLabels, inputLabels, validationTexts } from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
 import AsyncSelectField from '../fields/AsyncSelectField';
 import DateField from '../fields/DateField';
 import NumericTextField from '../fields/NumericTextField';
-import { FormItem } from '../other/FormItem';
-import SimpleContainer from '../other/SimpleContainer';
+import Popup from '../layouts/Popup';
+import MainTable from '../tables/MainTable';
 
-const InvestmentsContainer = ({
-  investments,
-  errors,
-  handleChange,
-  counter,
-  setCounter,
-  disabled,
-}) => {
+const investmentsSchema = Yup.object().shape({
+  source: Yup.object().required(validationTexts.requireText),
+  fundsAmount: Yup.string().required(validationTexts.requireText),
+  appointedAt: Yup.date().required(validationTexts.requireText),
+});
+
+const investmentsLabels = {
+  source: { label: inputLabels.source, show: true },
+  fundsAmount: { label: inputLabels.fundsAmount, show: true },
+  appointedAt: { label: inputLabels.appointedAt, show: true },
+};
+
+const InvestmentsContainer = ({ investments, handleChange, counter, setCounter, disabled }) => {
   const investmentKeys = Object.keys(investments);
 
+  const [current, setCurrent] = useState<SportBase['investments'] | {}>();
+
+  const onSubmit = async (values: any) => {
+    if (typeof values?.index !== 'undefined') {
+      const { index, ...rest } = values;
+
+      const updatedOrganizations = { ...investments, [index]: rest };
+
+      handleChange('investments', updatedOrganizations);
+    } else {
+      handleChange('investments', { [counter]: values, ...investments });
+      setCounter(setCounter + 1);
+    }
+
+    setCurrent(undefined);
+  };
+
+  const initialValues: any = current || {};
+
   return (
-    <SimpleContainer title={formLabels.investments}>
-      <FormRow columns={1}>
-        {investmentKeys.map((key) => {
-          const item = investments[key];
-          return (
-            <FormItem
-              {...((!disabled || investmentKeys.length > 1) && {
-                onDelete: () => handleChange('investments', omit(investments, key)),
-              })}
-            >
-              <FormRow>
-                <AsyncSelectField
-                  disabled={disabled}
-                  label={inputLabels.source}
-                  value={item?.source}
-                  error={errors?.source}
-                  name="source"
-                  onChange={(source: Source) => {
-                    handleChange(`investments.${key}.source`, source);
-                  }}
-                  getOptionLabel={(option) => option?.name}
-                  loadOptions={(input, page) => getSourcesList(input, page)}
-                />
-                <NumericTextField
-                  disabled={disabled}
-                  label={inputLabels.fundsAmount}
-                  value={item?.fundsAmount}
-                  error={errors?.fundsAmount}
-                  name={`investments.${key}.fundsAmount`}
-                  onChange={(e: string) => {
-                    handleChange(`investments.${key}.fundsAmount`, e);
-                  }}
-                />
-                <DateField
-                  disabled={disabled}
-                  label={inputLabels.appointedAt}
-                  value={item?.appointedAt}
-                  error={errors?.appointedAt}
-                  onChange={(appointedAt) =>
-                    handleChange(`investments.${key}.appointedAt`, appointedAt)
-                  }
-                />
-              </FormRow>
-            </FormItem>
-          );
-        })}
-        <StyledButton
-          disabled={disabled}
-          error={!!errors}
-          onClick={() => {
-            handleChange('investments', {
-              [counter]: {
-                source: undefined,
-                fundsAmount: '',
-                appointedAt: '',
-              },
-              ...investments,
-            });
-            setCounter(counter + 1);
-          }}
-          variant={ButtonColors.TRANSPARENT}
-          borderType={'dashed'}
+    <>
+      <TableButtonsRow>
+        <TableButtonsInnerRow>
+          <Title>{sportBaseTabTitles.investments}</Title>
+        </TableButtonsInnerRow>
+        {!disabled && (
+          <Button disabled={disabled} onClick={() => setCurrent({})}>
+            {buttonsTitles.addOrganization}
+          </Button>
+        )}
+      </TableButtonsRow>
+      <MainTable
+        notFoundInfo={{ text: 'Nėra sukurtų investicijų' }}
+        isFilterApplied={false}
+        data={{
+          data: investmentKeys.map((key) => ({
+            ...investments[key],
+            source: investments?.[key]?.source?.name,
+            appointedAt: format(new Date(investments?.[key]?.appointedAt), 'yyyy-MM-dd'),
+            id: key,
+          })),
+        }}
+        hidePagination={true}
+        columns={investmentsLabels}
+        onClick={(id) => {
+          setCurrent({ ...investments[id], index: id });
+        }}
+      />
+
+      <Popup
+        title={formLabels.sportOrganizations}
+        visible={!!current}
+        onClose={() => setCurrent(undefined)}
+      >
+        <Formik
+          validateOnChange={false}
+          enableReinitialize={false}
+          initialValues={initialValues}
+          onSubmit={onSubmit}
+          validationSchema={investmentsSchema}
         >
-          {buttonsTitles.addInvestment}
-        </StyledButton>
-      </FormRow>
-    </SimpleContainer>
+          {({ values, errors, setFieldValue }) => {
+            return (
+              <Form>
+                <FormRow columns={1}>
+                  <AsyncSelectField
+                    disabled={disabled}
+                    label={inputLabels.source}
+                    value={values?.source}
+                    error={errors?.source}
+                    name="source"
+                    onChange={(source: Source) => {
+                      setFieldValue(`source`, source);
+                    }}
+                    getOptionLabel={(option) => option?.name}
+                    loadOptions={(input, page) => getSourcesList(input, page)}
+                  />
+                  <NumericTextField
+                    disabled={disabled}
+                    label={inputLabels.fundsAmount}
+                    value={values?.fundsAmount}
+                    error={errors?.fundsAmount}
+                    onChange={(e: string) => {
+                      setFieldValue(`fundsAmount`, e);
+                    }}
+                  />
+                  <DateField
+                    disabled={disabled}
+                    label={inputLabels.appointedAt}
+                    value={values?.appointedAt}
+                    error={errors?.appointedAt}
+                    onChange={(appointedAt) => setFieldValue(`appointedAt`, appointedAt)}
+                  />
+                  {!disabled && (
+                    <ButtonRow>
+                      {values.index && (
+                        <Button
+                          disabled={disabled}
+                          variant={ButtonColors.DANGER}
+                          onClick={() => {
+                            handleChange('investments', omit(investments, values.index));
+                            setCurrent(undefined);
+                          }}
+                        >
+                          {buttonsTitles.delete}
+                        </Button>
+                      )}
+                      <Button disabled={disabled} type="submit">
+                        {buttonsTitles.save}
+                      </Button>
+                    </ButtonRow>
+                  )}
+                </FormRow>
+              </Form>
+            );
+          }}
+        </Formik>
+      </Popup>
+    </>
   );
 };
 
-const StyledButton = styled(Button)<{
-  error: boolean;
-}>`
-  border-color: ${({ error }) => (error ? 'red' : '#CDD5DF')};
+const ButtonRow = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 16px 0;
+`;
+
+const Title = styled.div`
+  font-size: 2rem;
+  line-height: 25px;
+  font-weight: bold;
+  color: #231f20;
+  margin-right: 16px;
 `;
 
 export default InvestmentsContainer;

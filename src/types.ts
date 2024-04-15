@@ -114,9 +114,9 @@ export interface SportBase {
   diningPlaces?: number;
   accommodationPlaces?: number;
   publicWifi: boolean;
-  lastRequest?: Request;
+  lastRequest: Request;
   spaces: SportBaseSpace[];
-  owners: { name: string; code: string; website: string }[];
+  owners: { name: string; companyCode: string; website: string }[];
   organizations: {
     name: string;
     startAt: string;

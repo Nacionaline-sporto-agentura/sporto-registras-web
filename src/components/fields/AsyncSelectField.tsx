@@ -10,7 +10,7 @@ export interface AsyncSelectFieldProps {
   name?: string;
   label?: string;
   value?: any;
-  error?: string;
+  error?: any;
   showError?: boolean;
   editable?: boolean;
   left?: JSX.Element;

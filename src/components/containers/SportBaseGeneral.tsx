@@ -13,6 +13,7 @@ import {
 } from '../../utils/functions';
 import { formLabels, inputLabels } from '../../utils/texts';
 import AsyncSelectField from '../fields/AsyncSelectField';
+import NumericTextField from '../fields/NumericTextField';
 import PhotoUploadField from '../fields/PhotoUploadField';
 import TextField from '../fields/TextField';
 import UrlField from '../fields/UrlField';
@@ -108,7 +109,8 @@ const SportBaseGeneralContainer = ({
           />
         </FormRow>
         <FormRow columns={2}>
-          <TextField
+          <NumericTextField
+            digitsAfterComma={12}
             disabled={disabled}
             label={inputLabels.coordinateX}
             value={sportBase?.coordinates?.x || ''}
@@ -118,7 +120,8 @@ const SportBaseGeneralContainer = ({
               handleChange(`coordinates.x`, coordinateX);
             }}
           />
-          <TextField
+          <NumericTextField
+            digitsAfterComma={12}
             disabled={disabled}
             label={inputLabels.coordinateY}
             value={sportBase?.coordinates?.y || ''}

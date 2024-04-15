@@ -1,4 +1,4 @@
-import { AdminRoleType, ServerErrorMessages, StatusTypes, TenantTypes } from './constants';
+import { AdminRoleType, ServerErrorTypes, StatusTypes, TenantTypes } from './constants';
 
 export const validationTexts = {
   badFileTypes: 'Blogi failų tipai',
@@ -16,16 +16,16 @@ export const validationTexts = {
   error: 'Ivyko klaida, prašome pabandyti vėliau',
   badEmailFormat: 'Blogas el. pašto formatas',
   tooFrequentRequest: 'Nepavyko, per dažna užklausa prašome pabandyti veliau ',
-  [ServerErrorMessages.WRONG_PASSWORD]: 'Blogas elektroninis paštas arba slaptažodis',
-  [ServerErrorMessages.USER_NOT_FOUND]: 'Naudotojo su tokiu el. paštu nėra',
-
-  [ServerErrorMessages.NOT_FOUND]: 'Blogas elektroninis paštas arba slaptažodis',
-  [ServerErrorMessages.USER_NOT_FOUND]: 'Sistemoje nėra tokio elektroninio pašto',
+  [ServerErrorTypes.WRONG_PASSWORD]: 'Blogas elektroninis paštas arba slaptažodis',
+  [ServerErrorTypes.EMAIL_NOT_FOUND]: 'Naudotojo su tokiu el. paštu nėra',
+  [ServerErrorTypes.NOT_FOUND]: 'Blogas elektroninis paštas arba slaptažodis',
+  [ServerErrorTypes.EMAIL_NOT_FOUND]: 'Sistemoje nėra tokio elektroninio pašto',
   personalCode: 'Blogas asmens kodas',
   companyCode: 'Blogas įmonės kodas',
 };
 
 export const descriptions = {
+  cantLogin: 'Norint prisijungti turi būti suteikta prieiga',
   tableNotFound: 'Atsiprašome nieko neradome pagal pasirinktus filtrus',
   deleteUsersWithGroup: 'Ką reikėtų daryti su šiai grupei priskirtais naudotojais?',
   disabledAccessible: 'Sporto bazė pritaikyta žmonėms su judėjimo negalia',
@@ -36,6 +36,7 @@ export const descriptions = {
 };
 
 export const formLabels = {
+  inActiveProfile: 'Anketa neaktyvi',
   groupInfo: 'Informacija apie grupę',
   userInfo: 'Informacija apie naudotoją',
   selectProfile: 'Pasirinkite paskyrą',

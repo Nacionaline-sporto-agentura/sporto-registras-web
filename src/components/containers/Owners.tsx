@@ -1,88 +1,154 @@
+import { Form, Formik } from 'formik';
 import { omit } from 'lodash';
+import { useState } from 'react';
 import styled from 'styled-components';
-import { FormRow } from '../../styles/CommonStyles';
-import { Source } from '../../types';
-import { buttonsTitles, formLabels, inputLabels } from '../../utils/texts';
+import * as Yup from 'yup';
+import { sportBaseTabTitles } from '../../pages/SportBase';
+import { FormRow, TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
+import { Source, SportBase } from '../../types';
+import { buttonsTitles, formLabels, inputLabels, validationTexts } from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
 import TextField from '../fields/TextField';
 import UrlField from '../fields/UrlField';
-import { FormItem } from '../other/FormItem';
-import SimpleContainer from '../other/SimpleContainer';
+import Popup from '../layouts/Popup';
+import MainTable from '../tables/MainTable';
 
-const OwnersContainer = ({ owners, errors, handleChange, counter, setCounter, disabled }) => {
+const ownersSchema = Yup.object().shape({
+  name: Yup.string().required(validationTexts.requireText),
+  companyCode: Yup.string().required(validationTexts.requireText),
+  website: Yup.string().required(validationTexts.requireText),
+});
+
+const ownersLabels = {
+  name: { label: inputLabels.jarName, show: true },
+  companyCode: { label: inputLabels.code, show: true },
+  website: { label: inputLabels.website, show: true },
+};
+
+const OwnersContainer = ({ owners, handleChange, counter, setCounter, disabled }) => {
   const ownerKeys = Object.keys(owners);
 
+  const [current, setCurrent] = useState<SportBase['owners'] | {}>();
+
+  const onSubmit = async (values: any) => {
+    if (typeof values?.index !== 'undefined') {
+      const { index, ...rest } = values;
+
+      const updatedOwners = { ...owners, [index]: rest };
+
+      handleChange('owners', updatedOwners);
+    } else {
+      handleChange('owners', { [counter]: values, ...owners });
+      setCounter(setCounter + 1);
+    }
+
+    setCurrent(undefined);
+  };
+
+  const initialValues: any = current || {};
+
   return (
-    <SimpleContainer title={formLabels.infoAboutOwner}>
-      <FormRow columns={1}>
-        {ownerKeys.map((key) => {
-          const item = owners[key];
-          return (
-            <FormItem
-              {...((!disabled || ownerKeys.length > 1) && {
-                onDelete: () => handleChange('owners', omit(owners, key)),
-              })}
-            >
-              <FormRow>
-                <TextField
-                  disabled={disabled}
-                  label={inputLabels.jarName}
-                  value={item?.name}
-                  error={errors?.name}
-                  name="name"
-                  onChange={(source: Source) => {
-                    handleChange(`owners.${key}.name`, source);
-                  }}
-                />
-                <TextField
-                  disabled={disabled}
-                  label={inputLabels.code}
-                  value={item?.code}
-                  error={errors?.code}
-                  name="code"
-                  onChange={(source: Source) => {
-                    handleChange(`owners.${key}.code`, source);
-                  }}
-                />
-                <UrlField
-                  disabled={disabled}
-                  label={inputLabels.website}
-                  value={item?.website}
-                  error={errors?.website}
-                  onChange={(endAt) => handleChange(`owners.${key}.website`, endAt)}
-                />
-              </FormRow>
-            </FormItem>
-          );
-        })}
-        <StyledButton
-          error={!!errors}
-          onClick={() => {
-            handleChange('owners', {
-              [counter]: {
-                source: undefined,
-                fundsAmount: '',
-                appointedAt: '',
-              },
-              ...owners,
-            });
-            setCounter(counter + 1);
-          }}
-          variant={ButtonColors.TRANSPARENT}
-          borderType={'dashed'}
-          disabled={disabled}
+    <>
+      <TableButtonsRow>
+        <TableButtonsInnerRow>
+          <Title>{sportBaseTabTitles.owners}</Title>
+        </TableButtonsInnerRow>
+        {!disabled && <Button onClick={() => setCurrent({})}>{buttonsTitles.addOwner}</Button>}
+      </TableButtonsRow>
+      <MainTable
+        notFoundInfo={{ text: 'Nėra sukurtų savininkų' }}
+        isFilterApplied={false}
+        data={{ data: ownerKeys.map((key) => ({ ...owners[key], id: key })) }}
+        hidePagination={true}
+        columns={ownersLabels}
+        onClick={(id) => {
+          setCurrent({ ...owners[id], index: id });
+        }}
+      />
+
+      <Popup
+        title={formLabels.infoAboutOwner}
+        visible={!!current}
+        onClose={() => setCurrent(undefined)}
+      >
+        <Formik
+          validateOnChange={false}
+          enableReinitialize={false}
+          initialValues={initialValues}
+          onSubmit={onSubmit}
+          validationSchema={ownersSchema}
         >
-          {buttonsTitles.addOwner}
-        </StyledButton>
-      </FormRow>
-    </SimpleContainer>
+          {({ values, errors, setFieldValue }) => {
+            console.log(errors, 'errors');
+            return (
+              <Form>
+                <FormRow columns={1}>
+                  <TextField
+                    disabled={disabled}
+                    label={inputLabels.jarName}
+                    value={values?.name}
+                    error={errors?.name}
+                    name="name"
+                    onChange={(source: Source) => {
+                      setFieldValue(`name`, source);
+                    }}
+                  />
+                  <TextField
+                    disabled={disabled}
+                    label={inputLabels.code}
+                    value={values?.companyCode}
+                    error={errors?.companyCode}
+                    name="companyCode"
+                    onChange={(companyCode: string) => {
+                      setFieldValue(`companyCode`, companyCode);
+                    }}
+                  />
+                  <UrlField
+                    disabled={disabled}
+                    label={inputLabels.website}
+                    value={values?.website}
+                    error={errors?.website}
+                    onChange={(endAt) => setFieldValue(`website`, endAt)}
+                  />
+                  {!disabled && (
+                    <ButtonRow>
+                      {values.index && (
+                        <Button
+                          variant={ButtonColors.DANGER}
+                          onClick={() => {
+                            handleChange('owners', omit(owners, values.index));
+                            setCurrent(undefined);
+                          }}
+                        >
+                          {buttonsTitles.delete}
+                        </Button>
+                      )}
+                      <Button type="submit">{buttonsTitles.save}</Button>
+                    </ButtonRow>
+                  )}
+                </FormRow>
+              </Form>
+            );
+          }}
+        </Formik>
+      </Popup>
+    </>
   );
 };
 
-const StyledButton = styled(Button)<{
-  error: boolean;
-}>`
-  border-color: ${({ error }) => (error ? 'red' : '#CDD5DF')};
+const ButtonRow = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 16px 0;
+`;
+
+const Title = styled.div`
+  font-size: 2rem;
+  line-height: 25px;
+  font-weight: bold;
+  color: #231f20;
+  margin-right: 16px;
 `;
 
 export default OwnersContainer;

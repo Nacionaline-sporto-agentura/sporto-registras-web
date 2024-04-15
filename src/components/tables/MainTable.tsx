@@ -15,6 +15,7 @@ export interface LoginLayoutProps {
   pageName?: string;
   isFilterApplied?: boolean;
   loading?: boolean;
+  hidePagination?: boolean;
 }
 
 const MainTable = ({
@@ -26,13 +27,14 @@ const MainTable = ({
   pageName,
   loading,
   isFilterApplied = false,
+  hidePagination = false,
 }: LoginLayoutProps) => {
   const isMobile = useWindowSize(device.mobileL);
 
   if (loading) return <FullscreenLoader />;
 
   return (
-    <TableLayout data={data} pageName={pageName} loading={loading}>
+    <TableLayout hidePagination={hidePagination} data={data} pageName={pageName} loading={loading}>
       {isMobile ? (
         <MobileTable
           data={data?.data}

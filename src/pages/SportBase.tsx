@@ -106,14 +106,18 @@ const SportBasePage = () => {
   const { prasymas: queryStringRequestId } = Object.fromEntries([...Array.from(searchParams)]);
   const backUrl = isNew(id) ? slugs.unConfirmedSportBases : slugs.sportBases;
 
-  const { isLoading, data: sportBase } = useQuery(['sportBase', id], () => api.getSportBase(id), {
-    onError: () => {
-      navigate(slugs.sportBases);
+  const { isLoading: sportBaseLoading, data: sportBase } = useQuery(
+    ['sportBase', id],
+    () => api.getSportBase(id),
+    {
+      onError: () => {
+        navigate(slugs.sportBases);
+      },
+      enabled: !isNew(id),
     },
-    enabled: !isNew(id),
-  });
+  );
 
-  const { isLoading: requestLoading, data: request } = useQuery(
+  const { isLoading: requestLoading, data: requestResponse } = useQuery(
     ['request', queryStringRequestId],
     () => api.getRequest(queryStringRequestId),
     {
@@ -124,20 +128,22 @@ const SportBasePage = () => {
     },
   );
 
-  const requestId = sportBase?.lastRequest?.id || request?.id;
+  const lastRequestApprovalOrRejection =
+    sportBase &&
+    [StatusTypes.APPROVED, StatusTypes.REJECTED].includes(sportBase?.lastRequest?.status);
 
-  const canValidate = sportBase?.lastRequest?.canValidate || request?.canValidate;
-  const canEdit =
-    (isNew(id) && !queryStringRequestId) ||
-    sportBase?.lastRequest?.canEdit ||
-    request?.canEdit ||
-    sportBase?.canCreateRequest;
+  const request = sportBase?.lastRequest || requestResponse;
 
-  const createRequest = useMutation(
+  const canValidate = request?.canValidate;
+
+  const isNewRequest = isNew(id) && !queryStringRequestId;
+
+  const canEdit = isNewRequest || request?.canEdit || sportBase?.canCreateRequest;
+  const canCreateRequest = sportBase?.canCreateRequest || !request?.id;
+
+  const createOrUpdateRequest = useMutation(
     (params: any) =>
-      !requestId
-        ? api.createRequests({ ...params, status: StatusTypes.CREATED })
-        : api.updateRequest({ ...params, status: StatusTypes.SUBMITTED }, requestId),
+      canCreateRequest ? api.createRequests(params) : api.updateRequest(params, request.id),
     {
       onSuccess: () => {
         navigate(backUrl);
@@ -145,39 +151,25 @@ const SportBasePage = () => {
       retry: false,
     },
   );
-
-  const createDraftRequest = useMutation(
-    (params: any) => api.createRequests({ ...params, status: StatusTypes.DRAFT }),
-    {
-      onSuccess: () => {
-        navigate(backUrl);
-      },
-      retry: false,
-    },
-  );
-
-  const response = useMutation((params: any) => api.updateRequest({ ...params }, requestId), {
-    onSuccess: () => {
-      navigate(slugs.sportBases);
-    },
-    retry: false,
-  });
 
   const handleDraft = async (values: any) => {
-    createDraftRequest.mutateAsync({ changes: values });
+    handleSubmit(values, StatusTypes.DRAFT);
   };
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (changes: any, currentStatus?: StatusTypes) => {
+    const status = currentStatus || canCreateRequest ? StatusTypes.CREATED : StatusTypes.SUBMITTED;
+
     const params = {
       ...(!isNew(id) && { entity: id }),
-      changes: values.map((item) => {
+      status,
+      changes: changes.map((item) => {
         const { oldValue, ...rest } = item;
 
         return rest;
       }),
     };
 
-    createRequest.mutateAsync(params);
+    createOrUpdateRequest.mutateAsync(params);
   };
 
   const flattenArrays = (data: any): any => {
@@ -195,27 +187,25 @@ const SportBasePage = () => {
     return data;
   };
 
-  if (isLoading || requestLoading) return <FullscreenLoader />;
+  if (sportBaseLoading || requestLoading) return <FullscreenLoader />;
 
   const getSportBase = () => {
     if (!sportBase) return {};
 
     const { lastRequest, ...rest } = sportBase;
 
-    return rest;
+    return flattenArrays(rest);
   };
 
   const sportBaseWithoutLastRequest = getSportBase();
 
   const getFormValues = () => {
-    if (sportBase) {
-      const changes = sportBase?.lastRequest?.changes || [];
-
-      return flattenArrays(applyPatch(sportBaseWithoutLastRequest, changes).newDocument);
+    // Do not apply diff if the last request status type is APPROVED OR REJECTED
+    if (lastRequestApprovalOrRejection) {
+      return { ...sportBaseWithoutLastRequest };
     }
-
     if (request) {
-      return flattenArrays(applyPatch({}, request.changes).newDocument);
+      return applyPatch({ ...sportBaseWithoutLastRequest }, request?.changes || []).newDocument;
     }
 
     return {};
@@ -225,15 +215,14 @@ const SportBasePage = () => {
   const disabled = !canEdit;
 
   const showDraftButton =
-    (isNew(id) && !queryStringRequestId) ||
-    [request?.status, sportBase?.lastRequest?.status].includes(StatusTypes.DRAFT);
+    isNewRequest || [request?.status].includes(StatusTypes.DRAFT) || lastRequestApprovalOrRejection;
 
   return (
     <Formik
       enableReinitialize={false}
       initialValues={initialValues}
       validateOnChange={false}
-      onSubmit={handleSubmit}
+      onSubmit={() => {}}
     >
       {({ values, errors, setFieldValue, setErrors }) => {
         const spaceTypeIds = (Object.values(values?.spaces || {}) as SportBase[])?.map(
@@ -274,38 +263,40 @@ const SportBasePage = () => {
           const diffs: any = [];
 
           for (const item of patchOps) {
-            if (item.path.includes('/id')) {
+            if (item.path.endsWith('/id')) {
               const parentPath = item.path.replace('/id', '');
               idKeys[parentPath] = 1;
-            } else {
-              diffs.push(item);
             }
           }
 
-          diffs.push(
-            ...Object.values(
-              patchOps.reduce((acc, curr) => {
-                const { path, ...rest } = curr as any;
-                const key = path.split('/');
-                const prop = key.pop();
-                const parentPath = key.join('/');
+          const mergedObjects = Object.values(
+            patchOps.reduce((acc, curr) => {
+              const { path, ...rest } = curr as any;
+              const key = path.split('/');
+              const prop = key.pop();
+              const parentPath = key.join('/');
 
-                if (idKeys[parentPath]) {
-                  acc[parentPath] = {
-                    path: parentPath,
-                    op: curr.op,
-                    oldValue: { ...(acc[parentPath]?.oldValue || {}), [prop]: rest?.oldValue },
-                    value: { ...(acc[parentPath]?.value || {}), [prop]: rest?.value },
-                  };
-                }
+              if (idKeys[parentPath]) {
+                acc[parentPath] = {
+                  path: parentPath,
+                  op: curr.op,
+                  oldValue: { ...(acc[parentPath]?.oldValue || {}), [prop]: rest?.oldValue },
+                  value: { ...(acc[parentPath]?.value || {}), [prop]: rest?.value },
+                };
+              } else {
+                diffs.push(curr);
+              }
 
-                return acc;
-              }, {}),
-            ),
+              return acc;
+            }, {}),
           );
+
+          diffs.push(...mergedObjects);
 
           return diffs;
         };
+
+        const preprocessedJsonPatch = preprocessJsonPatch(mergedDiffs);
 
         const containers = {
           [sportBaseTabTitles.generalInfo]: (
@@ -342,7 +333,6 @@ const SportBasePage = () => {
           [sportBaseTabTitles.owners]: (
             <OwnersContainer
               owners={values.owners || {}}
-              errors={errors?.owners}
               handleChange={setFieldValue}
               counter={ownersCounter}
               setCounter={setOwnersCounter}
@@ -352,7 +342,6 @@ const SportBasePage = () => {
           [sportBaseTabTitles.organizations]: (
             <OrganizationsContainer
               organizations={values.organizations || {}}
-              errors={errors?.organizations}
               handleChange={setFieldValue}
               counter={organizationCounter}
               setCounter={setOrganizationCounter}
@@ -362,7 +351,6 @@ const SportBasePage = () => {
           [sportBaseTabTitles.investments]: (
             <InvestmentsContainer
               investments={values.investments || {}}
-              errors={errors?.investments}
               handleChange={setFieldValue}
               counter={investmentCounter}
               setCounter={setInvestmentCounter}
@@ -373,8 +361,6 @@ const SportBasePage = () => {
 
         const hasNext = tabs[currentTab + 1];
         const hasPrevious = tabs[currentTab - 1];
-
-        const preprocessedJsonPatch = preprocessJsonPatch(mergedDiffs);
 
         return (
           <>
@@ -394,7 +380,7 @@ const SportBasePage = () => {
                   )}
                   {canValidate && (
                     <AdditionalButtons
-                      handleChange={(status) => response.mutateAsync({ status })}
+                      handleChange={(status) => createOrUpdateRequest.mutateAsync({ status })}
                     />
                   )}
                 </Row>

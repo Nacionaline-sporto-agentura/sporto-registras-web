@@ -100,9 +100,7 @@ const SportBaseSpaceContainer = ({
     }),
   );
 
-  const [open, setOpen] = useState(false);
-
-  const [current, setCurrent] = useState<SportBaseSpace>();
+  const [current, setCurrent] = useState<SportBaseSpace | {}>();
 
   const [currentTab, setCurrentTab] = useState(0);
 
@@ -117,7 +115,7 @@ const SportBaseSpaceContainer = ({
       setSportBaseCounter(sportBaseCounter + 1);
     }
 
-    setOpen(false);
+    setCurrent(undefined);
   };
 
   const initialValues: any = current || {};
@@ -133,7 +131,6 @@ const SportBaseSpaceContainer = ({
               disabled={disabled}
               sportBaseSpace={space}
               onEdit={() => {
-                setOpen(true);
                 setCurrent({ ...space, index: key } as any);
               }}
               onDelete={() => {
@@ -147,8 +144,7 @@ const SportBaseSpaceContainer = ({
       <StyledButton
         error={!!errors}
         onClick={() => {
-          setOpen(true);
-          setCurrent(undefined);
+          setCurrent({});
         }}
         variant={ButtonColors.TRANSPARENT}
         borderType={'dashed'}
@@ -156,7 +152,7 @@ const SportBaseSpaceContainer = ({
       >
         {buttonsTitles.addSportBaseSpace}
       </StyledButton>
-      <Popup title={title} visible={open} onClose={() => setOpen(false)}>
+      <Popup title={title} visible={!!current} onClose={() => setCurrent(undefined)}>
         <Container>
           <TabBar
             tabs={currentTabs}

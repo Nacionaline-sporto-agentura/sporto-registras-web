@@ -48,7 +48,7 @@ const SportBaseSpaceCard = ({
         </TitleRow>
         <TitleRow>
           {!disabled && <Action onClick={onDelete}>{buttonsTitles.delete}</Action>}
-          <Action onClick={onEdit}>{disabled ? buttonsTitles.view : buttonsTitles.view}</Action>
+          <Action onClick={onEdit}>{disabled ? buttonsTitles.view : buttonsTitles.edit}</Action>
         </TitleRow>
       </Row>
       <Type>{type?.name}</Type>
