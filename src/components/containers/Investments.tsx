@@ -56,9 +56,11 @@ const InvestmentsContainer = ({ investments, handleChange, counter, setCounter, 
         <TableButtonsInnerRow>
           <Title>{sportBaseTabTitles.investments}</Title>
         </TableButtonsInnerRow>
-        <Button disabled={disabled} onClick={() => setCurrent({})}>
-          {buttonsTitles.addOrganization}
-        </Button>
+        {!disabled && (
+          <Button disabled={disabled} onClick={() => setCurrent({})}>
+            {buttonsTitles.addOrganization}
+          </Button>
+        )}
       </TableButtonsRow>
       <MainTable
         notFoundInfo={{ text: 'Nėra sukurtų investicijų' }}
@@ -122,23 +124,25 @@ const InvestmentsContainer = ({ investments, handleChange, counter, setCounter, 
                     error={errors?.appointedAt}
                     onChange={(appointedAt) => setFieldValue(`appointedAt`, appointedAt)}
                   />
-                  <ButtonRow>
-                    {values.index && (
-                      <Button
-                        disabled={disabled}
-                        variant={ButtonColors.DANGER}
-                        onClick={() => {
-                          handleChange('investments', omit(investments, values.index));
-                          setCurrent(undefined);
-                        }}
-                      >
-                        {buttonsTitles.delete}
+                  {!disabled && (
+                    <ButtonRow>
+                      {values.index && (
+                        <Button
+                          disabled={disabled}
+                          variant={ButtonColors.DANGER}
+                          onClick={() => {
+                            handleChange('investments', omit(investments, values.index));
+                            setCurrent(undefined);
+                          }}
+                        >
+                          {buttonsTitles.delete}
+                        </Button>
+                      )}
+                      <Button disabled={disabled} type="submit">
+                        {buttonsTitles.save}
                       </Button>
-                    )}
-                    <Button disabled={disabled} type="submit">
-                      {buttonsTitles.save}
-                    </Button>
-                  </ButtonRow>
+                    </ButtonRow>
+                  )}
                 </FormRow>
               </Form>
             );

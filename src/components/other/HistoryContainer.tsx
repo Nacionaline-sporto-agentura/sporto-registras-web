@@ -174,7 +174,7 @@ const HistoryContainer = ({
       name: sportBaseTabTitles.owners,
       children: {
         name: { name: inputLabels.jarName },
-        code: { name: inputLabels.code },
+        companyCode: { name: inputLabels.code },
         website: { name: inputLabels.website },
       },
     },

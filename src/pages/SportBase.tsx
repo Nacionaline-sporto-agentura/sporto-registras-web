@@ -128,6 +128,10 @@ const SportBasePage = () => {
     },
   );
 
+  const lastRequestApprovalOrRejection =
+    sportBase &&
+    [StatusTypes.APPROVED, StatusTypes.REJECTED].includes(sportBase?.lastRequest?.status);
+
   const request = sportBase?.lastRequest || requestResponse;
 
   const canValidate = request?.canValidate;
@@ -135,10 +139,11 @@ const SportBasePage = () => {
   const isNewRequest = isNew(id) && !queryStringRequestId;
 
   const canEdit = isNewRequest || request?.canEdit || sportBase?.canCreateRequest;
+  const canCreateRequest = sportBase?.canCreateRequest || !request?.id;
 
   const createOrUpdateRequest = useMutation(
     (params: any) =>
-      !request?.id ? api.createRequests(params) : api.updateRequest(params, request.id),
+      canCreateRequest ? api.createRequests(params) : api.updateRequest(params, request.id),
     {
       onSuccess: () => {
         navigate(backUrl);
@@ -152,7 +157,7 @@ const SportBasePage = () => {
   };
 
   const handleSubmit = async (changes: any, currentStatus?: StatusTypes) => {
-    const status = currentStatus || !request?.id ? StatusTypes.CREATED : StatusTypes.SUBMITTED;
+    const status = currentStatus || canCreateRequest ? StatusTypes.CREATED : StatusTypes.SUBMITTED;
 
     const params = {
       ...(!isNew(id) && { entity: id }),
@@ -193,10 +198,6 @@ const SportBasePage = () => {
   };
 
   const sportBaseWithoutLastRequest = getSportBase();
-
-  const lastRequestApprovalOrRejection =
-    sportBase &&
-    [StatusTypes.APPROVED, StatusTypes.REJECTED].includes(sportBase?.lastRequest?.status);
 
   const getFormValues = () => {
     // Do not apply diff if the last request status type is APPROVED OR REJECTED

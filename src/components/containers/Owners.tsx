@@ -15,13 +15,13 @@ import MainTable from '../tables/MainTable';
 
 const ownersSchema = Yup.object().shape({
   name: Yup.string().required(validationTexts.requireText),
-  code: Yup.string().required(validationTexts.requireText),
+  companyCode: Yup.string().required(validationTexts.requireText),
   website: Yup.string().required(validationTexts.requireText),
 });
 
 const ownersLabels = {
   name: { label: inputLabels.jarName, show: true },
-  code: { label: inputLabels.code, show: true },
+  companyCode: { label: inputLabels.code, show: true },
   website: { label: inputLabels.website, show: true },
 };
 
@@ -53,9 +53,7 @@ const OwnersContainer = ({ owners, handleChange, counter, setCounter, disabled }
         <TableButtonsInnerRow>
           <Title>{sportBaseTabTitles.owners}</Title>
         </TableButtonsInnerRow>
-        <Button disabled={disabled} onClick={() => setCurrent({})}>
-          {buttonsTitles.addOwner}
-        </Button>
+        {!disabled && <Button onClick={() => setCurrent({})}>{buttonsTitles.addOwner}</Button>}
       </TableButtonsRow>
       <MainTable
         notFoundInfo={{ text: 'Nėra sukurtų savininkų' }}
@@ -81,6 +79,7 @@ const OwnersContainer = ({ owners, handleChange, counter, setCounter, disabled }
           validationSchema={ownersSchema}
         >
           {({ values, errors, setFieldValue }) => {
+            console.log(errors, 'errors');
             return (
               <Form>
                 <FormRow columns={1}>
@@ -97,11 +96,11 @@ const OwnersContainer = ({ owners, handleChange, counter, setCounter, disabled }
                   <TextField
                     disabled={disabled}
                     label={inputLabels.code}
-                    value={values?.code}
-                    error={errors?.code}
-                    name="code"
-                    onChange={(source: Source) => {
-                      setFieldValue(`code`, source);
+                    value={values?.companyCode}
+                    error={errors?.companyCode}
+                    name="companyCode"
+                    onChange={(companyCode: string) => {
+                      setFieldValue(`companyCode`, companyCode);
                     }}
                   />
                   <UrlField
@@ -111,23 +110,22 @@ const OwnersContainer = ({ owners, handleChange, counter, setCounter, disabled }
                     error={errors?.website}
                     onChange={(endAt) => setFieldValue(`website`, endAt)}
                   />
-                  <ButtonRow>
-                    {values.index && (
-                      <Button
-                        disabled={disabled}
-                        variant={ButtonColors.DANGER}
-                        onClick={() => {
-                          handleChange('owners', omit(owners, values.index));
-                          setCurrent(undefined);
-                        }}
-                      >
-                        {buttonsTitles.delete}
-                      </Button>
-                    )}
-                    <Button disabled={disabled} type="submit">
-                      {buttonsTitles.save}
-                    </Button>
-                  </ButtonRow>
+                  {!disabled && (
+                    <ButtonRow>
+                      {values.index && (
+                        <Button
+                          variant={ButtonColors.DANGER}
+                          onClick={() => {
+                            handleChange('owners', omit(owners, values.index));
+                            setCurrent(undefined);
+                          }}
+                        >
+                          {buttonsTitles.delete}
+                        </Button>
+                      )}
+                      <Button type="submit">{buttonsTitles.save}</Button>
+                    </ButtonRow>
+                  )}
                 </FormRow>
               </Form>
             );

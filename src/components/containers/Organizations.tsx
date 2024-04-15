@@ -53,9 +53,11 @@ const OrganizationsContainer = ({ organizations, handleChange, counter, setCount
         <TableButtonsInnerRow>
           <Title>{sportBaseTabTitles.organizations}</Title>
         </TableButtonsInnerRow>
-        <Button disabled={disabled} onClick={() => setCurrent({})}>
-          {buttonsTitles.addOrganization}
-        </Button>
+        {!disabled && (
+          <Button disabled={disabled} onClick={() => setCurrent({})}>
+            {buttonsTitles.addOrganization}
+          </Button>
+        )}
       </TableButtonsRow>
       <MainTable
         notFoundInfo={{ text: 'Nėra sukurtų organizacijų' }}
@@ -81,6 +83,7 @@ const OrganizationsContainer = ({ organizations, handleChange, counter, setCount
           validationSchema={organizationsSchema}
         >
           {({ values, errors, setFieldValue }) => {
+            console.log(errors, 'errors');
             return (
               <Form>
                 <FormRow columns={1}>
@@ -113,23 +116,22 @@ const OrganizationsContainer = ({ organizations, handleChange, counter, setCount
                     error={errors?.endAt}
                     onChange={(endAt) => setFieldValue(`endAt`, endAt)}
                   />
-                  <ButtonRow>
-                    {values.index && (
-                      <Button
-                        disabled={disabled}
-                        variant={ButtonColors.DANGER}
-                        onClick={() => {
-                          handleChange('organizations', omit(organizations, values.index));
-                          setCurrent(undefined);
-                        }}
-                      >
-                        {buttonsTitles.delete}
-                      </Button>
-                    )}
-                    <Button disabled={disabled} type="submit">
-                      {buttonsTitles.save}
-                    </Button>
-                  </ButtonRow>
+                  {!disabled && (
+                    <ButtonRow>
+                      {values.index && (
+                        <Button
+                          variant={ButtonColors.DANGER}
+                          onClick={() => {
+                            handleChange('organizations', omit(organizations, values.index));
+                            setCurrent(undefined);
+                          }}
+                        >
+                          {buttonsTitles.delete}
+                        </Button>
+                      )}
+                      <Button type="submit">{buttonsTitles.save}</Button>
+                    </ButtonRow>
+                  )}
                 </FormRow>
               </Form>
             );

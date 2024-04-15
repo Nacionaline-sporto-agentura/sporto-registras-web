@@ -116,7 +116,7 @@ export interface SportBase {
   publicWifi: boolean;
   lastRequest: Request;
   spaces: SportBaseSpace[];
-  owners: { name: string; code: string; website: string }[];
+  owners: { name: string; companyCode: string; website: string }[];
   organizations: {
     name: string;
     startAt: string;
