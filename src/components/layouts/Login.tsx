@@ -11,7 +11,7 @@ const LoginLayout = ({ children }: LoginLayoutProps) => {
   return (
     <Div100vh>
       <Container>
-        <LayoutImage alt="login-background-image" src="./background.webp" />
+        <LayoutImage alt="login-background-image" src="./background.png" />
         <InnerContainer>
           <StyledLogo />
           {children}

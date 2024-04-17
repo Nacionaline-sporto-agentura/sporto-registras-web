@@ -1,7 +1,6 @@
 import { isEmpty } from 'lodash';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { device } from '../../styles';
 import { FileProps, Photo } from '../../types';
 import api from '../../utils/api';
 import { handleErrorToast } from '../../utils/functions';
@@ -135,9 +134,6 @@ const UploadFieldInnerContainer = styled.div`
   justify-content: center;
   align-items: center;
   gap: 16px;
-  @media ${device.mobileL} {
-    width: 100%;
-  }
 `;
 
 const StyledInput = styled.input``;
@@ -145,6 +141,7 @@ const StyledInput = styled.input``;
 const ButtonIcon = styled.div`
   display: flex;
   justify-content: center;
+  width: 100%;
   align-items: center;
 `;
 

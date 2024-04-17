@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import { useInfiniteQuery, useMutation, useQuery } from 'react-query';
 import { matchPath, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import { Tab } from '../components/Tabs/TabBar';
@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '../state/hooks';
 import { actions as userAction } from '../state/user/reducer';
 import { TableData, TableDataProp, User } from '../types';
 import api from './api';
+import { intersectionObserverConfig } from './configs';
 import { AdminRoleType } from './constants';
 import { handleErrorToastFromServer } from './functions';
 import { clearCookies, emptyUser, handleSetProfile } from './loginFunctions';
@@ -181,4 +182,52 @@ export const useIsTenantAdmin = () => {
   const currentProfile = useGetCurrentProfile();
 
   return currentProfile?.role === AdminRoleType.ADMIN;
+};
+
+export const useInfinityLoad = (
+  queryKey: string,
+  fn: (params: { page: number }) => any,
+  observerRef: any,
+  filters = {},
+) => {
+  const queryFn = async (page: number) => {
+    const data = await fn({
+      ...filters,
+      page,
+    });
+    return {
+      ...data,
+      data: data.rows,
+    };
+  };
+
+  const result = useInfiniteQuery({
+    queryKey: [queryKey],
+    queryFn: ({ pageParam }: any) => queryFn(pageParam),
+    getNextPageParam: (lastPage: any) => {
+      return lastPage?.page < lastPage?.totalPages ? lastPage.page + 1 : undefined;
+    },
+  });
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = result;
+  useEffect(() => {
+    const currentObserver = observerRef.current;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    }, intersectionObserverConfig);
+
+    if (currentObserver) {
+      observer.observe(currentObserver);
+    }
+
+    return () => {
+      if (currentObserver) {
+        observer.unobserve(currentObserver);
+      }
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, data, observerRef]);
+
+  return result;
 };

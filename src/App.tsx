@@ -31,7 +31,6 @@ const cookies = new Cookies();
 
 function App() {
   const loggedIn = useAppSelector((state) => state.user.loggedIn);
-  //const loggedIn = true;
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();

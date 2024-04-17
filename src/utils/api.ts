@@ -7,6 +7,8 @@ const cookies = new Cookies();
 
 export enum Resources {
   LOGIN = 'auth/login',
+  HISTORY = 'history',
+
   FILES_UPLOAD = 'api/files/upload',
   REFRESH_TOKEN = 'auth/refresh',
   E_GATES_LOGIN = 'auth/evartai/login',
@@ -58,7 +60,7 @@ export enum SortDescFields {
 interface TableList<T = any> {
   filter?: T;
   query?: any;
-  page?: string;
+  page?: string | number;
   id?: string;
   pageSize?: string;
   isMy?: boolean;
@@ -70,7 +72,7 @@ interface TableList<T = any> {
 
 interface GetAllProps {
   resource?: string;
-  page?: string;
+  page?: string | number;
   populate?: string[];
   filter?: string;
   query?: any;
@@ -659,6 +661,13 @@ class Api {
       query,
       resource: Resources.FIELDS,
       populate: [Populations.FIELD],
+    });
+
+  getRequestHistory = async ({ page, pageSize, id }: TableList) =>
+    await this.getList({
+      resource: `${Resources.REQUESTS}/${id}/${Resources.HISTORY}`,
+      page,
+      pageSize,
     });
 }
 

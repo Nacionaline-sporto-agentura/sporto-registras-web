@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import { Form, Formik } from 'formik';
 import { omit } from 'lodash';
 import { useState } from 'react';
@@ -7,7 +6,7 @@ import * as Yup from 'yup';
 import { sportBaseTabTitles } from '../../pages/SportBase';
 import { FormRow, TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { Source, SportBase } from '../../types';
-import { getSourcesList } from '../../utils/functions';
+import { formatDate, getSourcesList } from '../../utils/functions';
 import { buttonsTitles, formLabels, inputLabels, validationTexts } from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
 import AsyncSelectField from '../fields/AsyncSelectField';
@@ -69,7 +68,7 @@ const InvestmentsContainer = ({ investments, handleChange, counter, setCounter, 
           data: investmentKeys.map((key) => ({
             ...investments[key],
             source: investments?.[key]?.source?.name,
-            appointedAt: format(new Date(investments?.[key]?.appointedAt), 'yyyy-MM-dd'),
+            appointedAt: formatDate(investments?.[key]?.appointedAt),
             id: key,
           })),
         }}

@@ -3,6 +3,7 @@ import {
   AdminRoleType,
   AuthStrategy,
   FieldTypes,
+  HistoryTypes,
   StatusTypes,
   TableItemWidth,
   TenantTypes,
@@ -273,4 +274,10 @@ export interface Request {
   field: Field;
   changes: Operation[];
   entity: any;
+}
+export interface FormHistory {
+  type: HistoryTypes;
+  comment: string;
+  createdBy: User;
+  createdAt: Date;
 }
