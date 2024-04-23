@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import { User } from '../types';
 import api from './api';
@@ -156,3 +157,7 @@ export const getSportBaseSpaceBuildingTypesList = async (input: string, page: st
     page,
   });
 };
+
+export const formatDate = (date: string | Date) => format(new Date(date), 'yyyy-MM-dd');
+export const formatDateAndTime = (datetime: Date | string) =>
+  datetime ? format(new Date(datetime), 'yyyy-MM-dd HH:mm') : '-';

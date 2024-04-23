@@ -1,13 +1,25 @@
 import { format } from 'date-fns';
 import { get, isEmpty } from 'lodash';
-import { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
 import { sportBaseTabTitles } from '../../pages/SportBase';
+import { FormHistory } from '../../types';
 import api from '../../utils/api';
-import { descriptions, inputLabels } from '../../utils/texts';
+import { colorsByStatus } from '../../utils/constants';
+import { formatDateAndTime } from '../../utils/functions';
+import { useInfinityLoad } from '../../utils/hooks';
+import {
+  descriptions,
+  inputLabels,
+  requestFormHistoryDescriptions,
+  requestStatusLabels,
+} from '../../utils/texts';
+import Button, { ButtonColors } from '../buttons/Button';
 import { sportBaseSpaceTabTitles } from '../containers/SportBaseSpace';
+import FullscreenLoader from './FullscreenLoader';
 import Icon, { IconName } from './Icons';
+import StatusTag from './StatusTag';
 
 const dateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
 
@@ -27,6 +39,7 @@ export interface Diff {
 
 const getLabel = (diff: Diff, titles) => {
   let arr = diff.path.split('/').slice(1);
+
   if (diff.op == ActionTypes.REMOVE) {
     arr = arr.slice(0, -1);
   }
@@ -40,14 +53,14 @@ const getLabel = (diff: Diff, titles) => {
     const item = arr[i];
 
     if (!dynamicFields && !isNaN(parseFloat(item)) && isFinite(item as any)) {
-      label = [...label, <strong>{arr[i]}</strong>, ` eilutėje `];
+      label = [...label, <BoldText>{arr[i]}</BoldText>, ` eilutėje `];
       continue;
     }
     const currentTitlesObject = tempTitles?.[item];
 
     dynamicFields = item === 'additionalValues';
 
-    label = [...label, <strong>{`${currentTitlesObject?.name} `}</strong>];
+    label = [...label, <BoldText>{`${currentTitlesObject?.name} `}</BoldText>];
     tempTitles = currentTitlesObject?.children;
 
     labelField = currentTitlesObject?.labelField;
@@ -115,13 +128,20 @@ const HistoryContainer = ({
   data,
   spaceTypeIds,
   disabled,
+  open,
+  requestId,
+  handleClear,
 }: {
   spaceTypeIds: number[];
   disabled: boolean;
   diff: Diff[];
   handleChange: any;
   data: any;
+  open: boolean;
+  requestId: any;
+  handleClear: () => void;
 }) => {
+  const observerRef = useRef(null);
   const { data: additionalFieldLabels } = useQuery(
     ['spaceTypeIds', spaceTypeIds],
     async () =>
@@ -130,6 +150,13 @@ const HistoryContainer = ({
         {},
       ),
     { enabled: !isEmpty(spaceTypeIds) },
+  );
+
+  const { data: history, isFetching } = useInfinityLoad(
+    'subscriptions',
+    (data) => api.getRequestHistory({ ...data, id: requestId }),
+    observerRef,
+    {},
   );
 
   const titles = {
@@ -227,12 +254,12 @@ const HistoryContainer = ({
     },
   };
 
-  const [spreadOut, setSpreadOut] = useState(true);
+  const [isOpen, setIsOpen] = useState(open);
 
-  if (!spreadOut) {
+  if (!isOpen) {
     return (
       <SideBar $padding={'16px 8px'} $width={'40px'}>
-        <IconContainer onClick={() => setSpreadOut(true)}>
+        <IconContainer onClick={() => setIsOpen(true)}>
           <ArrowIcon name={IconName.info} />
         </IconContainer>
       </SideBar>
@@ -265,27 +292,102 @@ const HistoryContainer = ({
     <SideBar $padding={'16px'} $width={'320px'}>
       <Row>
         <Title>Veikla</Title>
-        <IconContainer onClick={() => setSpreadOut(false)}>
+        <IconContainer onClick={() => setIsOpen(false)}>
           <ArrowIcon name={IconName.arrowRight} />
         </IconContainer>
       </Row>
-      {diff.map((item, index) => {
-        return (
-          <Column key={`history-${index}`}>
-            <Action>{getLabel(item, titles)}</Action>
-            {!disabled && (
-              <ContentRow onClick={() => handleAction(item)}>
-                <StyledIcon name={IconName.close} />
-                <div>Anuliuoti pakeitimą</div>
-              </ContentRow>
-            )}
+      {!isEmpty(diff) && (
+        <>
+          <SubTitleRow>
+            <SubTitle>{'Naujausia veikla'}</SubTitle>
             <Line />
-          </Column>
-        );
-      })}
+          </SubTitleRow>
+          {!disabled && (
+            <StyledBUtton onClick={handleClear} variant={ButtonColors.TRANSPARENT}>
+              Anuliuoti visus pakeitimus
+            </StyledBUtton>
+          )}
+          <Container>
+            {diff.map((item, index) => {
+              return (
+                <Column key={`changes-${index}`}>
+                  <Text>{getLabel(item, titles)}</Text>
+                  {!disabled && (
+                    <ContentRow onClick={() => handleAction(item)}>
+                      <StyledIcon name={IconName.close} />
+                      <div>Anuliuoti pakeitimą</div>
+                    </ContentRow>
+                  )}
+                  <Line />
+                </Column>
+              );
+            })}
+          </Container>
+        </>
+      )}
+      <SubTitleRow>
+        <SubTitle>{'Istorija'}</SubTitle>
+        <Line />
+      </SubTitleRow>
+      <Container>
+        {history?.pages.map((page: { data: FormHistory[] }, pageIndex: number) => {
+          return (
+            <React.Fragment key={pageIndex}>
+              {page?.data.map((history, index) => {
+                const createdBy = `${history?.createdBy?.firstName?.[0]}. ${history?.createdBy?.lastName}`;
+                return (
+                  <Column key={`history-${index}`}>
+                    <HistoryRow>
+                      <DateContainer>{formatDateAndTime(history.createdAt)}</DateContainer>
+                      <StatusTag
+                        label={requestStatusLabels[history.type]}
+                        color={colorsByStatus[history.type]}
+                      />
+                    </HistoryRow>
+                    <Text>
+                      <BoldText>{createdBy}</BoldText>
+                      {requestFormHistoryDescriptions[history.type]}
+                    </Text>
+                    {history?.comment && (
+                      <Comment>
+                        <Text>{history?.comment}</Text>
+                      </Comment>
+                    )}
+                    <Line />
+                  </Column>
+                );
+              })}
+            </React.Fragment>
+          );
+        })}
+
+        {isFetching && <FullscreenLoader />}
+        {observerRef && <div ref={observerRef} />}
+      </Container>
     </SideBar>
   );
 };
+
+const HistoryRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const StyledBUtton = styled(Button)`
+  margin: 16px 0;
+  border-color: ${({ theme }) => theme.colors.primary};
+`;
+
+const DateContainer = styled.div`
+  font-size: 1.2rem;
+  color: #697586;
+`;
+
+const Container = styled.div`
+  max-height: 400px;
+  overflow-y: auto;
+`;
 
 const IconContainer = styled.div`
   display: flex;
@@ -307,26 +409,33 @@ const Row = styled.div`
 `;
 
 const SideBar = styled.div<{ $width: string; $padding: string }>`
-  position: absolute;
+  min-width ${({ $width }) => $width};
   width ${({ $width }) => $width};
-  height: 100%;
-  right: 0;
-  top: 0;
   background-color: white;
   overflow-y: auto;
   padding: ${({ $padding }) => $padding};
-`;
-
-const Action = styled.div`
-  font-size: 1.4rem;
-  font-weight: 400;
-  line-height: 20px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const Title = styled.div`
   font-size: 1.4rem;
   font-weight: 600;
   line-height: 24px;
+`;
+const SubTitle = styled.div`
+  font-size: 1.2rem;
+  font-weight: 400;
+  line-height: 20px;
+  white-space: nowrap;
+  color: #697586;
+`;
+
+const SubTitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0 8px 0;
 `;
 
 const Line = styled.div`
@@ -335,11 +444,30 @@ const Line = styled.div`
   background-color: #eaeaef;
 `;
 
+const Text = styled.div`
+  font-size: 1.4rem;
+  font-weight: 400;
+  line-height: 20px;
+  color: #4b5565;
+`;
+
+const BoldText = styled.span`
+  font-weight: 500;
+  color: black;
+  margin-right: 2px;
+`;
+
 const Column = styled.div`
   display: flex;
   flex-direction: column;
   margin: 16px 0;
   gap: 15px;
+`;
+
+const Comment = styled.div`
+  padding: 8px;
+  border-radius: 4px 0px 0px 0px;
+  background-color: #f8fafc;
 `;
 
 const StyledIcon = styled(Icon)`

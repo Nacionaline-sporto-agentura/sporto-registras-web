@@ -79,7 +79,6 @@ const OwnersContainer = ({ owners, handleChange, counter, setCounter, disabled }
           validationSchema={ownersSchema}
         >
           {({ values, errors, setFieldValue }) => {
-            console.log(errors, 'errors');
             return (
               <Form>
                 <FormRow columns={1}>
