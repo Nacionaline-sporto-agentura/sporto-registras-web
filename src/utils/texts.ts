@@ -1,4 +1,11 @@
-import { AdminRoleType, ServerErrorTypes, StatusTypes, TenantTypes } from './constants';
+import { ButtonColors } from '../components/buttons/Button';
+import {
+  AdminRoleType,
+  HistoryTypes,
+  ServerErrorTypes,
+  StatusTypes,
+  TenantTypes,
+} from './constants';
 
 export const validationTexts = {
   badFileTypes: 'Blogi failų tipai',
@@ -36,6 +43,7 @@ export const descriptions = {
 };
 
 export const formLabels = {
+  history: 'Istorija',
   inActiveProfile: 'Anketa neaktyvi',
   groupInfo: 'Informacija apie grupę',
   userInfo: 'Informacija apie naudotoją',
@@ -74,6 +82,7 @@ export const inputLabels = {
   spaces: 'Erdvės',
   owners: 'Savininkai',
   photos: 'Nuotraukos',
+  comment: 'Komentaras',
   buildingNumber: 'Unikalus statinio numeris',
   buildingArea: 'Bendrasis pastato plotas',
   energyClass: 'Energetinė klasė',
@@ -237,4 +246,38 @@ export const requestStatusLabels = {
   [StatusTypes.REJECTED]: 'Atmestas',
   [StatusTypes.APPROVED]: 'Patvirtintas',
   [StatusTypes.DRAFT]: 'Juodraštis',
+};
+export const buttonColors = {
+  [StatusTypes.SUBMITTED]: ButtonColors.PRIMARY,
+  [StatusTypes.APPROVED]: ButtonColors.SUCCESS,
+  [StatusTypes.RETURNED]: ButtonColors.PRIMARY,
+  [StatusTypes.REJECTED]: ButtonColors.DANGER,
+};
+export const formActionLabels = {
+  [StatusTypes.APPROVED]: 'Tvirtinamas prašymas',
+  [StatusTypes.RETURNED]: 'Grąžinti prašymą taisymui',
+  [StatusTypes.REJECTED]: 'Atmesti prašymą',
+  [StatusTypes.SUBMITTED]: 'Pateikti prašymą',
+};
+
+export const actionButtonLabels = {
+  [StatusTypes.APPROVED]: 'Patvirtinti',
+  [StatusTypes.RETURNED]: 'Grąžinti taisyti',
+  [StatusTypes.REJECTED]: 'Atmesti',
+  [StatusTypes.SUBMITTED]: 'Pateikti',
+};
+export const requestFormHistoryLabels = {
+  [HistoryTypes.CREATED]: 'Pateiktas',
+  [HistoryTypes.SUBMITTED]: 'Pateiktas pakartotinai',
+  [HistoryTypes.REJECTED]: 'Atmestas',
+  [HistoryTypes.RETURNED]: 'Grąžintas taisyti',
+  [HistoryTypes.APPROVED]: 'Priimtas',
+};
+
+export const requestFormHistoryDescriptions = {
+  [HistoryTypes.CREATED]: 'pateikė prašymą įregistruoti sporto bazę',
+  [HistoryTypes.SUBMITTED]: 'pateikė pakartotinai prašymą įregistruoti sporto bazę',
+  [HistoryTypes.RETURNED]: 'grąžino taisyti pateiktą prašymą įregistruoti sporto bazę',
+  [HistoryTypes.REJECTED]: 'atmetė pateiktą prašymą įregistruoti sporto bazę',
+  [HistoryTypes.APPROVED]: 'patvirtino prašymą įregistruoti sporto bazę',
 };

@@ -18,6 +18,7 @@ import SpecificationContainer from '../components/containers/Specification';
 import SportBaseGeneral from '../components/containers/SportBaseGeneral';
 import SportBaseSpaceContainer from '../components/containers/SportBaseSpace';
 import { FormErrorMessage } from '../components/other/FormErrorMessage';
+import FormPopUp from '../components/other/FormPopup';
 import FullscreenLoader from '../components/other/FullscreenLoader';
 import HistoryContainer, { ActionTypes } from '../components/other/HistoryContainer';
 import TabBar from '../components/Tabs/TabBar';
@@ -105,6 +106,7 @@ const SportBasePage = () => {
   const title = isNew(id) ? 'Įregistruoti naują sporto bazę' : 'Atnaujinti sporto bazę';
   const { prasymas: queryStringRequestId } = Object.fromEntries([...Array.from(searchParams)]);
   const backUrl = isNew(id) ? slugs.unConfirmedSportBases : slugs.sportBases;
+  const [status, setStatus] = useState('');
 
   const { isLoading: sportBaseLoading, data: sportBase } = useQuery(
     ['sportBase', id],
@@ -141,6 +143,8 @@ const SportBasePage = () => {
   const canEdit = isNewRequest || request?.canEdit || sportBase?.canCreateRequest;
   const canCreateRequest = sportBase?.canCreateRequest || !request?.id;
 
+  const isCreateStatus = canCreateRequest || request.status === StatusTypes.DRAFT;
+
   const createOrUpdateRequest = useMutation(
     (params: any) =>
       canCreateRequest ? api.createRequests(params) : api.updateRequest(params, request.id),
@@ -152,20 +156,20 @@ const SportBasePage = () => {
     },
   );
 
-  const handleDraft = async (values: any) => {
-    handleSubmit(values, StatusTypes.DRAFT);
+  const handleDraft = async (changes) => {
+    handleSubmit({ changes, status: StatusTypes.DRAFT });
   };
 
-  const handleSubmit = async (changes: any, currentStatus?: StatusTypes) => {
-    const status = currentStatus || canCreateRequest ? StatusTypes.CREATED : StatusTypes.SUBMITTED;
-
+  const handleSubmit = async ({ changes, status, comment }: any) => {
     const params = {
       ...(!isNew(id) && { entity: id }),
       status,
-      changes: changes.map((item) => {
-        const { oldValue, ...rest } = item;
-
-        return rest;
+      comment,
+      ...(!isEmpty(changes) && {
+        changes: changes.map((item) => {
+          const { oldValue, ...rest } = item;
+          return rest;
+        }),
       }),
     };
 
@@ -224,7 +228,7 @@ const SportBasePage = () => {
       validateOnChange={false}
       onSubmit={() => {}}
     >
-      {({ values, errors, setFieldValue, setErrors }) => {
+      {({ values, errors, setFieldValue, setErrors, setValues }) => {
         const spaceTypeIds = (Object.values(values?.spaces || {}) as SportBase[])?.map(
           (space) => space?.type?.id,
         );
@@ -296,7 +300,7 @@ const SportBasePage = () => {
           return diffs;
         };
 
-        const preprocessedJsonPatch = preprocessJsonPatch(mergedDiffs);
+        const changes = preprocessJsonPatch(mergedDiffs);
 
         const containers = {
           [sportBaseTabTitles.generalInfo]: (
@@ -363,8 +367,8 @@ const SportBasePage = () => {
         const hasPrevious = tabs[currentTab - 1];
 
         return (
-          <>
-            <Container>
+          <Container>
+            <InnerContainer>
               <TitleColumn>
                 <BackButton />
                 <Row>
@@ -372,18 +376,27 @@ const SportBasePage = () => {
                   {showDraftButton && (
                     <Button
                       onClick={() => {
-                        handleDraft(preprocessedJsonPatch);
+                        handleDraft(changes);
                       }}
                     >
                       {buttonsTitles.saveAsDraft}
                     </Button>
                   )}
                   {canValidate && (
-                    <AdditionalButtons
-                      handleChange={(status) => createOrUpdateRequest.mutateAsync({ status })}
-                    />
+                    <AdditionalButtons handleChange={(status) => setStatus(status)} />
                   )}
                 </Row>
+                <FormPopUp
+                  onClose={() => setStatus('')}
+                  status={status}
+                  onSubmit={({ comment, status }) => {
+                    handleSubmit({
+                      ...(status === StatusTypes.SUBMITTED && { changes }),
+                      status,
+                      comment,
+                    });
+                  }}
+                />
               </TitleColumn>
 
               <Column>
@@ -434,8 +447,17 @@ const SportBasePage = () => {
                           errors = yupToFormErrors(e);
                         }
 
+                        setErrors(errors);
+
                         if (isEmpty(errors)) {
-                          handleSubmit(preprocessedJsonPatch);
+                          if (!isCreateStatus) {
+                            return setStatus(StatusTypes.SUBMITTED);
+                          }
+
+                          handleSubmit({
+                            changes,
+                            status: StatusTypes.CREATED,
+                          });
                         }
                       }}
                     >
@@ -444,15 +466,22 @@ const SportBasePage = () => {
                   )}
                 </ButtonRow>
               </Column>
-            </Container>
-            <HistoryContainer
-              disabled={disabled}
-              handleChange={setFieldValue}
-              spaceTypeIds={spaceTypeIds}
-              diff={preprocessedJsonPatch as any}
-              data={values}
-            />
-          </>
+            </InnerContainer>
+            {!isNewRequest && (
+              <HistoryContainer
+                handleClear={() => {
+                  setValues(sportBaseWithoutLastRequest);
+                }}
+                requestId={request?.id}
+                disabled={disabled}
+                handleChange={setFieldValue}
+                open={!lastRequestApprovalOrRejection}
+                spaceTypeIds={spaceTypeIds}
+                diff={changes as any}
+                data={values}
+              />
+            )}
+          </Container>
         );
       }}
     </Formik>
@@ -466,13 +495,25 @@ const ButtonRow = styled.div`
   margin: 16px 0;
 `;
 
-const Container = styled.div`
+const InnerContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 16px 16px;
   margin: 0 auto;
-  min-height: 100%;
+  width: 100%;
   max-width: 1000px;
+`;
+
+const Container = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+
+  gap: 16px;
+  @media ${device.mobileL} {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
 `;
 
 const Column = styled.div`

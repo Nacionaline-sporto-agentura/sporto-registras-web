@@ -66,8 +66,16 @@ export enum StatusTypes {
 
 export const colorsByStatus = {
   [StatusTypes.CREATED]: TagColors.BLUE,
-  [StatusTypes.SUBMITTED]: TagColors.VIOLET,
+  [StatusTypes.SUBMITTED]: TagColors.BLUE,
   [StatusTypes.APPROVED]: TagColors.GREEN,
   [StatusTypes.RETURNED]: TagColors.ORANGE,
   [StatusTypes.REJECTED]: TagColors.PINK,
 };
+
+export enum HistoryTypes {
+  CREATED = 'CREATED',
+  SUBMITTED = 'SUBMITTED',
+  REJECTED = 'REJECTED',
+  RETURNED = 'RETURNED',
+  APPROVED = 'APPROVED',
+}

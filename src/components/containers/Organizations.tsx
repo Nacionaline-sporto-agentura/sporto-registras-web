@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import { sportBaseTabTitles } from '../../pages/SportBase';
 import { FormRow, TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { Source, SportBase } from '../../types';
+import { formatDate } from '../../utils/functions';
 import { buttonsTitles, formLabels, inputLabels, validationTexts } from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
 import DateField from '../fields/DateField';
@@ -15,14 +16,14 @@ import MainTable from '../tables/MainTable';
 
 const organizationsSchema = Yup.object().shape({
   name: Yup.string().required(validationTexts.requireText),
-  endAt: Yup.date().required(validationTexts.requireText),
   startAt: Yup.date().required(validationTexts.requireText),
+  endAt: Yup.date().required(validationTexts.requireText),
 });
 
 const organizationsLabels = {
   name: { label: inputLabels.name, show: true },
-  endAt: { label: inputLabels.endAt, show: true },
   startAt: { label: inputLabels.startAt, show: true },
+  endAt: { label: inputLabels.endAt, show: true },
 };
 
 const OrganizationsContainer = ({ organizations, handleChange, counter, setCounter, disabled }) => {
@@ -62,7 +63,14 @@ const OrganizationsContainer = ({ organizations, handleChange, counter, setCount
       <MainTable
         notFoundInfo={{ text: 'Nėra sukurtų organizacijų' }}
         isFilterApplied={false}
-        data={{ data: organizationKeys.map((key) => ({ ...organizations[key], id: key })) }}
+        data={{
+          data: organizationKeys.map((key) => ({
+            ...organizations[key],
+            startAt: formatDate(organizations?.[key]?.startAt),
+            endAt: formatDate(organizations?.[key]?.endAt),
+            id: key,
+          })),
+        }}
         hidePagination={true}
         columns={organizationsLabels}
         onClick={(id) => {
@@ -83,7 +91,6 @@ const OrganizationsContainer = ({ organizations, handleChange, counter, setCount
           validationSchema={organizationsSchema}
         >
           {({ values, errors, setFieldValue }) => {
-            console.log(errors, 'errors');
             return (
               <Form>
                 <FormRow columns={1}>
