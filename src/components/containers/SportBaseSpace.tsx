@@ -168,8 +168,6 @@ const SportBaseSpaceContainer = ({
       ? sportBaseSpaceSchema(additionalFields)
       : tabs[currentTabIndex]?.validation;
 
-  console.log(validationSchema, 'validationSchema');
-
   return (
     <>
       {Object.keys(spaces).map((key, index) => {
