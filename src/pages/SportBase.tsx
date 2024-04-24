@@ -5,7 +5,7 @@ import { applyPatch, compare } from 'fast-json-patch';
 import { Formik, yupToFormErrors } from 'formik';
 import { isEmpty } from 'lodash';
 import { useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import AdditionalButtons from '../components/buttons/AdditionalButtons';
@@ -110,6 +110,7 @@ const SportBasePage = () => {
   const [status, setStatus] = useState('');
   const user = useAppSelector((state) => state.user.userData);
   const [validateOnChange, setValidateOnChange] = useState<any>({});
+  const queryClient = useQueryClient();
 
   const { isLoading: sportBaseLoading, data: sportBase } = useQuery(
     ['sportBase', id],
@@ -154,6 +155,8 @@ const SportBasePage = () => {
     {
       onSuccess: () => {
         navigate(backUrl);
+        queryClient.invalidateQueries({ queryKey: ['sportBase', id] });
+        queryClient.invalidateQueries({ queryKey: ['request', queryStringRequestId] });
       },
       retry: false,
     },
@@ -314,11 +317,7 @@ const SportBasePage = () => {
 
           const obj = {};
 
-          if (!sportBase) {
-            const requestDif = compare(initialValues, values, true);
-            extractIdKeys(requestDif);
-            processDiffs(requestDif, idKeys, 0, obj);
-          } else if (sportBase && !lastRequestApprovalOrRejection) {
+          if (sportBase && !lastRequestApprovalOrRejection) {
             const sportBaseDif = compare(sportBaseWithoutLastRequest, values, true);
             extractIdKeys(sportBaseDif);
             processDiffs(sportBaseDif, idKeys, 0, obj);
