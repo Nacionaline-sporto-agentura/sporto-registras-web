@@ -110,7 +110,7 @@ const SportBaseSpaceContainer = ({
   handleChange: any;
 }) => {
   const title = 'Pridėti sporto erdvę';
-  const [validateOnChange, setValidateOnChange] = useState({});
+  const [validateOnChange, setValidateOnChange] = useState<any>({});
   const [sportBaseSpaceTypeId, setSportBaseSpaceTypeId] = useState();
 
   const { data: additionalFields = [] } = useQuery(
@@ -164,9 +164,11 @@ const SportBaseSpaceContainer = ({
   const buttonDisabled = disabled || !sportBaseTypeId;
 
   const validationSchema =
-    tabs.length - 1 == currentTabIndex
+    currentTabs.length - 1 == currentTabIndex
       ? sportBaseSpaceSchema(additionalFields)
       : tabs[currentTabIndex]?.validation;
+
+  console.log(validationSchema, 'validationSchema');
 
   return (
     <>
@@ -211,7 +213,7 @@ const SportBaseSpaceContainer = ({
             initialValues={initialValues}
             onSubmit={onSubmit}
             validationSchema={validationSchema}
-            validateOnChange={!!validateOnChange[currentTabIndex]}
+            validateOnChange={!!validateOnChange?.all || !!validateOnChange[currentTabIndex]}
           >
             {({ values, errors, setFieldValue, setErrors }) => {
               setSportBaseSpaceTypeId(values.type?.id);
@@ -264,13 +266,13 @@ const SportBaseSpaceContainer = ({
                 ),
               };
 
-              const hasNext = tabs[currentTabIndex + 1];
-              const hasPrevious = tabs[currentTabIndex - 1];
+              const hasNext = currentTabs[currentTabIndex + 1];
+              const hasPrevious = currentTabs[currentTabIndex - 1];
 
               return (
                 <Form>
                   <Container>
-                    {containers[tabs[currentTabIndex].label]}
+                    {containers[currentTabs[currentTabIndex].label]}
                     <FormErrorMessage errors={errors} />
                     <ButtonRow>
                       {hasPrevious && (
@@ -287,19 +289,17 @@ const SportBaseSpaceContainer = ({
                         <Button
                           onClick={async () => {
                             {
-                              const partialValidationSchema = tabs[currentTabIndex]?.validation;
-
-                              partialValidationSchema
-                                .validate(values, { abortEarly: false })
-                                .then(() => setCurrentTabIndex(currentTabIndex + 1))
-                                .catch((error) => {
-                                  const updatedValidateOnChange = {
-                                    ...validateOnChange,
-                                    [currentTabIndex]: true,
-                                  };
-                                  setValidateOnChange(updatedValidateOnChange);
-                                  setErrors(yupToFormErrors(error));
-                                });
+                              try {
+                                await validationSchema?.validate(values, { abortEarly: false });
+                                setCurrentTabIndex(currentTabIndex + 1);
+                              } catch (e) {
+                                const updatedValidateOnChange = {
+                                  ...validateOnChange,
+                                  [currentTabIndex]: true,
+                                };
+                                setValidateOnChange(updatedValidateOnChange);
+                                setErrors(yupToFormErrors(e));
+                              }
                             }
                           }}
                         >
@@ -307,7 +307,31 @@ const SportBaseSpaceContainer = ({
                         </Button>
                       )}
 
-                      {!disabled && !hasNext && <Button type="submit">{buttonsTitles.save}</Button>}
+                      {!disabled && !hasNext && (
+                        <Button
+                          onClick={async () => {
+                            let errors = {};
+                            try {
+                              await validationSchema?.validate(values, { abortEarly: false });
+                            } catch (e) {
+                              const updatedValidateOnChange = {
+                                ...validateOnChange,
+                                all: true,
+                              };
+                              setValidateOnChange(updatedValidateOnChange);
+                              errors = yupToFormErrors(e);
+                            }
+
+                            setErrors(errors);
+
+                            if (isEmpty(errors)) {
+                              onSubmit(values);
+                            }
+                          }}
+                        >
+                          {buttonsTitles.save}
+                        </Button>
+                      )}
                     </ButtonRow>
                   </Container>
                 </Form>

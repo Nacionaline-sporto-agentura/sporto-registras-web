@@ -109,7 +109,7 @@ const SportBasePage = () => {
   const backUrl = isNew(id) ? slugs.unConfirmedSportBases : slugs.sportBases;
   const [status, setStatus] = useState('');
   const user = useAppSelector((state) => state.user.userData);
-  const [validateOnChange, setValidateOnChange] = useState({});
+  const [validateOnChange, setValidateOnChange] = useState<any>({});
 
   const { isLoading: sportBaseLoading, data: sportBase } = useQuery(
     ['sportBase', id],
@@ -233,14 +233,14 @@ const SportBasePage = () => {
   const validationSchema =
     tabs.length - 1 == currentTabIndex ? sportBaseSchema : tabs[currentTabIndex]?.validation;
 
-  const oldValue = isEmpty(sportBase) ? request : sportBase;
+  const oldData = isEmpty(sportBase) ? request : sportBase;
 
   return (
     <Formik
       enableReinitialize={false}
       initialValues={initialValues}
       validationSchema={validationSchema}
-      validateOnChange={!!validateOnChange[currentTabIndex]}
+      validateOnChange={!!validateOnChange?.all || !!validateOnChange[currentTabIndex]}
       onSubmit={() => {}}
     >
       {({ values, errors, setFieldValue, setErrors, setValues }) => {
@@ -299,11 +299,8 @@ const SportBasePage = () => {
             }
           }
         };
-        const sportBaseDif = compare(sportBaseWithoutLastRequest, values, true);
 
         const mergedDiffs = () => {
-          const requestDif = compare(initialValues, values, true);
-
           const idKeys = {};
 
           const extractIdKeys = (diff) => {
@@ -315,19 +312,32 @@ const SportBasePage = () => {
             }
           };
 
-          extractIdKeys(sportBaseDif);
-          extractIdKeys(requestDif);
-
           const obj = {};
 
-          processDiffs(sportBaseDif, idKeys, 0, obj);
+          if (!sportBase) {
+            const requestDif = compare(initialValues, values, true);
+            extractIdKeys(requestDif);
+            processDiffs(requestDif, idKeys, 0, obj);
+          } else if (sportBase && !lastRequestApprovalOrRejection) {
+            const sportBaseDif = compare(sportBaseWithoutLastRequest, values, true);
+            extractIdKeys(sportBaseDif);
+            processDiffs(sportBaseDif, idKeys, 0, obj);
 
-          processDiffs(requestDif, idKeys, 1, obj);
+            const requestDif = compare(initialValues, values, true);
+            extractIdKeys(requestDif);
+            processDiffs(requestDif, idKeys, 1, obj);
+          } else {
+            const sportBaseDif = compare(sportBaseWithoutLastRequest, values, true);
+            extractIdKeys(sportBaseDif);
+            processDiffs(sportBaseDif, idKeys, 0, obj);
+          }
 
           return Object.values(obj);
         };
 
         const changes = mergedDiffs();
+
+        const submitChanges = changes.map((change: any) => change[0]);
 
         const containers = {
           [sportBaseTabTitles.generalInfo]: (
@@ -403,7 +413,7 @@ const SportBasePage = () => {
                   {showDraftButton && (
                     <Button
                       onClick={() => {
-                        handleDraft(changes);
+                        handleDraft(submitChanges);
                       }}
                     >
                       {buttonsTitles.saveAsDraft}
@@ -418,7 +428,7 @@ const SportBasePage = () => {
                   status={status}
                   onSubmit={({ comment, status }) => {
                     handleSubmit({
-                      ...(status === StatusTypes.SUBMITTED && { changes }),
+                      ...(status === StatusTypes.SUBMITTED && { changes: submitChanges }),
                       status,
                       comment,
                     });
@@ -450,23 +460,19 @@ const SportBasePage = () => {
                   {hasNext && (
                     <Button
                       onClick={async () => {
-                        const partialValidationSchema = tabs[currentTabIndex]?.validation;
-                        if (!partialValidationSchema)
-                          return setCurrentTabIndex(currentTabIndex + 1);
+                        if (!validationSchema) return setCurrentTabIndex(currentTabIndex + 1);
 
-                        partialValidationSchema
-                          .validate(values, { abortEarly: false })
-                          .then(() => {
-                            setCurrentTabIndex(currentTabIndex + 1);
-                          })
-                          .catch((error) => {
-                            const updatedValidateOnChange = {
-                              ...validateOnChange,
-                              [currentTabIndex]: true,
-                            };
-                            setValidateOnChange(updatedValidateOnChange);
-                            setErrors(yupToFormErrors(error));
-                          });
+                        try {
+                          await validationSchema?.validate(values, { abortEarly: false });
+                          setCurrentTabIndex(currentTabIndex + 1);
+                        } catch (e) {
+                          const updatedValidateOnChange = {
+                            ...validateOnChange,
+                            [currentTabIndex]: true,
+                          };
+                          setValidateOnChange(updatedValidateOnChange);
+                          setErrors(yupToFormErrors(e));
+                        }
                       }}
                     >
                       {buttonsTitles.next}
@@ -476,16 +482,16 @@ const SportBasePage = () => {
                   {!disabled && !hasNext && (
                     <Button
                       onClick={async () => {
-                        let errors: any = {};
-
+                        let errors = {};
                         try {
-                          await sportBaseSchema.validate(values, { abortEarly: false });
+                          await validationSchema?.validate(values, { abortEarly: false });
                         } catch (e) {
                           const updatedValidateOnChange = {
                             ...validateOnChange,
                             all: true,
                           };
                           setValidateOnChange(updatedValidateOnChange);
+
                           errors = yupToFormErrors(e);
                         }
 
@@ -497,7 +503,7 @@ const SportBasePage = () => {
                           }
 
                           handleSubmit({
-                            changes: changes.map((change: any) => change[0]),
+                            changes: submitChanges,
                             status: StatusTypes.CREATED,
                           });
                         }
@@ -514,7 +520,7 @@ const SportBasePage = () => {
                 handleClear={() => {
                   setValues(sportBaseWithoutLastRequest);
                 }}
-                oldData={oldValue}
+                oldData={oldData}
                 requestId={request?.id}
                 disabled={disabled}
                 handleChange={setFieldValue}

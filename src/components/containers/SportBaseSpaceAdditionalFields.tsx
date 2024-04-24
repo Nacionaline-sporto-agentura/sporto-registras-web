@@ -66,6 +66,7 @@ const SportBaseSpaceAdditionalFields = ({
     }
   };
 
+  // Todo add "order" field in the backend and sort by that field
   return (
     <>
       <FormRow columns={2}>
