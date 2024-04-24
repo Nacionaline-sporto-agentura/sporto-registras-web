@@ -12,6 +12,7 @@ import Button, { ButtonColors } from '../buttons/Button';
 import AsyncSelectField from '../fields/AsyncSelectField';
 import DateField from '../fields/DateField';
 import NumericTextField from '../fields/NumericTextField';
+import { generateUniqueString } from '../fields/utils/function';
 import Popup from '../layouts/Popup';
 import MainTable from '../tables/MainTable';
 
@@ -27,7 +28,7 @@ const investmentsLabels = {
   appointedAt: { label: inputLabels.appointedAt, show: true },
 };
 
-const InvestmentsContainer = ({ investments, handleChange, counter, setCounter, disabled }) => {
+const InvestmentsContainer = ({ investments, handleChange, disabled }) => {
   const investmentKeys = Object.keys(investments);
   const [validateOnChange, setValidateOnChange] = useState(false);
 
@@ -37,14 +38,13 @@ const InvestmentsContainer = ({ investments, handleChange, counter, setCounter, 
     if (typeof values?.index !== 'undefined') {
       const { index, ...rest } = values;
 
-      const updatedOrganizations = { ...investments, [index]: rest };
+      const updatedInvestments = { ...investments, [index]: rest };
 
-      handleChange('investments', updatedOrganizations);
+      handleChange('investments', updatedInvestments);
     } else {
-      handleChange('investments', { [counter]: values, ...investments });
-      setCounter(setCounter + 1);
+      handleChange('investments', { [generateUniqueString()]: values, ...investments });
     }
-
+    setValidateOnChange(false);
     setCurrent(undefined);
   };
 

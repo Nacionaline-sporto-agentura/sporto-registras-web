@@ -10,6 +10,7 @@ import { SportBaseSpace, TypesAndFields } from '../../types';
 import api from '../../utils/api';
 import { buttonsTitles, validationTexts } from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
+import { generateUniqueString } from '../fields/utils/function';
 import Popup from '../layouts/Popup';
 import { FormErrorMessage } from '../other/FormErrorMessage';
 import SportBaseSpaceCard from '../other/SportBaseSpaceCard';
@@ -96,14 +97,9 @@ const SportBaseSpaceContainer = ({
   sportBaseTypeId,
   handleChange,
   errors,
-  sportBaseCounter,
   disabled,
-
-  setSportBaseCounter,
 }: {
-  sportBaseCounter: number;
   disabled: boolean;
-  setSportBaseCounter: (num: number) => void;
   spaces: SportBaseSpace[];
   sportBaseTypeId: number;
   errors: any;
@@ -142,12 +138,12 @@ const SportBaseSpaceContainer = ({
   const onSubmit = async (values: any) => {
     if (typeof values?.index !== 'undefined') {
       const { index, ...rest } = values;
-      spaces[index] = rest;
 
-      handleChange('spaces', spaces);
+      const updatedSpaces = { ...spaces, [index]: rest };
+
+      handleChange('spaces', updatedSpaces);
     } else {
-      handleChange('spaces', { [sportBaseCounter]: values, ...spaces });
-      setSportBaseCounter(sportBaseCounter + 1);
+      handleChange('spaces', { [generateUniqueString()]: values, ...spaces });
     }
     handleClear();
   };
@@ -216,13 +212,6 @@ const SportBaseSpaceContainer = ({
             {({ values, errors, setFieldValue, setErrors }) => {
               setSportBaseSpaceTypeId(values.type?.id);
 
-              const [sportTypesCounter, setSportTypeCounter] = useState(
-                Object.keys(values.sportTypes || {}).length,
-              );
-              const [photosCounter, setPhotosCounter] = useState(
-                Object.keys(values.sportTypes || {}).length,
-              );
-
               const containers = {
                 [sportBaseSpaceTabTitles.generalInfo]: (
                   <SportBaseSpaceGeneral
@@ -230,8 +219,6 @@ const SportBaseSpaceContainer = ({
                     sportBaseSpace={values}
                     errors={errors}
                     handleChange={setFieldValue}
-                    setCounter={setSportTypeCounter}
-                    counter={sportTypesCounter}
                     disabled={disabled}
                   />
                 ),
@@ -254,8 +241,6 @@ const SportBaseSpaceContainer = ({
                 ),
                 [sportBaseSpaceTabTitles.photos]: (
                   <PhotosContainer
-                    counter={photosCounter}
-                    setCounter={setPhotosCounter}
                     photos={values.photos}
                     errors={errors.photos}
                     handleChange={setFieldValue}

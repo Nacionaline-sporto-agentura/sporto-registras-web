@@ -5,22 +5,19 @@ import CheckBox from '../fields/CheckBox';
 import DragAndDropUploadField from '../fields/DragAndDropUploadField';
 import NumericTextField from '../fields/NumericTextField';
 import TextField from '../fields/TextField';
+import { generateUniqueString } from '../fields/utils/function';
 import SimpleContainer from '../other/SimpleContainer';
 
 const SpecificationContainer = ({
   sportBase,
   errors,
   handleChange,
-  setCounter,
-  counter,
   disabled,
 }: {
   sportBase: SportBase;
   disabled: boolean;
   errors: any;
   handleChange: any;
-  setCounter: any;
-  counter: any;
 }) => {
   const plans = sportBase?.plans || {};
   const planValues = Object.values(plans);
@@ -126,7 +123,6 @@ const SpecificationContainer = ({
             handleChange(`accommodationPlaces`, accommodationPlaces);
           }}
         />
-        
       </FormRow>
       <FormRow columns={1}>
         <CheckBox
@@ -151,7 +147,6 @@ const SpecificationContainer = ({
           disabled={disabled}
           onChange={(value: any) => {
             const filteredPlans = {};
-            let tempCounter = counter;
 
             Object.entries(plans).forEach(([key, type]) => {
               const found = value.find((c) => c.url === (type as any)?.url);
@@ -163,11 +158,9 @@ const SpecificationContainer = ({
 
             value.forEach((type) => {
               if (planValues.every((sportValue: any) => sportValue.url !== type.url)) {
-                filteredPlans[tempCounter] = type;
-                tempCounter++;
+                filteredPlans[generateUniqueString()] = type;
               }
             });
-            setCounter(tempCounter);
             handleChange('plans', filteredPlans);
           }}
           files={planValues}

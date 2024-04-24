@@ -9,22 +9,20 @@ import { inputLabels } from '../../utils/texts';
 import AsyncMultiSelect from '../fields/AsyncMultiSelect';
 import AsyncSelectField from '../fields/AsyncSelectField';
 import TextField from '../fields/TextField';
+import { generateUniqueString } from '../fields/utils/function';
 
 const SportBaseSpaceGeneralContainer = ({
   sportBaseTypeId,
   sportBaseSpace,
   errors,
   handleChange,
-  setCounter,
-  counter,
+
   disabled,
 }: {
   sportBaseTypeId: number;
   sportBaseSpace: SportBaseSpace;
   errors: any;
   handleChange: any;
-  counter: number;
-  setCounter: (num: number) => void;
   disabled: boolean;
 }) => {
   const sportTypes = sportBaseSpace?.sportTypes || {};
@@ -73,8 +71,7 @@ const SportBaseSpaceGeneralContainer = ({
 
           types.forEach((type) => {
             if (sportValues.every((sportValue: any) => sportValue.id !== type.id)) {
-              filteredSportTypes[counter] = type;
-              setCounter(counter + 1);
+              filteredSportTypes[generateUniqueString()] = type;
             }
           });
 

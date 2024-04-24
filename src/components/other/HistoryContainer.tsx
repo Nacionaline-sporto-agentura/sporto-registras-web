@@ -55,23 +55,20 @@ const getLabel = (diff: Diff, titles, oldData) => {
     const item = arr[i];
     key += arr[i] + '.';
 
-    if (!dynamicFields && !isNaN(parseFloat(item)) && isFinite(item as any)) {
+    const currentTitlesObject = tempTitles?.[item];
+
+    if (!currentTitlesObject) {
       label = [...label, get(oldData, key + labelField), ' '];
       continue;
     }
-    const currentTitlesObject = tempTitles?.[item];
-
-    dynamicFields = item === 'additionalValues';
 
     label = [...label, <BoldText>{`${currentTitlesObject?.name} `}</BoldText>];
     tempTitles = currentTitlesObject?.children;
     labelField = currentTitlesObject?.labelField;
   }
 
-  const areAllKeysNumbers = (obj = {}) =>
-    Object.keys(obj).every((key) => !isNaN(parseFloat(key)) && isFinite(key as any));
-
   const extractValue = (obj, labelField = '') => {
+
     if (labelField) return get(obj, labelField);
 
     if (dateTimeRegex.test(obj) && new Date(obj).toString() !== 'Invalid Date') {
@@ -82,32 +79,32 @@ const getLabel = (diff: Diff, titles, oldData) => {
       return JSON.stringify(obj);
     }
 
-    return obj;
+    return obj.toString();
   };
 
   const extractValues = (obj = {}, labelField) => {
+    const mapValue = (value, index, arr) =>
+      `${extractValue(value, labelField)}${index < arr.length - 1 ? ', ' : ''}`;
+
     if (Array.isArray(obj)) {
-      return obj.map((item) => extractValue(item, labelField)).toString();
+      return obj.map(mapValue).join('');
     } else if (typeof obj === 'object' && obj !== null) {
-      return Object.values(obj)
-        .map((item) => extractValue(item, labelField))
-        .toString();
+      return Object.values(obj).map(mapValue);
     } else {
       return extractValue(obj, labelField);
     }
   };
 
-  const oldValue = dynamicFields
-    ? extractValue(diff.oldValue, labelField)
-    : areAllKeysNumbers(diff.oldValue)
-    ? extractValues(diff.oldValue, labelField)
-    : extractValue(diff.oldValue, labelField);
+  const areAllKeysObjects = (obj = {}) =>
+    Object.values(obj).every((val) => typeof val === 'object');
 
-  const value = dynamicFields
-    ? extractValue(diff.value, labelField)
-    : areAllKeysNumbers(diff.value)
-    ? extractValues(diff.value, labelField)
-    : extractValue(diff.value, labelField);
+  const extractAndFormat = (diff, labelField) => {
+    const extractFunc = areAllKeysObjects(diff) ? extractValues : extractValue;
+    return extractFunc(diff, labelField);
+  };
+
+  const oldValue = extractAndFormat(diff.oldValue, labelField);
+  const value = extractAndFormat(diff.value, labelField);
 
   if (diff.op == ActionTypes.REPLACE) {
     label = [...label, ` pasikeitė iš ${oldValue} į ${value}`];
@@ -278,9 +275,11 @@ const HistoryContainer = ({
     if (currentItem.op == ActionTypes.REPLACE) {
       handleChange(formikPath, currentItem.oldValue);
     }
-    const objectPath = formikPath.slice(0, -2);
 
-    const index = formikPath.slice(-1)[0];
+    const formikPathArray = formikPath.split('.');
+    const objectPath = formikPathArray.slice(0, -1).join('.');
+
+    const index = formikPathArray.slice(-1)[0];
 
     if (currentItem.op == ActionTypes.REMOVE) {
       handleChange(objectPath, {

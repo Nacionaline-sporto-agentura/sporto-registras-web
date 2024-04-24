@@ -4,7 +4,7 @@ import { Row, TitleColumn } from '../styles/CommonStyles';
 import { applyPatch, compare } from 'fast-json-patch';
 import { Formik, yupToFormErrors } from 'formik';
 import { isEmpty } from 'lodash';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -17,6 +17,7 @@ import OwnersContainer from '../components/containers/Owners';
 import SpecificationContainer from '../components/containers/Specification';
 import SportBaseGeneral from '../components/containers/SportBaseGeneral';
 import SportBaseSpaceContainer from '../components/containers/SportBaseSpace';
+import { generateUniqueString } from '../components/fields/utils/function';
 import { FormErrorMessage } from '../components/other/FormErrorMessage';
 import FormPopUp from '../components/other/FormPopup';
 import FullscreenLoader from '../components/other/FullscreenLoader';
@@ -119,6 +120,7 @@ const SportBasePage = () => {
       onError: () => {
         navigate(slugs.sportBases);
       },
+      refetchOnWindowFocus: false,
       enabled: !isNew(id),
     },
   );
@@ -130,6 +132,7 @@ const SportBasePage = () => {
       onError: () => {
         navigate(slugs.unConfirmedSportBases);
       },
+      refetchOnWindowFocus: false,
       enabled: !!queryStringRequestId,
     },
   );
@@ -185,8 +188,8 @@ const SportBasePage = () => {
   const flattenArrays = (data: any): any => {
     if (Array.isArray(data)) {
       const obj: any = {};
-      data.forEach((item, index) => {
-        obj[index] = flattenArrays(item);
+      data.forEach((item) => {
+        obj[item.id || generateUniqueString()] = flattenArrays(item);
       });
       return obj;
     } else if (typeof data === 'object' && data !== null) {
@@ -200,17 +203,15 @@ const SportBasePage = () => {
     return data;
   };
 
-  if (sportBaseLoading || requestLoading) return <FullscreenLoader />;
-
-  const getSportBase = () => {
+  const sportBaseWithoutLastRequest = useMemo(() => {
     if (!sportBase) return {};
 
     const { lastRequest, ...rest } = sportBase;
 
-    return flattenArrays(rest);
-  };
+    return flattenArrays({ ...rest });
+  }, [sportBase]);
 
-  const sportBaseWithoutLastRequest = getSportBase();
+  if (sportBaseLoading || requestLoading) return <FullscreenLoader />;
 
   const getFormValues = () => {
     // Do not apply diff if the last request status type is APPROVED OR REJECTED
@@ -236,7 +237,7 @@ const SportBasePage = () => {
   const validationSchema =
     tabs.length - 1 == currentTabIndex ? sportBaseSchema : tabs[currentTabIndex]?.validation;
 
-  const oldData = isEmpty(sportBase) ? request : sportBase;
+  const oldData = isEmpty(sportBase) ? request : sportBaseWithoutLastRequest;
 
   return (
     <Formik
@@ -250,18 +251,6 @@ const SportBasePage = () => {
         const spaceTypeIds = (Object.values(values?.spaces || {}) as SportBase[])?.map(
           (space) => space?.type?.id,
         );
-        const [sportBaseCounter, setSportBaseCounter] = useState(
-          Object.keys(values.spaces || {}).length,
-        );
-        const [photoCounter, setPhotoCounter] = useState(Object.keys(values.photos || {}).length);
-        const [fieldsCounter, setFieldsCounter] = useState(Object.keys(values.plans || {}).length);
-        const [investmentCounter, setInvestmentCounter] = useState(
-          Object.keys(values.investments || {}).length,
-        );
-        const [organizationCounter, setOrganizationCounter] = useState(
-          Object.keys(values.organizations || {}).length,
-        );
-        const [ownersCounter, setOwnersCounter] = useState(Object.keys(values.owners || {}).length);
 
         const processDiffs = (diffs, idKeys, index, obj) => {
           for (const key of diffs) {
@@ -341,8 +330,6 @@ const SportBasePage = () => {
         const containers = {
           [sportBaseTabTitles.generalInfo]: (
             <SportBaseGeneral
-              counter={photoCounter}
-              setCounter={setPhotoCounter}
               sportBase={values}
               errors={errors}
               handleChange={setFieldValue}
@@ -351,8 +338,6 @@ const SportBasePage = () => {
           ),
           [sportBaseTabTitles.specification]: (
             <SpecificationContainer
-              counter={fieldsCounter}
-              setCounter={setFieldsCounter}
               sportBase={values}
               errors={errors}
               handleChange={setFieldValue}
@@ -361,8 +346,6 @@ const SportBasePage = () => {
           ),
           [sportBaseTabTitles.spaces]: (
             <SportBaseSpaceContainer
-              sportBaseCounter={sportBaseCounter}
-              setSportBaseCounter={setSportBaseCounter}
               spaces={values.spaces || {}}
               sportBaseTypeId={values?.type?.id}
               handleChange={setFieldValue}
@@ -374,8 +357,6 @@ const SportBasePage = () => {
             <OwnersContainer
               owners={values.owners || {}}
               handleChange={setFieldValue}
-              counter={ownersCounter}
-              setCounter={setOwnersCounter}
               disabled={disabled}
             />
           ),
@@ -383,8 +364,6 @@ const SportBasePage = () => {
             <OrganizationsContainer
               organizations={values.organizations || {}}
               handleChange={setFieldValue}
-              counter={organizationCounter}
-              setCounter={setOrganizationCounter}
               disabled={disabled}
             />
           ),
@@ -392,8 +371,6 @@ const SportBasePage = () => {
             <InvestmentsContainer
               investments={values.investments || {}}
               handleChange={setFieldValue}
-              counter={investmentCounter}
-              setCounter={setInvestmentCounter}
               disabled={disabled}
             />
           ),

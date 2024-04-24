@@ -11,6 +11,7 @@ import { buttonsTitles, formLabels, inputLabels, validationTexts } from '../../u
 import Button, { ButtonColors } from '../buttons/Button';
 import DateField from '../fields/DateField';
 import TextField from '../fields/TextField';
+import { generateUniqueString } from '../fields/utils/function';
 import Popup from '../layouts/Popup';
 import MainTable from '../tables/MainTable';
 
@@ -26,7 +27,7 @@ const organizationsLabels = {
   endAt: { label: inputLabels.endAt, show: true },
 };
 
-const OrganizationsContainer = ({ organizations, handleChange, counter, setCounter, disabled }) => {
+const OrganizationsContainer = ({ organizations, handleChange, disabled }) => {
   const organizationKeys = Object.keys(organizations);
   const [validateOnChange, setValidateOnChange] = useState(false);
   const [current, setCurrent] = useState<SportBase['organizations'] | {}>();
@@ -39,10 +40,9 @@ const OrganizationsContainer = ({ organizations, handleChange, counter, setCount
 
       handleChange('organizations', updatedOrganizations);
     } else {
-      handleChange('organizations', { [counter]: values, ...organizations });
-      setCounter(setCounter + 1);
+      handleChange('organizations', { [generateUniqueString()]: values, ...organizations });
     }
-
+    setValidateOnChange(false);
     setCurrent(undefined);
   };
 

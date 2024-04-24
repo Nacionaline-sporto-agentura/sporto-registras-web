@@ -10,6 +10,7 @@ import { buttonsTitles, formLabels, inputLabels, validationTexts } from '../../u
 import Button, { ButtonColors } from '../buttons/Button';
 import TextField from '../fields/TextField';
 import UrlField from '../fields/UrlField';
+import { generateUniqueString } from '../fields/utils/function';
 import Popup from '../layouts/Popup';
 import MainTable from '../tables/MainTable';
 
@@ -25,7 +26,7 @@ const ownersLabels = {
   website: { label: inputLabels.website, show: true },
 };
 
-const OwnersContainer = ({ owners, handleChange, counter, setCounter, disabled }) => {
+const OwnersContainer = ({ owners = {}, handleChange, disabled }) => {
   const ownerKeys = Object.keys(owners);
   const [validateOnChange, setValidateOnChange] = useState(false);
   const [current, setCurrent] = useState<SportBase['owners'] | {}>();
@@ -38,8 +39,7 @@ const OwnersContainer = ({ owners, handleChange, counter, setCounter, disabled }
 
       handleChange('owners', updatedOwners);
     } else {
-      handleChange('owners', { [counter]: values, ...owners });
-      setCounter(setCounter + 1);
+      handleChange('owners', { [generateUniqueString()]: values, ...owners });
     }
 
     setCurrent(undefined);

@@ -1,11 +1,5 @@
 import { FormRow } from '../../styles/CommonStyles';
-import {
-  Photo,
-  SportBase,
-  SportsBasesCondition,
-  SportsBasesLevel,
-  SportsBasesType,
-} from '../../types';
+import { SportBase, SportsBasesCondition, SportsBasesLevel, SportsBasesType } from '../../types';
 import {
   getSportBaseLevelsList,
   getSportBaseTechnicalConditionList,
@@ -23,19 +17,14 @@ const SportBaseGeneralContainer = ({
   sportBase,
   errors,
   handleChange,
-  setCounter,
-  counter,
   disabled,
 }: {
   disabled: boolean;
   sportBase: SportBase;
   errors: any;
   handleChange: any;
-  counter: number;
-  setCounter: (num: number) => void;
 }) => {
-  const photos = sportBase?.photos || {};
-  const photoValues = Object.values(photos);
+  const photos: any = sportBase?.photos || {};
 
   return (
     <>
@@ -138,32 +127,8 @@ const SportBaseGeneralContainer = ({
           disabled={disabled}
           name={'photos'}
           error={errors?.photos}
-          photos={photoValues}
-          onChange={(name, value: Photo[]) => {
-            if (typeof value !== 'object') {
-              return handleChange(name, value);
-            }
-
-            const filteredPhotos = {};
-            let tempCounter = counter;
-
-            Object.entries(photos).forEach(([key, type]) => {
-              const found = value.find((c) => c.url === (type as any)?.url);
-
-              if (found) {
-                filteredPhotos[key] = found;
-              }
-            });
-
-            value.forEach((type) => {
-              if (photoValues.every((sportValue: any) => sportValue.url !== type.url)) {
-                filteredPhotos[tempCounter] = type;
-                tempCounter++;
-              }
-            });
-            setCounter(tempCounter);
-            handleChange(name, filteredPhotos);
-          }}
+          photos={photos}
+          onChange={handleChange}
         />
       </SimpleContainer>
     </>

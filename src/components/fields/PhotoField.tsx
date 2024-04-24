@@ -16,12 +16,14 @@ export interface PhotoFielProps {
   disabled?: boolean;
   index: number;
   onChange: (name: string, props: any) => void;
+  photoKey: string;
 }
 
 const PhotoField = ({
   handleDelete,
   handleSetRepresentative,
   disabled = false,
+  photoKey,
   index,
   photo,
   onChange,
@@ -38,7 +40,7 @@ const PhotoField = ({
           {representative ? inputLabels.isRepresentative : inputLabels.makeRepresentative}
         </IconText>
       </ItemRow>
-      <ItemRow onClick={() => onChange(`photos.${index}.public`, !isPublic)}>
+      <ItemRow onClick={() => onChange(`photos.${photoKey}.public`, !isPublic)}>
         <StyledIcon name={isPublic ? IconName.visibleOn : IconName.visibleOff} />
         <IconText>{isPublic ? inputLabels.isPublic : inputLabels.makePublic}</IconText>
       </ItemRow>
@@ -51,7 +53,7 @@ const PhotoField = ({
         onDelete: () => handleDelete(index),
         title: Additional,
       })}
-      key={`photo-${index}`}
+      key={`photo-${photoKey}`}
     >
       <ContentRow>
         <StyledImg
@@ -70,7 +72,7 @@ const PhotoField = ({
           label={inputLabels.description}
           value={description}
           name="name"
-          onChange={(input) => onChange(`photos.${index}.description`, input)}
+          onChange={(input) => onChange(`photos.${photoKey}.description`, input)}
         />
       </ContentRow>
       {loading && (
