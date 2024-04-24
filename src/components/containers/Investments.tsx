@@ -29,6 +29,7 @@ const investmentsLabels = {
 
 const InvestmentsContainer = ({ investments, handleChange, counter, setCounter, disabled }) => {
   const investmentKeys = Object.keys(investments);
+  const [validateOnChange, setValidateOnChange] = useState(false);
 
   const [current, setCurrent] = useState<SportBase['investments'] | {}>();
 
@@ -57,7 +58,7 @@ const InvestmentsContainer = ({ investments, handleChange, counter, setCounter, 
         </TableButtonsInnerRow>
         {!disabled && (
           <Button disabled={disabled} onClick={() => setCurrent({})}>
-            {buttonsTitles.addOrganization}
+            {buttonsTitles.addInvestment}
           </Button>
         )}
       </TableButtonsRow>
@@ -85,10 +86,13 @@ const InvestmentsContainer = ({ investments, handleChange, counter, setCounter, 
         onClose={() => setCurrent(undefined)}
       >
         <Formik
-          validateOnChange={false}
+          validateOnChange={validateOnChange}
           enableReinitialize={false}
           initialValues={initialValues}
           onSubmit={onSubmit}
+          validate={() => {
+            setValidateOnChange(true);
+          }}
           validationSchema={investmentsSchema}
         >
           {({ values, errors, setFieldValue }) => {

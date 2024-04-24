@@ -107,7 +107,6 @@ export interface SportBase {
   blindAccessible: boolean;
   plotArea?: number;
   builtPlotArea?: number;
-  audienceSeats?: number;
   parkingPlaces?: number;
   dressingRooms?: number;
   methodicalClasses?: number;

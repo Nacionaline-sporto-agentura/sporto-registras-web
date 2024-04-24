@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import { Row, TitleColumn } from '../styles/CommonStyles';
 
-import { applyPatch, compare, Operation } from 'fast-json-patch';
+import { applyPatch, compare } from 'fast-json-patch';
 import { Formik, yupToFormErrors } from 'formik';
 import { isEmpty } from 'lodash';
 import { useState } from 'react';
@@ -22,10 +22,11 @@ import FormPopUp from '../components/other/FormPopup';
 import FullscreenLoader from '../components/other/FullscreenLoader';
 import HistoryContainer, { ActionTypes } from '../components/other/HistoryContainer';
 import TabBar from '../components/Tabs/TabBar';
+import { useAppSelector } from '../state/hooks';
 import { device } from '../styles';
 import { SportBase } from '../types';
 import api from '../utils/api';
-import { StatusTypes } from '../utils/constants';
+import { AdminRoleType, StatusTypes } from '../utils/constants';
 import { isNew } from '../utils/functions';
 import { slugs } from '../utils/routes';
 import { buttonsTitles, validationTexts } from '../utils/texts';
@@ -52,7 +53,7 @@ const specificationSxhema = Yup.object().shape({
   plotNumber: Yup.string().required(validationTexts.requireText),
   plotArea: Yup.string().required(validationTexts.requireText),
   builtPlotArea: Yup.string().required(validationTexts.requireText),
-  audienceSeats: Yup.string().required(validationTexts.requireText),
+  methodicalClasses: Yup.string().required(validationTexts.requireText),
   parkingPlaces: Yup.string().required(validationTexts.requireText),
   dressingRooms: Yup.string().required(validationTexts.requireText),
   saunas: Yup.string().required(validationTexts.requireText),
@@ -100,13 +101,15 @@ export const tabs = [
 
 const SportBasePage = () => {
   const navigate = useNavigate();
-  const [currentTab, setCurrentTab] = useState(0);
+  const [currentTabIndex, setCurrentTabIndex] = useState(0);
   const { id = '' } = useParams();
   const [searchParams] = useSearchParams();
   const title = isNew(id) ? 'Įregistruoti naują sporto bazę' : 'Atnaujinti sporto bazę';
   const { prasymas: queryStringRequestId } = Object.fromEntries([...Array.from(searchParams)]);
   const backUrl = isNew(id) ? slugs.unConfirmedSportBases : slugs.sportBases;
   const [status, setStatus] = useState('');
+  const user = useAppSelector((state) => state.user.userData);
+  const [validateOnChange, setValidateOnChange] = useState({});
 
   const { isLoading: sportBaseLoading, data: sportBase } = useQuery(
     ['sportBase', id],
@@ -186,6 +189,9 @@ const SportBasePage = () => {
     } else if (typeof data === 'object' && data !== null) {
       for (let key in data) {
         data[key] = flattenArrays(data[key]);
+        if (['createdAt', 'createdBy', 'deletedAt', 'deletedBy', 'sportBase'].includes(key)) {
+          delete data[key];
+        }
       }
     }
     return data;
@@ -219,13 +225,22 @@ const SportBasePage = () => {
   const disabled = !canEdit;
 
   const showDraftButton =
-    isNewRequest || [request?.status].includes(StatusTypes.DRAFT) || lastRequestApprovalOrRejection;
+    user.type === AdminRoleType.USER &&
+    (isNewRequest ||
+      [request?.status].includes(StatusTypes.DRAFT) ||
+      lastRequestApprovalOrRejection);
+
+  const validationSchema =
+    tabs.length - 1 == currentTabIndex ? sportBaseSchema : tabs[currentTabIndex]?.validation;
+
+  const oldValue = isEmpty(sportBase) ? request : sportBase;
 
   return (
     <Formik
       enableReinitialize={false}
       initialValues={initialValues}
-      validateOnChange={false}
+      validationSchema={validationSchema}
+      validateOnChange={!!validateOnChange[currentTabIndex]}
       onSubmit={() => {}}
     >
       {({ values, errors, setFieldValue, setErrors, setValues }) => {
@@ -245,62 +260,74 @@ const SportBasePage = () => {
         );
         const [ownersCounter, setOwnersCounter] = useState(Object.keys(values.owners || {}).length);
 
-        const dif = compare(sportBaseWithoutLastRequest, values, true);
+        const processDiffs = (diffs, idKeys, index, obj) => {
+          for (const key of diffs) {
+            const pathArr = key.path.split('/');
+            const prop = pathArr.pop() || '';
+            const parentPath = pathArr.join('/');
+            const item = key;
 
-        const mergedDiffs: Operation[] = Object.values(
-          dif.reduce((obj, curr) => {
-            obj[curr.path] = obj[curr.path] || {};
+            const actionType = item.op === ActionTypes.TEST ? 'oldValue' : 'value';
+            const currentOperation = item.op !== ActionTypes.TEST ? item.op : undefined;
+            const isParentPath = !!idKeys[parentPath];
+            const path = isParentPath ? parentPath : item.path;
+            const curr = obj[path]?.[index];
+            const entry = {
+              path,
+              op: curr?.op || currentOperation,
+              oldValue: isParentPath ? { ...(curr?.oldValue || {}) } : curr?.oldValue,
+              value: isParentPath ? { ...(curr?.value || {}) } : curr?.value,
+            };
 
-            if (curr.op === ActionTypes.TEST) {
-              obj[curr.path] = { ...obj[curr.path], oldValue: curr.value };
+            if (idKeys[parentPath]) {
+              entry[actionType][prop] = item.value;
             } else {
-              obj[curr.path] = { ...obj[curr.path], ...curr };
+              entry[actionType] = item.value;
             }
 
-            return obj;
-          }, {}),
-        );
+            if (index !== 0 && (!obj[path] || !obj[path][0])) {
+              // If the 0 index element doesn't exist, don't create the 1 index element
+              continue;
+            }
 
-        const preprocessJsonPatch = (patchOps: Operation[]) => {
-          const idKeys = {};
-
-          const diffs: any = [];
-
-          for (const item of patchOps) {
-            if (item.path.endsWith('/id')) {
-              const parentPath = item.path.replace('/id', '');
-              idKeys[parentPath] = 1;
+            if (idKeys[parentPath]) {
+              obj[parentPath] = obj[parentPath] || [];
+              obj[parentPath][index] = entry;
+            } else {
+              obj[item.path] = obj[item.path] || [];
+              obj[item.path][index] = entry;
             }
           }
+        };
+        const sportBaseDif = compare(sportBaseWithoutLastRequest, values, true);
 
-          const mergedObjects = Object.values(
-            patchOps.reduce((acc, curr) => {
-              const { path, ...rest } = curr as any;
-              const key = path.split('/');
-              const prop = key.pop();
-              const parentPath = key.join('/');
+        const mergedDiffs = () => {
+          const requestDif = compare(initialValues, values, true);
 
-              if (idKeys[parentPath]) {
-                acc[parentPath] = {
-                  path: parentPath,
-                  op: curr.op,
-                  oldValue: { ...(acc[parentPath]?.oldValue || {}), [prop]: rest?.oldValue },
-                  value: { ...(acc[parentPath]?.value || {}), [prop]: rest?.value },
-                };
-              } else {
-                diffs.push(curr);
+          const idKeys = {};
+
+          const extractIdKeys = (diff) => {
+            for (const key of diff) {
+              if (key.path.endsWith('/id')) {
+                const parentPath = key.path.replace('/id', '');
+                idKeys[parentPath] = 1;
               }
+            }
+          };
 
-              return acc;
-            }, {}),
-          );
+          extractIdKeys(sportBaseDif);
+          extractIdKeys(requestDif);
 
-          diffs.push(...mergedObjects);
+          const obj = {};
 
-          return diffs;
+          processDiffs(sportBaseDif, idKeys, 0, obj);
+
+          processDiffs(requestDif, idKeys, 1, obj);
+
+          return Object.values(obj);
         };
 
-        const changes = preprocessJsonPatch(mergedDiffs);
+        const changes = mergedDiffs();
 
         const containers = {
           [sportBaseTabTitles.generalInfo]: (
@@ -363,8 +390,8 @@ const SportBasePage = () => {
           ),
         };
 
-        const hasNext = tabs[currentTab + 1];
-        const hasPrevious = tabs[currentTab - 1];
+        const hasNext = tabs[currentTabIndex + 1];
+        const hasPrevious = tabs[currentTabIndex - 1];
 
         return (
           <Container>
@@ -402,16 +429,18 @@ const SportBasePage = () => {
               <Column>
                 <TabBar
                   tabs={tabs}
-                  onClick={(_, index) => setCurrentTab(index || 0)}
-                  isActive={(_, index) => currentTab == index}
+                  onClick={(_, index) => {
+                    setCurrentTabIndex(index || 0);
+                  }}
+                  isActive={(_, index) => currentTabIndex == index}
                 />
-                {containers[tabs[currentTab]?.label]}
+                {containers[tabs[currentTabIndex]?.label]}
                 <FormErrorMessage errors={errors} />
                 <ButtonRow>
                   {hasPrevious && (
                     <Button
                       onClick={async () => {
-                        setCurrentTab(currentTab - 1);
+                        setCurrentTabIndex(currentTabIndex - 1);
                       }}
                     >
                       {buttonsTitles.back}
@@ -421,13 +450,21 @@ const SportBasePage = () => {
                   {hasNext && (
                     <Button
                       onClick={async () => {
-                        const partialValidationSchema = tabs[currentTab]?.validation;
-                        if (!partialValidationSchema) return setCurrentTab(currentTab + 1);
+                        const partialValidationSchema = tabs[currentTabIndex]?.validation;
+                        if (!partialValidationSchema)
+                          return setCurrentTabIndex(currentTabIndex + 1);
 
                         partialValidationSchema
                           .validate(values, { abortEarly: false })
-                          .then(() => setCurrentTab(currentTab + 1))
+                          .then(() => {
+                            setCurrentTabIndex(currentTabIndex + 1);
+                          })
                           .catch((error) => {
+                            const updatedValidateOnChange = {
+                              ...validateOnChange,
+                              [currentTabIndex]: true,
+                            };
+                            setValidateOnChange(updatedValidateOnChange);
                             setErrors(yupToFormErrors(error));
                           });
                       }}
@@ -444,6 +481,11 @@ const SportBasePage = () => {
                         try {
                           await sportBaseSchema.validate(values, { abortEarly: false });
                         } catch (e) {
+                          const updatedValidateOnChange = {
+                            ...validateOnChange,
+                            all: true,
+                          };
+                          setValidateOnChange(updatedValidateOnChange);
                           errors = yupToFormErrors(e);
                         }
 
@@ -455,7 +497,7 @@ const SportBasePage = () => {
                           }
 
                           handleSubmit({
-                            changes,
+                            changes: changes.map((change: any) => change[0]),
                             status: StatusTypes.CREATED,
                           });
                         }
@@ -472,6 +514,7 @@ const SportBasePage = () => {
                 handleClear={() => {
                   setValues(sportBaseWithoutLastRequest);
                 }}
+                oldData={oldValue}
                 requestId={request?.id}
                 disabled={disabled}
                 handleChange={setFieldValue}

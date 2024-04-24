@@ -650,7 +650,8 @@ class Api {
   getSportBaseSpaceTypes = async ({ page, filter, query }) =>
     await this.getList({
       page,
-      fields: ['id', 'name'],
+      fields: ['id', 'name', 'type'],
+
       query,
       filter,
       resource: Resources.SPACE_TYPES,

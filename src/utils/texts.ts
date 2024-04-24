@@ -104,7 +104,6 @@ export const inputLabels = {
   methodicalClasses: 'Metodinių klasių skaičius',
   diningPlaces: 'Maitinimo vietų skaičius',
   accommodationPlaces: 'Apgyvendinimo vietų skaičius',
-  audienceSeats: 'Žiūrovų vietų skaičius',
   saunas: 'Pirties patalpų skaičius',
   parkingPlaces: 'Automobilių aikštelės vietų skaičius',
   dressingRooms: 'Persirengimo patalpų skaičius',

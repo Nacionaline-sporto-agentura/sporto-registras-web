@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAppSelector } from '../../state/hooks';
 import { useGetCurrentProfile, useLogoutMutation } from '../../utils/hooks';
+import { handleSelectProfile } from '../../utils/loginFunctions';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles } from '../../utils/texts';
 import Icon, { IconName } from './Icons';
@@ -22,6 +23,7 @@ const ProfilesDropdown = () => {
 
   const handleProfileChange = (profileId) => {
     window.location.href = `/profiliai/${profileId}`;
+    handleSelectProfile(profileId);
   };
 
   return (

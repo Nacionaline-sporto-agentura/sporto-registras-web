@@ -31,7 +31,6 @@ const cookies = new Cookies();
 
 function App() {
   const loggedIn = useAppSelector((state) => state.user.loggedIn);
-  const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { ticket } = Object.fromEntries([...Array.from(searchParams)]);
@@ -110,12 +109,17 @@ interface ProtectedRouteProps {
 
 const PublicRoute = ({ loggedIn }: ProtectedRouteProps) => {
   const profileId = cookies.get('profileId');
-
+  const location = useLocation();
+  const isProfilesPathname = slugs.profiles === location.pathname;
   const user = useAppSelector((state) => state.user.userData);
 
   const userWithoutProfile = loggedIn && user.type == AdminRoleType.USER && !profileId;
 
-  if (loggedIn && !userWithoutProfile) {
+  if (loggedIn) {
+    if (!userWithoutProfile) return <Navigate to={'/'} replace />;
+
+    if (userWithoutProfile && !isProfilesPathname) return <Navigate to={slugs.profiles} replace />;
+  } else if (isProfilesPathname) {
     return <Navigate to={'/'} replace />;
   }
 

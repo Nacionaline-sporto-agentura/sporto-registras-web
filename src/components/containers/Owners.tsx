@@ -27,7 +27,7 @@ const ownersLabels = {
 
 const OwnersContainer = ({ owners, handleChange, counter, setCounter, disabled }) => {
   const ownerKeys = Object.keys(owners);
-
+  const [validateOnChange, setValidateOnChange] = useState(false);
   const [current, setCurrent] = useState<SportBase['owners'] | {}>();
 
   const onSubmit = async (values: any) => {
@@ -72,9 +72,12 @@ const OwnersContainer = ({ owners, handleChange, counter, setCounter, disabled }
         onClose={() => setCurrent(undefined)}
       >
         <Formik
-          validateOnChange={false}
+          validateOnChange={validateOnChange}
           enableReinitialize={false}
           initialValues={initialValues}
+          validate={() => {
+            setValidateOnChange(true);
+          }}
           onSubmit={onSubmit}
           validationSchema={ownersSchema}
         >

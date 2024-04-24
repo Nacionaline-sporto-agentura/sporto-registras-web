@@ -28,7 +28,7 @@ const organizationsLabels = {
 
 const OrganizationsContainer = ({ organizations, handleChange, counter, setCounter, disabled }) => {
   const organizationKeys = Object.keys(organizations);
-
+  const [validateOnChange, setValidateOnChange] = useState(false);
   const [current, setCurrent] = useState<SportBase['organizations'] | {}>();
 
   const onSubmit = async (values: any) => {
@@ -84,9 +84,12 @@ const OrganizationsContainer = ({ organizations, handleChange, counter, setCount
         onClose={() => setCurrent(undefined)}
       >
         <Formik
-          validateOnChange={false}
+          validateOnChange={validateOnChange}
           enableReinitialize={false}
           initialValues={initialValues}
+          validate={() => {
+            setValidateOnChange(true);
+          }}
           onSubmit={onSubmit}
           validationSchema={organizationsSchema}
         >

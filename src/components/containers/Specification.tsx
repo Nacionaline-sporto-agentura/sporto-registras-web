@@ -105,7 +105,7 @@ const SpecificationContainer = ({
           }}
         />
       </FormRow>
-      <FormRow>
+      <FormRow columns={2}>
         <NumericTextField
           disabled={disabled}
           label={inputLabels.diningPlaces}
@@ -126,16 +126,7 @@ const SpecificationContainer = ({
             handleChange(`accommodationPlaces`, accommodationPlaces);
           }}
         />
-        <NumericTextField
-          disabled={disabled}
-          label={inputLabels.audienceSeats}
-          value={sportBase?.audienceSeats}
-          error={errors?.audienceSeats}
-          name="audienceSeats"
-          onChange={(audienceSeats) => {
-            handleChange(`audienceSeats`, audienceSeats);
-          }}
-        />
+        
       </FormRow>
       <FormRow columns={1}>
         <CheckBox

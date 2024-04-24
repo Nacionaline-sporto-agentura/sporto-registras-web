@@ -1,12 +1,12 @@
 import * as Yup from 'yup';
 
-import { Formik, yupToFormErrors } from 'formik';
+import { Form, Formik, yupToFormErrors } from 'formik';
 import { isEmpty, omit } from 'lodash';
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
 import { device } from '../../styles';
-import { SportBaseSpace } from '../../types';
+import { SportBaseSpace, TypesAndFields } from '../../types';
 import api from '../../utils/api';
 import { buttonsTitles, validationTexts } from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
@@ -49,11 +49,22 @@ const photosSchema = Yup.object().shape({
   ),
 });
 
-const sportBaseSpaceSchema = Yup.object()
-  .shape({})
-  .concat(generalSchema)
-  .concat(buildingParametersSchema)
-  .concat(photosSchema);
+const getValidationSchema = (additionalFields: TypesAndFields[]) => {
+  const fieldValidations = (additionalFields || []).reduce((validations, item) => {
+    validations[item?.id] = Yup.string().required(validationTexts.requireText);
+    return validations;
+  }, {});
+  return Yup.object().shape({ additionalValues: Yup.object().shape(fieldValidations) });
+};
+
+const sportBaseSpaceSchema = (additionalFields: TypesAndFields[]) => {
+  return Yup.object()
+    .shape({})
+    .concat(generalSchema)
+    .concat(buildingParametersSchema)
+    .concat(photosSchema)
+    .concat(getValidationSchema(additionalFields));
+};
 
 export const sportBaseSpaceTabTitles = {
   generalInfo: 'Bendra informacija',
@@ -62,18 +73,23 @@ export const sportBaseSpaceTabTitles = {
   photos: 'Nuotraukos',
 };
 
-export const tabs = [
-  {
-    label: sportBaseSpaceTabTitles.generalInfo,
-    validation: generalSchema,
-  },
-  {
-    label: sportBaseSpaceTabTitles.buildingParameters,
-    validation: buildingParametersSchema,
-  },
-  { label: sportBaseSpaceTabTitles.additionalFields },
-  { label: sportBaseSpaceTabTitles.photos, validation: photosSchema },
-];
+export const getTabs = (additionalFields: TypesAndFields[]) => {
+  return [
+    {
+      label: sportBaseSpaceTabTitles.generalInfo,
+      validation: generalSchema,
+    },
+    {
+      label: sportBaseSpaceTabTitles.buildingParameters,
+      validation: buildingParametersSchema,
+    },
+    {
+      label: sportBaseSpaceTabTitles.additionalFields,
+      validation: getValidationSchema(additionalFields),
+    },
+    { label: sportBaseSpaceTabTitles.photos, validation: photosSchema },
+  ];
+};
 
 const SportBaseSpaceContainer = ({
   spaces,
@@ -94,15 +110,34 @@ const SportBaseSpaceContainer = ({
   handleChange: any;
 }) => {
   const title = 'Pridėti sporto erdvę';
-  const [currentTabs, setCurrentTabs] = useState(
-    tabs.filter((tabs) => {
-      return tabs.label !== sportBaseSpaceTabTitles.additionalFields;
-    }),
+  const [validateOnChange, setValidateOnChange] = useState({});
+  const [sportBaseSpaceTypeId, setSportBaseSpaceTypeId] = useState();
+
+  const { data: additionalFields = [] } = useQuery(
+    ['additionalFields', sportBaseSpaceTypeId],
+    async () => {
+      return api.getFields({ query: { type: sportBaseSpaceTypeId } });
+    },
+
+    {
+      onSuccess: (additionalFields) => {
+        const tabs = getTabs(additionalFields);
+        setCurrentTabs(tabs);
+      },
+      enabled: !!sportBaseSpaceTypeId,
+    },
   );
+
+  const tabs = getTabs(additionalFields);
+  const tabsWithoutAdditionalFields = tabs.filter((tabs) => {
+    return tabs.label !== sportBaseSpaceTabTitles.additionalFields;
+  });
+
+  const [currentTabs, setCurrentTabs] = useState(tabsWithoutAdditionalFields);
 
   const [current, setCurrent] = useState<SportBaseSpace | {}>();
 
-  const [currentTab, setCurrentTab] = useState(0);
+  const [currentTabIndex, setCurrentTabIndex] = useState(0);
 
   const onSubmit = async (values: any) => {
     if (typeof values?.index !== 'undefined') {
@@ -114,12 +149,24 @@ const SportBaseSpaceContainer = ({
       handleChange('spaces', { [sportBaseCounter]: values, ...spaces });
       setSportBaseCounter(sportBaseCounter + 1);
     }
+    handleClear();
+  };
 
+  const handleClear = () => {
+    setValidateOnChange({});
     setCurrent(undefined);
+    setSportBaseSpaceTypeId(undefined);
+    setCurrentTabs(tabsWithoutAdditionalFields);
+    setCurrentTabIndex(0);
   };
 
   const initialValues: any = current || {};
   const buttonDisabled = disabled || !sportBaseTypeId;
+
+  const validationSchema =
+    tabs.length - 1 == currentTabIndex
+      ? sportBaseSpaceSchema(additionalFields)
+      : tabs[currentTabIndex]?.validation;
 
   return (
     <>
@@ -152,40 +199,28 @@ const SportBaseSpaceContainer = ({
       >
         {buttonsTitles.addSportBaseSpace}
       </StyledButton>
-      <Popup title={title} visible={!!current} onClose={() => setCurrent(undefined)}>
+      <Popup title={title} visible={!!current} onClose={handleClear}>
         <Container>
           <TabBar
             tabs={currentTabs}
-            onClick={(_, index) => setCurrentTab(index || 0)}
-            isActive={(_, index) => currentTab == index}
+            onClick={(_, index) => setCurrentTabIndex(index || 0)}
+            isActive={(_, index) => currentTabIndex == index}
           />
           <Formik
-            validateOnChange={false}
             enableReinitialize={false}
             initialValues={initialValues}
             onSubmit={onSubmit}
-            validationSchema={sportBaseSpaceSchema}
+            validationSchema={validationSchema}
+            validateOnChange={!!validateOnChange[currentTabIndex]}
           >
-            {({ values, errors, setFieldValue, validateForm, setErrors }) => {
-              const sportBaseSpaceTypeId = values.type?.id;
+            {({ values, errors, setFieldValue, setErrors }) => {
+              setSportBaseSpaceTypeId(values.type?.id);
 
               const [sportTypesCounter, setSportTypeCounter] = useState(
                 Object.keys(values.sportTypes || {}).length,
               );
               const [photosCounter, setPhotosCounter] = useState(
                 Object.keys(values.sportTypes || {}).length,
-              );
-
-              const { data: additionalFields = [] } = useQuery(
-                ['additionalFields', sportBaseSpaceTypeId],
-                async () => {
-                  setCurrentTabs(tabs);
-
-                  return api.getFields({ query: { type: sportBaseSpaceTypeId } });
-                },
-                {
-                  enabled: !!sportBaseSpaceTypeId,
-                },
               );
 
               const containers = {
@@ -229,85 +264,53 @@ const SportBaseSpaceContainer = ({
                 ),
               };
 
-              const hasNext = tabs[currentTab + 1];
-              const hasPrevious = tabs[currentTab - 1];
+              const hasNext = tabs[currentTabIndex + 1];
+              const hasPrevious = tabs[currentTabIndex - 1];
 
               return (
-                <Container>
-                  {containers[tabs[currentTab].label]}
-                  <FormErrorMessage errors={errors} />
-                  <ButtonRow>
-                    {hasPrevious && (
-                      <Button
-                        onClick={async () => {
-                          setCurrentTab(currentTab - 1);
-                        }}
-                      >
-                        {buttonsTitles.back}
-                      </Button>
-                    )}
+                <Form>
+                  <Container>
+                    {containers[tabs[currentTabIndex].label]}
+                    <FormErrorMessage errors={errors} />
+                    <ButtonRow>
+                      {hasPrevious && (
+                        <Button
+                          onClick={async () => {
+                            setCurrentTabIndex(currentTabIndex - 1);
+                          }}
+                        >
+                          {buttonsTitles.back}
+                        </Button>
+                      )}
 
-                    {hasNext && (
-                      <Button
-                        onClick={async () => {
-                          {
-                            const partialValidationSchema = tabs[currentTab]?.validation;
-                            if (!partialValidationSchema) {
-                              const errors: any = {};
+                      {hasNext && (
+                        <Button
+                          onClick={async () => {
+                            {
+                              const partialValidationSchema = tabs[currentTabIndex]?.validation;
 
-                              additionalFields.forEach((item) => {
-                                if (typeof values?.additionalValues?.[item?.id] === 'undefined') {
-                                  errors.additionalValues = errors.additionalValues || {};
-
-                                  errors.additionalValues[item?.id] = validationTexts.requireText;
-                                }
-                              });
-
-                              if (isEmpty(errors)) {
-                                setCurrentTab(currentTab + 1);
-                              }
-
-                              return setErrors(errors);
+                              partialValidationSchema
+                                .validate(values, { abortEarly: false })
+                                .then(() => setCurrentTabIndex(currentTabIndex + 1))
+                                .catch((error) => {
+                                  const updatedValidateOnChange = {
+                                    ...validateOnChange,
+                                    [currentTabIndex]: true,
+                                  };
+                                  setValidateOnChange(updatedValidateOnChange);
+                                  setErrors(yupToFormErrors(error));
+                                });
                             }
+                          }}
+                        >
+                          {buttonsTitles.next}
+                        </Button>
+                      )}
 
-                            partialValidationSchema
-                              .validate(values, { abortEarly: false })
-                              .then(() => setCurrentTab(currentTab + 1))
-                              .catch((error) => {
-                                setErrors(yupToFormErrors(error));
-                              });
-                          }
-                        }}
-                      >
-                        {buttonsTitles.next}
-                      </Button>
-                    )}
-
-                    {!disabled && !hasNext && (
-                      <Button
-                        onClick={async (e) => {
-                          const errors = (await validateForm(values)) as any;
-
-                          additionalFields.forEach((item) => {
-                            if (typeof values?.additionalValues?.[item?.id] === 'undefined') {
-                              errors.additionalValues = errors.additionalValues || {};
-
-                              errors.additionalValues[item?.id] = validationTexts.requireText;
-                            }
-                          });
-
-                          setErrors(errors);
-
-                          if (isEmpty(errors)) {
-                            onSubmit(values);
-                          }
-                        }}
-                      >
-                        {buttonsTitles.save}
-                      </Button>
-                    )}
-                  </ButtonRow>
-                </Container>
+                      {!disabled && !hasNext && <Button type="submit">{buttonsTitles.save}</Button>}
+                    </ButtonRow>
+                  </Container>
+                </Form>
               );
             }}
           </Formik>

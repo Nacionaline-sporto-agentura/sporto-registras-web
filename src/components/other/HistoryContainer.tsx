@@ -37,7 +37,7 @@ export interface Diff {
   oldValue: any;
 }
 
-const getLabel = (diff: Diff, titles) => {
+const getLabel = (diff: Diff, titles, oldData) => {
   let arr = diff.path.split('/').slice(1);
 
   if (diff.op == ActionTypes.REMOVE) {
@@ -47,13 +47,16 @@ const getLabel = (diff: Diff, titles) => {
   let label: any[] = [];
   let tempTitles = { ...titles };
   let labelField = '';
+  let key = '';
+
   let dynamicFields = false;
 
   for (let i = 0; i < arr.length; i++) {
     const item = arr[i];
+    key += arr[i] + '.';
 
     if (!dynamicFields && !isNaN(parseFloat(item)) && isFinite(item as any)) {
-      label = [...label, <BoldText>{arr[i]}</BoldText>, ` eilutėje `];
+      label = [...label, get(oldData, key + labelField), ' '];
       continue;
     }
     const currentTitlesObject = tempTitles?.[item];
@@ -62,7 +65,6 @@ const getLabel = (diff: Diff, titles) => {
 
     label = [...label, <BoldText>{`${currentTitlesObject?.name} `}</BoldText>];
     tempTitles = currentTitlesObject?.children;
-
     labelField = currentTitlesObject?.labelField;
   }
 
@@ -126,6 +128,7 @@ const HistoryContainer = ({
   diff,
   handleChange,
   data,
+  oldData,
   spaceTypeIds,
   disabled,
   open,
@@ -134,9 +137,10 @@ const HistoryContainer = ({
 }: {
   spaceTypeIds: number[];
   disabled: boolean;
-  diff: Diff[];
+  diff: Diff[][];
   handleChange: any;
   data: any;
+  oldData?: any;
   open: boolean;
   requestId: any;
   handleClear: () => void;
@@ -157,6 +161,7 @@ const HistoryContainer = ({
     (data) => api.getRequestHistory({ ...data, id: requestId }),
     observerRef,
     {},
+    !!requestId,
   );
 
   const titles = {
@@ -167,6 +172,7 @@ const HistoryContainer = ({
       children: {
         representative: { name: inputLabels.representative },
         public: { name: inputLabels.public },
+        description: { name: inputLabels.description },
       },
     },
     address: { name: inputLabels.address },
@@ -190,7 +196,6 @@ const HistoryContainer = ({
     saunas: { name: inputLabels.saunas },
     diningPlaces: { name: inputLabels.diningPlaces },
     accommodationPlaces: { name: inputLabels.accommodationPlaces },
-    audienceSeats: { name: inputLabels.audienceSeats },
     disabledAccessible: { name: descriptions.disabledAccessible },
     blindAccessible: { name: descriptions.blindAccessible },
     publicWifi: { name: descriptions.publicWifi },
@@ -235,6 +240,7 @@ const HistoryContainer = ({
           children: {
             representative: { name: inputLabels.representative },
             public: { name: inputLabels.public },
+            description: { name: inputLabels.description },
           },
         },
         technicalCondition: { name: inputLabels.technicalCondition, labelField: 'name' },
@@ -309,13 +315,14 @@ const HistoryContainer = ({
           )}
           <Container>
             {diff.map((item, index) => {
+              const lastItemIndex = item.length - 1;
               return (
                 <Column key={`changes-${index}`}>
-                  <Text>{getLabel(item, titles)}</Text>
+                  <Text>{getLabel(item[lastItemIndex], titles, oldData)}</Text>
                   {!disabled && (
-                    <ContentRow onClick={() => handleAction(item)}>
+                    <ContentRow onClick={() => handleAction(item[lastItemIndex])}>
                       <StyledIcon name={IconName.close} />
-                      <div>Anuliuoti pakeitimą</div>
+                      <div>{lastItemIndex ? 'Atstatyti' : 'Atstatyti į pradinę būseną'}</div>
                     </ContentRow>
                   )}
                   <Line />

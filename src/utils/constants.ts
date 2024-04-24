@@ -38,7 +38,7 @@ export enum Apps {
 
 export enum FieldTypes {
   SELECT = 'SELECT',
-  TEXT = 'TEXT',
+  TEXT_AREA = 'TEXT_AREA',
   BOOLEAN = 'BOOLEAN',
   NUMBER = 'NUMBER',
   DECIMAL = 'DECIMAL',
