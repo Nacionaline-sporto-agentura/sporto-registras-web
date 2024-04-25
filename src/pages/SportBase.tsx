@@ -3,7 +3,7 @@ import { Row, TitleColumn } from '../styles/CommonStyles';
 
 import { applyPatch, compare } from 'fast-json-patch';
 import { Formik, yupToFormErrors } from 'formik';
-import { isEmpty } from 'lodash';
+import { cloneDeep, isEmpty } from 'lodash';
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -16,8 +16,9 @@ import OrganizationsContainer from '../components/containers/Organizations';
 import OwnersContainer from '../components/containers/Owners';
 import SpecificationContainer from '../components/containers/Specification';
 import SportBaseGeneral from '../components/containers/SportBaseGeneral';
-import SportBaseSpaceContainer from '../components/containers/SportBaseSpace';
-import { generateUniqueString } from '../components/fields/utils/function';
+import SportBaseSpaceContainer, {
+  sportBaseSpaceTabTitles,
+} from '../components/containers/SportBaseSpace';
 import { FormErrorMessage } from '../components/other/FormErrorMessage';
 import FormPopUp from '../components/other/FormPopup';
 import FullscreenLoader from '../components/other/FullscreenLoader';
@@ -30,7 +31,7 @@ import api from '../utils/api';
 import { AdminRoleType, StatusTypes } from '../utils/constants';
 import { isNew } from '../utils/functions';
 import { slugs } from '../utils/routes';
-import { buttonsTitles, validationTexts } from '../utils/texts';
+import { buttonsTitles, descriptions, inputLabels, validationTexts } from '../utils/texts';
 
 const generalSchema = Yup.object().shape({
   address: Yup.string().required(validationTexts.requireText),
@@ -185,26 +186,26 @@ const SportBasePage = () => {
     createOrUpdateRequest.mutateAsync(params);
   };
 
-  const flattenArrays = (data: any): any => {
-    if (Array.isArray(data)) {
-      const obj: any = {};
-      data.forEach((item) => {
-        obj[item.id || generateUniqueString()] = flattenArrays(item);
-      });
-      return obj;
-    } else if (typeof data === 'object' && data !== null) {
-      for (let key in data) {
-        data[key] = flattenArrays(data[key]);
-        if (['createdAt', 'createdBy', 'deletedAt', 'deletedBy', 'sportBase'].includes(key)) {
-          delete data[key];
-        }
-      }
-    }
-    return data;
-  };
-
   const sportBaseWithoutLastRequest = useMemo(() => {
     if (!sportBase) return {};
+
+    const flattenArrays = (data: any): any => {
+      if (Array.isArray(data)) {
+        const obj: any = {};
+        data.forEach((item, index) => {
+          obj[index] = flattenArrays(item);
+        });
+        return obj;
+      } else if (typeof data === 'object' && data !== null) {
+        for (let key in data) {
+          data[key] = flattenArrays(data[key]);
+          if (['createdAt', 'createdBy', 'deletedAt', 'deletedBy', 'sportBase'].includes(key)) {
+            delete data[key];
+          }
+        }
+      }
+      return data;
+    };
 
     const { lastRequest, ...rest } = sportBase;
 
@@ -216,10 +217,10 @@ const SportBasePage = () => {
   const getFormValues = () => {
     // Do not apply diff if the last request status type is APPROVED OR REJECTED
     if (lastRequestApprovalOrRejection) {
-      return { ...sportBaseWithoutLastRequest };
+      return cloneDeep(sportBaseWithoutLastRequest);
     }
     if (request) {
-      return applyPatch({ ...sportBaseWithoutLastRequest }, request?.changes || []).newDocument;
+      return applyPatch(cloneDeep(sportBaseWithoutLastRequest), request?.changes || []).newDocument;
     }
 
     return {};
@@ -379,6 +380,112 @@ const SportBasePage = () => {
         const hasNext = tabs[currentTabIndex + 1];
         const hasPrevious = tabs[currentTabIndex - 1];
 
+        const { data: additionalFieldLabels } = useQuery(
+          ['spaceTypeIds', spaceTypeIds],
+          async () =>
+            (await api.getFields({ query: { type: { $in: spaceTypeIds } } })).reduce(
+              (obj, curr) => ({ ...obj, [curr.id]: { name: curr.field.title } }),
+              {},
+            ),
+          { enabled: !isEmpty(spaceTypeIds) },
+        );
+
+        const titles = {
+          name: { name: inputLabels.sportBaseName },
+          photos: {
+            name: inputLabels.photos,
+            labelField: 'description',
+            children: {
+              representative: { name: inputLabels.representative },
+              public: { name: inputLabels.public },
+              description: { name: inputLabels.description },
+            },
+          },
+          address: { name: inputLabels.address },
+          type: { name: inputLabels.type, labelField: 'name' },
+          technicalCondition: { name: inputLabels.technicalCondition, labelField: 'name' },
+          level: { name: inputLabels.level, labelField: 'name' },
+          coordinates: {
+            name: inputLabels.coordinates,
+            children: {
+              x: { name: inputLabels.coordinateX },
+              y: { name: inputLabels.coordinateY },
+            },
+          },
+          webPage: { name: inputLabels.website },
+          plotNumber: { name: inputLabels.plotNumber },
+          plotArea: { name: inputLabels.plotArea },
+          builtPlotArea: { name: inputLabels.builtPlotArea },
+          parkingPlaces: { name: inputLabels.parkingPlaces },
+          dressingRooms: { name: inputLabels.dressingRooms },
+          methodicalClasses: { name: inputLabels.methodicalClasses },
+          saunas: { name: inputLabels.saunas },
+          diningPlaces: { name: inputLabels.diningPlaces },
+          accommodationPlaces: { name: inputLabels.accommodationPlaces },
+          disabledAccessible: { name: descriptions.disabledAccessible },
+          blindAccessible: { name: descriptions.blindAccessible },
+          publicWifi: { name: descriptions.publicWifi },
+          plans: { labelField: 'name', name: descriptions.plans },
+          owners: {
+            labelField: 'name',
+            name: sportBaseTabTitles.owners,
+            children: {
+              name: { name: inputLabels.jarName },
+              companyCode: { name: inputLabels.code },
+              website: { name: inputLabels.website },
+            },
+          },
+          investments: {
+            labelField: 'source.name',
+            name: sportBaseTabTitles.investments,
+            children: {
+              source: { name: inputLabels.source, labelField: 'name' },
+              fundsAmount: { name: inputLabels.fundsAmount },
+              appointedAt: { name: inputLabels.appointedAt },
+            },
+          },
+          organizations: {
+            labelField: 'name',
+            name: sportBaseTabTitles.organizations,
+            children: {
+              name: { name: inputLabels.name },
+              startAt: { name: inputLabels.startAt },
+              endAt: { name: inputLabels.endAt },
+            },
+          },
+          spaces: {
+            labelField: 'name',
+            name: sportBaseTabTitles.spaces,
+            children: {
+              name: { name: inputLabels.name },
+              type: { name: inputLabels.type },
+              sportTypes: { name: inputLabels.sportTypes, labelField: 'name' },
+              photos: {
+                name: inputLabels.photos,
+                labelField: 'description',
+                children: {
+                  representative: { name: inputLabels.representative },
+                  public: { name: inputLabels.public },
+                  description: { name: inputLabels.description },
+                },
+              },
+              technicalCondition: { name: inputLabels.technicalCondition, labelField: 'name' },
+              buildingNumber: { name: inputLabels.buildingNumber },
+              buildingArea: { name: inputLabels.buildingArea },
+              energyClass: { name: inputLabels.energyClass },
+              energyClassCertificate: { name: descriptions.energyClassCertificate },
+              buildingType: { name: inputLabels.buildingType },
+              buildingPurpose: { name: inputLabels.buildingPurpose },
+              constructionDate: { name: inputLabels.constructionDate },
+              latestRenovationDate: { name: inputLabels.latestRenovationDate },
+              additionalValues: {
+                name: sportBaseSpaceTabTitles.additionalFields,
+                children: additionalFieldLabels,
+              },
+            },
+          },
+        };
+
         return (
           <Container>
             <InnerContainer>
@@ -501,7 +608,7 @@ const SportBasePage = () => {
                 disabled={disabled}
                 handleChange={setFieldValue}
                 open={!lastRequestApprovalOrRejection}
-                spaceTypeIds={spaceTypeIds}
+                titles={titles}
                 diff={changes as any}
                 data={values}
               />

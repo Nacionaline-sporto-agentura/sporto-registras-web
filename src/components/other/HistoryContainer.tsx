@@ -1,22 +1,14 @@
 import { format } from 'date-fns';
 import { get, isEmpty } from 'lodash';
 import React, { useRef, useState } from 'react';
-import { useQuery } from 'react-query';
 import styled from 'styled-components';
-import { sportBaseTabTitles } from '../../pages/SportBase';
 import { FormHistory } from '../../types';
 import api from '../../utils/api';
 import { colorsByStatus } from '../../utils/constants';
 import { formatDateAndTime } from '../../utils/functions';
 import { useInfinityLoad } from '../../utils/hooks';
-import {
-  descriptions,
-  inputLabels,
-  requestFormHistoryDescriptions,
-  requestStatusLabels,
-} from '../../utils/texts';
+import { requestFormHistoryDescriptions, requestStatusLabels } from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
-import { sportBaseSpaceTabTitles } from '../containers/SportBaseSpace';
 import FullscreenLoader from './FullscreenLoader';
 import Icon, { IconName } from './Icons';
 import StatusTag from './StatusTag';
@@ -68,7 +60,6 @@ const getLabel = (diff: Diff, titles, oldData) => {
   }
 
   const extractValue = (obj, labelField = '') => {
-
     if (labelField) return get(obj, labelField);
 
     if (dateTimeRegex.test(obj) && new Date(obj).toString() !== 'Invalid Date') {
@@ -126,13 +117,13 @@ const HistoryContainer = ({
   handleChange,
   data,
   oldData,
-  spaceTypeIds,
+  titles,
   disabled,
   open,
   requestId,
   handleClear,
 }: {
-  spaceTypeIds: number[];
+  titles: { [key: string]: any };
   disabled: boolean;
   diff: Diff[][];
   handleChange: any;
@@ -143,119 +134,14 @@ const HistoryContainer = ({
   handleClear: () => void;
 }) => {
   const observerRef = useRef(null);
-  const { data: additionalFieldLabels } = useQuery(
-    ['spaceTypeIds', spaceTypeIds],
-    async () =>
-      (await api.getFields({ query: { type: { $in: spaceTypeIds } } })).reduce(
-        (obj, curr) => ({ ...obj, [curr.id]: { name: curr.field.title } }),
-        {},
-      ),
-    { enabled: !isEmpty(spaceTypeIds) },
-  );
 
   const { data: history, isFetching } = useInfinityLoad(
-    'subscriptions',
+    `requestHistory-${requestId}`,
     (data) => api.getRequestHistory({ ...data, id: requestId }),
     observerRef,
     {},
     !!requestId,
   );
-
-  const titles = {
-    name: { name: inputLabels.sportBaseName },
-    photos: {
-      name: inputLabels.photos,
-      labelField: 'description',
-      children: {
-        representative: { name: inputLabels.representative },
-        public: { name: inputLabels.public },
-        description: { name: inputLabels.description },
-      },
-    },
-    address: { name: inputLabels.address },
-    type: { name: inputLabels.type, labelField: 'name' },
-    technicalCondition: { name: inputLabels.technicalCondition, labelField: 'name' },
-    level: { name: inputLabels.level, labelField: 'name' },
-    coordinates: {
-      name: inputLabels.coordinates,
-      children: {
-        x: { name: inputLabels.coordinateX },
-        y: { name: inputLabels.coordinateY },
-      },
-    },
-    webPage: { name: inputLabels.website },
-    plotNumber: { name: inputLabels.plotNumber },
-    plotArea: { name: inputLabels.plotArea },
-    builtPlotArea: { name: inputLabels.builtPlotArea },
-    parkingPlaces: { name: inputLabels.parkingPlaces },
-    dressingRooms: { name: inputLabels.dressingRooms },
-    methodicalClasses: { name: inputLabels.methodicalClasses },
-    saunas: { name: inputLabels.saunas },
-    diningPlaces: { name: inputLabels.diningPlaces },
-    accommodationPlaces: { name: inputLabels.accommodationPlaces },
-    disabledAccessible: { name: descriptions.disabledAccessible },
-    blindAccessible: { name: descriptions.blindAccessible },
-    publicWifi: { name: descriptions.publicWifi },
-    plans: { labelField: 'name', name: descriptions.plans },
-    owners: {
-      labelField: 'name',
-      name: sportBaseTabTitles.owners,
-      children: {
-        name: { name: inputLabels.jarName },
-        companyCode: { name: inputLabels.code },
-        website: { name: inputLabels.website },
-      },
-    },
-    investments: {
-      labelField: 'source.name',
-      name: sportBaseTabTitles.investments,
-      children: {
-        source: { name: inputLabels.source, labelField: 'name' },
-        fundsAmount: { name: inputLabels.fundsAmount },
-        appointedAt: { name: inputLabels.appointedAt },
-      },
-    },
-    organizations: {
-      labelField: 'name',
-      name: sportBaseTabTitles.organizations,
-      children: {
-        name: { name: inputLabels.name },
-        startAt: { name: inputLabels.startAt },
-        endAt: { name: inputLabels.endAt },
-      },
-    },
-    spaces: {
-      labelField: 'name',
-      name: sportBaseTabTitles.spaces,
-      children: {
-        name: { name: inputLabels.name },
-        type: { name: inputLabels.type },
-        sportTypes: { name: inputLabels.sportTypes, labelField: 'name' },
-        photos: {
-          name: inputLabels.photos,
-          labelField: 'description',
-          children: {
-            representative: { name: inputLabels.representative },
-            public: { name: inputLabels.public },
-            description: { name: inputLabels.description },
-          },
-        },
-        technicalCondition: { name: inputLabels.technicalCondition, labelField: 'name' },
-        buildingNumber: { name: inputLabels.buildingNumber },
-        buildingArea: { name: inputLabels.buildingArea },
-        energyClass: { name: inputLabels.energyClass },
-        energyClassCertificate: { name: descriptions.energyClassCertificate },
-        buildingType: { name: inputLabels.buildingType },
-        buildingPurpose: { name: inputLabels.buildingPurpose },
-        constructionDate: { name: inputLabels.constructionDate },
-        latestRenovationDate: { name: inputLabels.latestRenovationDate },
-        additionalValues: {
-          name: sportBaseSpaceTabTitles.additionalFields,
-          children: additionalFieldLabels,
-        },
-      },
-    },
-  };
 
   const [isOpen, setIsOpen] = useState(open);
 

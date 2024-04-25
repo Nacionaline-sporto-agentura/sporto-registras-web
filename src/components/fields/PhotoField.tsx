@@ -11,8 +11,8 @@ import TextAreaField from './TextAreaField';
 
 export interface PhotoFielProps {
   photo: Photo;
-  handleDelete: (index: number) => void;
-  handleSetRepresentative: (index: number) => void;
+  handleDelete: (index: string) => void;
+  handleSetRepresentative: (index: string) => void;
   disabled?: boolean;
   index: number;
   onChange: (name: string, props: any) => void;
@@ -34,7 +34,7 @@ const PhotoField = ({
 
   const Additional = (
     <Row>
-      <ItemRow onClick={() => handleSetRepresentative(index)}>
+      <ItemRow onClick={() => handleSetRepresentative(photoKey)}>
         <StyledIcon name={representative ? IconName.image : IconName.imageOff} />
         <IconText>
           {representative ? inputLabels.isRepresentative : inputLabels.makeRepresentative}
@@ -50,7 +50,7 @@ const PhotoField = ({
   return (
     <FormItem
       {...(!disabled && {
-        onDelete: () => handleDelete(index),
+        onDelete: () => handleDelete(photoKey),
         title: Additional,
       })}
       key={`photo-${photoKey}`}
