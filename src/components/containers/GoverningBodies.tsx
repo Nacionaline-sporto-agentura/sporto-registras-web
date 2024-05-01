@@ -137,7 +137,6 @@ const GoverningBodiesContainer = ({
           validationSchema={governingBodySchema}
         >
           {({ values, errors, setFieldValue }) => {
-            console.log(values, errors, 'err');
             const users = values?.users;
             const usersKeys = Object.keys(users);
             return (
