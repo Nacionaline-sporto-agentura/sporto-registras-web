@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { FeatureCollection } from '../../types';
 
-const mapsHost = import.meta.env.VITE_MAPS_HOST || 'https://maps.biip.lt/edit?types[]=point';
+const mapsHost = import.meta.env.VITE_MAPS_HOST || 'https://maps.biip.lt';
 
 const MapField = ({
   address,
