@@ -4,6 +4,7 @@ import {
   AuthStrategy,
   FieldTypes,
   HistoryTypes,
+  MembershipTypes,
   StatusTypes,
   TableItemWidth,
   TenantTypes,
@@ -22,6 +23,7 @@ export interface User {
   groups?: Group[];
   authStrategy?: AuthStrategy;
   permissions?: { [key: string]: { accesses: string[]; features: string[] } };
+  duties?: string;
 }
 
 export interface SportsBasesLevel {
@@ -98,7 +100,13 @@ export interface SportBase {
   type?: SportsBasesType;
   level?: SportsBasesLevel;
   technicalCondition?: SportsBasesCondition;
-  address: string;
+  address: {
+    municipality: string;
+    city: string;
+    street: string;
+    house: string;
+    apartment?: string;
+  };
   coordinates: { x: string; y: string };
   webPage: string;
   photos: Photo[];
@@ -107,7 +115,6 @@ export interface SportBase {
   blindAccessible: boolean;
   plotArea?: number;
   builtPlotArea?: number;
-  audienceSeats?: number;
   parkingPlaces?: number;
   dressingRooms?: number;
   methodicalClasses?: number;
@@ -118,21 +125,23 @@ export interface SportBase {
   lastRequest: Request;
   spaces: SportBaseSpace[];
   owners: { name: string; companyCode: string; website: string }[];
-  organizations: {
+  tenants: {
     name: string;
     startAt: string;
     endAt: string;
   }[];
-  investments: {
-    source: any;
-    fundsAmount: string;
-    appointedAt: string;
-  }[];
+  investments: Investment[];
   plans: Array<{
     url: string;
     name?: string;
     size?: number;
   }>;
+}
+
+export interface Investment {
+  appointedAt: string;
+  investmentSources: { source: Source; fundsAmount: string }[];
+  improvements: string;
 }
 
 export type ProfileId = 'freelancer' | string;
@@ -201,8 +210,16 @@ export interface UserFilters {
   email?: string;
 }
 
-export interface GroupFilters {
+export interface SimpleFilters {
   name?: string;
+}
+
+export interface UnconfirmedRequestFilters {
+  status?: { id: StatusTypes; label: string }[];
+}
+
+export interface UnconfirmedRequestFiltersProps {
+  status?: { $in: StatusTypes[] };
 }
 
 export interface NotFoundInfoProps {
@@ -242,6 +259,7 @@ export interface Group {
 
 export interface Tenant {
   id: string;
+  lastRequest: Request;
   name?: string;
   code?: string;
   parent?: Tenant;
@@ -249,6 +267,39 @@ export interface Tenant {
   phone?: string;
   tenantType: TenantTypes;
   children?: Tenant[];
+  fundingSources: TenantFundingSource[];
+  memberships: TenantMembership[];
+  governingBodies: GoverningBody[];
+  address?: string;
+  data?: any;
+}
+
+export interface GoverningBody {
+  id: number;
+  name: string;
+  users: {
+    firstName: string;
+    lastName: string;
+    duties: string;
+    personalCode: string;
+  }[];
+}
+
+export interface TenantFundingSource {
+  id: number;
+  fundsAmount: number;
+  description: string;
+  appointedAt: Date;
+  source: Source;
+}
+
+export interface TenantMembership {
+  improvements: string;
+  type: MembershipTypes;
+  name: string;
+  companyCode: string;
+  startAt: Date;
+  endAt: Date;
 }
 
 export interface Field {
@@ -274,6 +325,7 @@ export interface Request {
   field: Field;
   changes: Operation[];
   entity: any;
+  createdAt: Date;
 }
 export interface FormHistory {
   type: HistoryTypes;
@@ -281,3 +333,37 @@ export interface FormHistory {
   createdBy: User;
   createdAt: Date;
 }
+
+export type FeatureCollection = {
+  type: 'FeatureCollection';
+  features: Feature[];
+};
+
+type GenericObject = {
+  [key: string]: any;
+};
+
+type Feature = {
+  type: 'Feature';
+  geometry: Geometry;
+  properties?: GenericObject;
+};
+
+type Geometry = {
+  type: string;
+  coordinates: CoordinatesTypes;
+};
+type CoordinatesPoint = number[];
+type CoordinatesMultiPoint = CoordinatesPoint[];
+type CoordinatesLineString = CoordinatesPoint[];
+type CoordinatesMultiLineString = CoordinatesLineString[];
+type CoordinatesPolygon = CoordinatesLineString[];
+type CoordinatesMultiPolygon = CoordinatesPolygon[];
+
+type CoordinatesTypes =
+  | CoordinatesPoint
+  | CoordinatesLineString
+  | CoordinatesPolygon
+  | CoordinatesMultiPoint
+  | CoordinatesMultiLineString
+  | CoordinatesMultiPolygon;

@@ -10,7 +10,7 @@ export interface SelectFieldProps {
   name?: string;
   label?: string;
   value?: any;
-  error?: string;
+  error?: any;
   showError?: boolean;
   readOnly?: boolean;
   options?: any[];

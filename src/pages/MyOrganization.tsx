@@ -1,10 +1,5 @@
 import { useMutation, useQuery } from 'react-query';
 import * as Yup from 'yup';
-import OrganizationForm from '../components/forms/OrganizationForm';
-import FormikFormLayout from '../components/layouts/FormikFormLayout';
-import FullscreenLoader from '../components/other/FullscreenLoader';
-import { TitleColumn } from '../styles/CommonStyles';
-import { ReactQueryError } from '../types';
 import Api from '../utils/api';
 import {
   filterOutGroup,
@@ -16,10 +11,16 @@ import { pageTitles, validationTexts } from '../utils/texts';
 
 import { companyCode } from 'lt-codes';
 import Cookies from 'universal-cookie';
+import OrganizationExtendedForm from '../components/forms/OrganizationExtendedForm';
+import OrganizationForm from '../components/forms/OrganizationForm';
+import FormikFormLayout from '../components/layouts/FormikFormLayout';
+import FullscreenLoader from '../components/other/FullscreenLoader';
+import { TitleColumn } from '../styles/CommonStyles';
+import { ReactQueryError } from '../types';
 import { TenantTypes } from '../utils/constants';
 import { useIsTenantAdmin } from '../utils/hooks';
 
-export const validateCreateUserForm = Yup.object().shape({
+export const validateOrganizationForm = Yup.object().shape({
   companyName: Yup.string().required(validationTexts.requireText).trim(),
   companyCode: Yup.string()
     .required(validationTexts.requireText)
@@ -35,6 +36,23 @@ export const validateCreateUserForm = Yup.object().shape({
     .email(validationTexts.badEmailFormat)
     .required(validationTexts.requireText),
 });
+
+const organizationTabTitles = {
+  generalInfo: 'Bendra informacija',
+  governingBodies: 'Valdymo organai',
+  memberships: 'Narystės',
+  fundingSources: 'Finansavimo šaltiniai',
+};
+
+export const tabs = [
+  {
+    label: organizationTabTitles.generalInfo,
+    validation: validateOrganizationForm,
+  },
+  { label: organizationTabTitles.governingBodies },
+  { label: organizationTabTitles.memberships },
+  { label: organizationTabTitles.fundingSources },
+];
 
 const cookies = new Cookies();
 
@@ -63,8 +81,7 @@ const MyOrganization = () => {
   const title = pageTitles.myOrganization;
   const isTenantAdmin = useIsTenantAdmin();
   const disabled = !isTenantAdmin;
-
-  const { isFetching, data: institution } = useQuery(
+  const { isFetching, data: organization } = useQuery(
     ['organization', profileId],
     () => Api.getTenant({ id: profileId }),
     {
@@ -73,39 +90,6 @@ const MyOrganization = () => {
       },
     },
   );
-
-  const handleSubmit = async (values: InstitutionProps, { setErrors }) => {
-    const { companyEmail, companyCode, companyName, companyPhone, parent, data, address } = values;
-
-    const params = {
-      name: companyName,
-      address,
-      code: companyCode,
-      phone: companyPhone,
-      email: companyEmail?.toLowerCase(),
-      ...(!!parent && { parent: parseInt(parent) }),
-      data,
-    };
-
-    try {
-      return await updateTenant.mutateAsync(params);
-    } catch (e: any) {
-      const error = e as ReactQueryError;
-      const errorMessage = getReactQueryErrorMessage(error.response.data.message);
-      setErrors({ email: errorMessage });
-    }
-  };
-
-  const updateTenant = useMutation((params: any) => Api.updateTenant({ params, id: profileId }), {
-    onError: ({ response }) => {
-      handleErrorToastFromServer(response);
-    },
-    onSuccess: () => {
-      handleSuccessToast();
-    },
-    retry: false,
-  });
-
   const { data: groupOptions = [] } = useQuery(
     ['tenantOption', profileId],
     async () => filterOutGroup((await Api.getTenantOptions())?.rows, profileId),
@@ -116,45 +100,91 @@ const MyOrganization = () => {
     },
   );
 
-  const initialValues: InstitutionProps = {
-    companyName: institution?.name || '',
-    companyCode: institution?.code || '',
-    companyPhone: institution?.phone || '',
-    companyEmail: institution?.email || '',
-    address: institution?.address || '',
-    parent: institution?.parent || parent || '',
-    tenantType: institution?.tenantType || '',
-    data: { ...institution?.data },
-  };
+  if (organization?.tenantType === TenantTypes.MUNICIPALITY) {
+    const handleSubmit = async (values: InstitutionProps, { setErrors }) => {
+      const { companyEmail, companyCode, companyName, companyPhone, parent, data, address } =
+        values;
 
-  const renderForm = (values: InstitutionProps, errors: any, handleChange) => {
+      const params = {
+        name: companyName,
+        address,
+        code: companyCode,
+        phone: companyPhone,
+        email: companyEmail?.toLowerCase(),
+        ...(!!parent && { parent: parseInt(parent) }),
+        data,
+      };
+
+      try {
+        return await updateTenant.mutateAsync(params);
+      } catch (e: any) {
+        const error = e as ReactQueryError;
+        const errorMessage = getReactQueryErrorMessage(error.response.data.message);
+        setErrors({ email: errorMessage });
+      }
+    };
+
+    const updateTenant = useMutation((params: any) => Api.updateTenant({ params, id: profileId }), {
+      onError: ({ response }) => {
+        handleErrorToastFromServer(response);
+      },
+      onSuccess: () => {
+        handleSuccessToast();
+      },
+      retry: false,
+    });
+
+    const initialValues: any = {
+      companyName: organization?.name || '',
+      companyCode: organization?.code || '',
+      companyPhone: organization?.phone || '',
+      companyEmail: organization?.email || '',
+      address: organization?.address || '',
+      parent: organization?.parent || parent || '',
+      tenantType: organization?.tenantType || '',
+      data: { ...organization?.data },
+    };
+
+    const renderForm = (values: InstitutionProps, errors: any, handleChange) => {
+      return (
+        <TitleColumn>
+          <OrganizationForm
+            disabled={disabled}
+            toggleShowParentOrganization={true}
+            values={values}
+            errors={errors}
+            handleChange={handleChange}
+            groupOptions={groupOptions}
+          />
+        </TitleColumn>
+      );
+    };
+
+    if (isFetching) {
+      return <FullscreenLoader />;
+    }
+
     return (
-      <TitleColumn>
-        <OrganizationForm
-          disabled={disabled}
-          treeSelectDisabled={true}
-          values={values}
-          errors={errors}
-          handleChange={handleChange}
-          groupOptions={groupOptions}
-        />
-      </TitleColumn>
+      <FormikFormLayout
+        back={false}
+        title={title}
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        renderForm={renderForm}
+        validationSchema={validateOrganizationForm}
+        disabled={disabled}
+      />
     );
-  };
-
-  if (isFetching) {
-    return <FullscreenLoader />;
   }
 
   return (
-    <FormikFormLayout
-      back={false}
+    <OrganizationExtendedForm
       title={title}
-      initialValues={initialValues}
-      onSubmit={handleSubmit}
-      renderForm={renderForm}
-      validationSchema={validateCreateUserForm}
+      groupOptions={groupOptions}
       disabled={disabled}
+      organization={organization}
+      isLoading={isFetching}
+      id={profileId}
     />
   );
 };

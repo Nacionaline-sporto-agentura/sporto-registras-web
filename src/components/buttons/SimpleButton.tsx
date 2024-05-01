@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import React from 'react';
 
 export interface SimpleButtonProps {
   height?: number;
@@ -11,7 +10,7 @@ export interface SimpleButtonProps {
 
 const simpleButton = (props: any) => {
   return (
-    <Button {...props} onClick={props.onClick}>
+    <Button {...props} type="button" onClick={props.onClick}>
       {props.children}
     </Button>
   );

@@ -57,7 +57,6 @@ const Container = styled.div`
   gap: 16px;
   width: 100%;
   border-radius: 4px;
-  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 const TopRow = styled.div`

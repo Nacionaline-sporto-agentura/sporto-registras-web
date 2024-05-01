@@ -6,7 +6,7 @@ import FieldWrapper from './components/FieldWrapper';
 export interface TextFieldProps {
   value?: string | number;
   name?: string;
-  error?: string;
+  error?: any;
   showError?: boolean;
   label?: string;
   icon?: JSX.Element;

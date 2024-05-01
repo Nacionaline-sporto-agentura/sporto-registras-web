@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+import { isEmpty, omit } from 'lodash';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FileProps, Photo } from '../../types';
@@ -9,6 +9,7 @@ import Icon, { IconName } from '../other/Icons';
 import Loader from '../other/Loader';
 import FieldWrapper from './components/FieldWrapper';
 import PhotoField from './PhotoField';
+import { generateUniqueString } from './utils/function';
 
 export const availableMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
 
@@ -22,7 +23,7 @@ export const validateFileTypes = (files: File[]) => {
 
 export interface PhotoUploadFieldProps {
   name: string;
-  photos: Photo[];
+  photos: { [key: string]: Photo };
   onChange: (name: string, props: any) => void;
   disabled?: boolean;
   canOpenPhoto?: boolean;
@@ -31,7 +32,7 @@ export interface PhotoUploadFieldProps {
 }
 
 const PhotoUploadField = ({
-  photos = [],
+  photos = {},
   name,
   disabled = false,
   onChange,
@@ -40,23 +41,30 @@ const PhotoUploadField = ({
 }: PhotoUploadFieldProps) => {
   const [loading, setLoading] = useState(false);
 
-  const handleDelete = (index) => {
-    onChange('photos', [...photos?.slice(0, index), ...photos?.slice(index + 1)]);
+  const handleDelete = (key) => {
+    onChange('photos', omit(photos, key));
   };
 
-  const handleSetIsRepresentative = (currIndex) => {
-    onChange(
-      'photos',
-      photos.map((photo, index) => ({ ...photo, representative: currIndex === index })),
-    );
+  const handleSetIsRepresentative = (currKey) => {
+    const updatedPhotos = {};
+    Object.keys(photos).forEach((key) => {
+      updatedPhotos[key] = { ...photos[key], representative: key === currKey };
+    });
+    onChange('photos', updatedPhotos);
   };
 
-  const handleUpload = async (newPhotos: File[]) => {
+  const handleUpload = async (newPhotos) => {
     const files = await api.uploadFiles(newPhotos);
-    onChange('photos', [
-      ...photos,
-      ...files.map(({ name, ...rest }) => ({ ...rest, description: name })),
-    ]);
+    const updatedPhotos: any = { ...photos };
+    files.forEach(({ name, ...rest }) => {
+      updatedPhotos[generateUniqueString()] = { ...rest, description: name, public: false };
+    });
+
+    Object.keys(updatedPhotos).forEach((key, index) => {
+      updatedPhotos[key] = { ...updatedPhotos[key], representative: index === 0 };
+    });
+
+    onChange('photos', updatedPhotos);
   };
 
   const handleSetFiles = async (photos: File[]) => {
@@ -70,14 +78,15 @@ const PhotoUploadField = ({
   return (
     <FieldWrapper error={error} showError={showError}>
       <Container>
-        {photos.map((photo: FileProps | any, index: number) => {
-          if (!photo) return <></>;
+        {Object.keys(photos).map((key: FileProps | any, index: number) => {
+          if (!key) return <></>;
 
           return (
             <React.Fragment key={index + 'photo'}>
               <PhotoField
                 handleSetRepresentative={handleSetIsRepresentative}
-                photo={photo}
+                photoKey={key}
+                photo={photos[key]}
                 disabled={disabled}
                 handleDelete={handleDelete}
                 index={index}
@@ -177,6 +186,8 @@ const StyledIcon = styled(Icon)`
 
 const Container = styled.div`
   display: flex;
+  flex-direction: column;
+  width: 100%;
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;

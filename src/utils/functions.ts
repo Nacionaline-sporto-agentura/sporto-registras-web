@@ -108,8 +108,16 @@ export const filterOutGroup = (items?: any[], id?: string): any => {
   return items;
 };
 
-export const getSourcesList = async (input: string, page: string) => {
-  return await api.getSources({
+export const getSportBaseSourcesList = async (input: string, page: string, query: any) => {
+  return await api.getSportBaseSources({
+    filter: { name: input },
+    query,
+    page,
+  });
+};
+
+export const getTenantSourcesList = async (input: string, page: string) => {
+  return await api.getTenantSources({
     filter: { name: input },
     page,
   });
@@ -131,6 +139,13 @@ export const getSportBaseTechnicalConditionList = async (input: string, page: st
 
 export const getSportBaseTypesList = async (input: string, page: string) => {
   return await api.getSportBaseTypes({
+    filter: { name: input },
+    page,
+  });
+};
+
+export const getOrganizationBasisList = async (input: string, page: string) => {
+  return await api.getOrganizationBasis({
     filter: { name: input },
     page,
   });

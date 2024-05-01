@@ -3,14 +3,22 @@ import { omit } from 'lodash';
 import { useState } from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
-import { sportBaseTabTitles } from '../../pages/SportBase';
-import { FormRow, TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
+import { FormRow } from '../../styles/CommonStyles';
 import { Source, SportBase } from '../../types';
-import { buttonsTitles, formLabels, inputLabels, validationTexts } from '../../utils/texts';
+import {
+  buttonsTitles,
+  descriptions,
+  formLabels,
+  inputLabels,
+  pageTitles,
+  validationTexts,
+} from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
 import TextField from '../fields/TextField';
 import UrlField from '../fields/UrlField';
+import { generateUniqueString } from '../fields/utils/function';
 import Popup from '../layouts/Popup';
+import InnerContainerRow from '../other/InnerContainerRow';
 import MainTable from '../tables/MainTable';
 
 const ownersSchema = Yup.object().shape({
@@ -21,13 +29,13 @@ const ownersSchema = Yup.object().shape({
 
 const ownersLabels = {
   name: { label: inputLabels.jarName, show: true },
-  companyCode: { label: inputLabels.code, show: true },
+  companyCode: { label: inputLabels.jarCode, show: true },
   website: { label: inputLabels.website, show: true },
 };
 
-const OwnersContainer = ({ owners, handleChange, counter, setCounter, disabled }) => {
+const OwnersContainer = ({ owners = {}, handleChange, disabled }) => {
   const ownerKeys = Object.keys(owners);
-
+  const [validateOnChange, setValidateOnChange] = useState(false);
   const [current, setCurrent] = useState<SportBase['owners'] | {}>();
 
   const onSubmit = async (values: any) => {
@@ -38,8 +46,7 @@ const OwnersContainer = ({ owners, handleChange, counter, setCounter, disabled }
 
       handleChange('owners', updatedOwners);
     } else {
-      handleChange('owners', { [counter]: values, ...owners });
-      setCounter(setCounter + 1);
+      handleChange('owners', { [generateUniqueString()]: values, ...owners });
     }
 
     setCurrent(undefined);
@@ -49,12 +56,13 @@ const OwnersContainer = ({ owners, handleChange, counter, setCounter, disabled }
 
   return (
     <>
-      <TableButtonsRow>
-        <TableButtonsInnerRow>
-          <Title>{sportBaseTabTitles.owners}</Title>
-        </TableButtonsInnerRow>
-        {!disabled && <Button onClick={() => setCurrent({})}>{buttonsTitles.addOwner}</Button>}
-      </TableButtonsRow>
+      <InnerContainerRow
+        title={pageTitles.owners}
+        description={descriptions.owners}
+        buttonTitle={buttonsTitles.addOwner}
+        disabled={disabled}
+        onCreateNew={() => setCurrent({})}
+      />
       <MainTable
         notFoundInfo={{ text: 'Nėra sukurtų savininkų' }}
         isFilterApplied={false}
@@ -66,15 +74,14 @@ const OwnersContainer = ({ owners, handleChange, counter, setCounter, disabled }
         }}
       />
 
-      <Popup
-        title={formLabels.infoAboutOwner}
-        visible={!!current}
-        onClose={() => setCurrent(undefined)}
-      >
+      <Popup title={formLabels.addOwner} visible={!!current} onClose={() => setCurrent(undefined)}>
         <Formik
-          validateOnChange={false}
+          validateOnChange={validateOnChange}
           enableReinitialize={false}
           initialValues={initialValues}
+          validate={() => {
+            setValidateOnChange(true);
+          }}
           onSubmit={onSubmit}
           validationSchema={ownersSchema}
         >
@@ -94,7 +101,7 @@ const OwnersContainer = ({ owners, handleChange, counter, setCounter, disabled }
                   />
                   <TextField
                     disabled={disabled}
-                    label={inputLabels.code}
+                    label={inputLabels.jarCode}
                     value={values?.companyCode}
                     error={errors?.companyCode}
                     name="companyCode"

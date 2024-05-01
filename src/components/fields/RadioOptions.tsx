@@ -3,7 +3,7 @@ import { device } from '../../styles';
 import FieldWrapper from './components/FieldWrapper';
 
 export interface RadioOptionsProps {
-  options: { label: string; value: any }[];
+  options: any[];
   name?: string;
   value?: string | boolean;
   error?: string;
@@ -14,6 +14,7 @@ export interface RadioOptionsProps {
   disabled?: boolean;
   column?: boolean;
   oneLine?: boolean;
+  getOptionLabel: (option: any) => string;
 }
 
 const RadioOptions = ({
@@ -27,6 +28,7 @@ const RadioOptions = ({
   onChange,
   className,
   disabled,
+  getOptionLabel,
   label,
   ...rest
 }: RadioOptionsProps) => {
@@ -35,21 +37,21 @@ const RadioOptions = ({
       <FieldWrapper error={error} showError={showError} label={label}>
         <OptionsContainer column={column}>
           {options?.map((option, index) => {
-            const key = `${name}_${option.value}`;
+            const key = `${name}_${option}`;
             return (
               <InputContainer key={key} first={index === 0}>
                 <StyledInput
                   disabled={disabled}
                   type="radio"
                   name={name}
-                  id={`${option.value}-${key}`}
-                  value={option.value}
-                  checked={value === option.value}
+                  id={`${option}-${key}`}
+                  value={option}
+                  checked={value === option}
                   {...rest}
-                  onChange={() => onChange(option.value)}
+                  onChange={() => onChange(option)}
                 />
-                <OptionLabel disabled={!!disabled} htmlFor={`${option.value}-${key}`}>
-                  {option.label}
+                <OptionLabel disabled={!!disabled} htmlFor={`${option}-${key}`}>
+                  {getOptionLabel(option)}
                 </OptionLabel>
               </InputContainer>
             );

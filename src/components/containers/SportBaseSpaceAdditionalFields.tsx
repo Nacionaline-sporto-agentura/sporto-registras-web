@@ -4,16 +4,16 @@ import { FieldTypes } from '../../utils/constants';
 import ButtonsGroup from '../buttons/ButtonsGroup';
 import NumericTextField from '../fields/NumericTextField';
 import SelectField from '../fields/SelectField';
-import TextField from '../fields/TextField';
+import TextAreaField from '../fields/TextAreaField';
 
 const SportBaseSpaceAdditionalFields = ({
-  additionalValues,
+  additionalValues = {},
   additionalFields,
   errors,
   handleChange,
   disabled,
 }: {
-  additionalFields: any;
+  additionalFields: any[];
   additionalValues: { [key: string]: any };
   errors: any;
   handleChange: any;
@@ -46,11 +46,10 @@ const SportBaseSpaceAdditionalFields = ({
             onChange={(value) => onChange(value)}
           />
         );
-      case FieldTypes.TEXT:
-        return <TextField {...getCommonProps} />;
+      case FieldTypes.TEXT_AREA:
+        return <TextAreaField {...getCommonProps} />;
       case FieldTypes.NUMBER:
         return <NumericTextField {...getCommonProps} digitsAfterComma={field.scale} />;
-
       case FieldTypes.BOOLEAN:
         return (
           <ButtonsGroup
@@ -67,14 +66,28 @@ const SportBaseSpaceAdditionalFields = ({
     }
   };
 
+  // Todo add "order" field in the backend and sort by that field
   return (
-    <FormRow columns={2}>
-      {additionalFields.map((item) => {
-        return renderField(item.id, item.field, (value) => {
-          handleChange(`additionalValues.${item.id}`, value);
-        });
-      })}
-    </FormRow>
+    <>
+      <FormRow columns={2}>
+        {additionalFields
+          .filter((additionalField) => additionalField.field.type !== FieldTypes.TEXT_AREA)
+          .map((item) => {
+            return renderField(item.id, item.field, (value) => {
+              handleChange(`additionalValues`, { ...additionalValues, [item.id]: value });
+            });
+          })}
+      </FormRow>
+      <FormRow columns={1}>
+        {additionalFields
+          .filter((additionalField) => additionalField.field.type === FieldTypes.TEXT_AREA)
+          .map((item) => {
+            return renderField(item.id, item.field, (value) => {
+              handleChange(`additionalValues`, { ...additionalValues, [item.id]: value });
+            });
+          })}
+      </FormRow>
+    </>
   );
 };
 

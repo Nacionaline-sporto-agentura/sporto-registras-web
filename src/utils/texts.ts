@@ -2,6 +2,7 @@ import { ButtonColors } from '../components/buttons/Button';
 import {
   AdminRoleType,
   HistoryTypes,
+  MembershipTypes,
   ServerErrorTypes,
   StatusTypes,
   TenantTypes,
@@ -29,9 +30,11 @@ export const validationTexts = {
   [ServerErrorTypes.EMAIL_NOT_FOUND]: 'Sistemoje nėra tokio elektroninio pašto',
   personalCode: 'Blogas asmens kodas',
   companyCode: 'Blogas įmonės kodas',
+  minCharacters: 'Privalote įvesti bent 3 simbolius',
 };
 
 export const descriptions = {
+  fundingSources: 'Pridėkite visas gautas investicijas skirtas pagerinimui',
   cantLogin: 'Norint prisijungti turi būti suteikta prieiga',
   tableNotFound: 'Atsiprašome nieko neradome pagal pasirinktus filtrus',
   deleteUsersWithGroup: 'Ką reikėtų daryti su šiai grupei priskirtais naudotojais?',
@@ -40,6 +43,15 @@ export const descriptions = {
   publicWifi: 'Yra Public WiFi internetas',
   plans: 'Pridėti sporto bazės planus geoerdviniais formatais (2D ir 3D)',
   energyClassCertificate: 'Energetinės klasės pažymėjimas',
+  sportBaseGeneral: 'Sporto bazės pagrindinė informacija',
+  sportBaseSpecification: 'Nurodykite sporto bazės parametrus',
+  sportBaseSpaces: 'Nurodykite sporto bazės erdves',
+  organizations: 'Pridėkite organizacijas, kurios veikia šioje sporto bazėje',
+  investments: 'Pridėkite visas gautas investicijas skirtas pagerinimui',
+  photos: 'Pateikite nuotraukas',
+  owners: 'Pridėkite sporto bazės savininkus',
+  governingBodies: 'Pridėkite sporto bazės savininkus',
+  memberships: 'Pridėkite narystes',
 };
 
 export const formLabels = {
@@ -56,9 +68,12 @@ export const formLabels = {
   groupUsers: 'Grupės naudotojai',
   infoAboutInstitution: 'Informacija apie įstaigą',
   infoAboutOrganization: 'Informacija apie organizaciją',
-  infoAboutOwner: 'Atstovo duomenys',
+  addOwner: 'Pridėti savininką',
   investments: 'Investicijos',
   sportOrganizations: 'Sporto organizacjos',
+  addGoverningBody: 'Pridėti valdymo organo asmenį',
+  addMembership: 'Pridėti narystę',
+  addFundingSource: 'Pridėti finansavimo šaltinį',
   sportBaseInfo: 'Sporto bazės informacija',
   technicalSportBaseParameters: 'Techniniai sporto bazės parametrai',
 };
@@ -79,7 +94,10 @@ export const deleteDescriptionSecondPart = {
 };
 
 export const inputLabels = {
+  basis: 'Pagrindas',
   spaces: 'Erdvės',
+  status: 'Būsena',
+  improvements: 'Atlikti pagerinimai',
   owners: 'Savininkai',
   photos: 'Nuotraukos',
   comment: 'Komentaras',
@@ -104,7 +122,6 @@ export const inputLabels = {
   methodicalClasses: 'Metodinių klasių skaičius',
   diningPlaces: 'Maitinimo vietų skaičius',
   accommodationPlaces: 'Apgyvendinimo vietų skaičius',
-  audienceSeats: 'Žiūrovų vietų skaičius',
   saunas: 'Pirties patalpų skaičius',
   parkingPlaces: 'Automobilių aikštelės vietų skaičius',
   dressingRooms: 'Persirengimo patalpų skaičius',
@@ -117,16 +134,25 @@ export const inputLabels = {
   sportTypes: 'Kultivuojamos sporto šakos',
   address: 'Adresas',
   jarName: 'JAR Pavadinimas',
-  code: 'JAR Kodas',
+  jarCode: 'JAR Kodas',
   website: 'Svetainės adresas',
   source: 'Investicijų šaltinis',
+  fundingSource: 'Finansavimo šaltinis',
+  governingBodyName: 'Valdymo organo pavadinimas',
+  organizationName: 'Organizacijos pavadinimas',
   startAt: 'Pradžia',
+  membershipType: 'Narystės tipas',
   endAt: 'Pabaiga',
+  membershipStart: 'Narystės pradžia',
+  membershipEnd: 'Narystės pradžia',
   fundsAmount: 'Lėšų dydis',
+  totalFundsAmount: 'Bendras lėšų dydis, Eur',
+  membersCount: 'Narių skaičius',
   personalCode: 'Asmens kodas',
   appointedAt: 'Skyrimo data',
   parentOrganization: 'Tėvinė organizacija',
   name: 'Pavadinimas',
+  companyCode: 'Juridinio asmens kodas',
   firstName: 'Vardas',
   lastName: 'Pavardė',
   oldPassword: 'Senas slaptažodis',
@@ -134,8 +160,9 @@ export const inputLabels = {
   repeatNewPassword: 'Pakartokite naują slaptažodį',
   phone: 'Telefonas',
   email: 'El. pašto adresas',
+  duties: 'Pareigos',
   group: 'Grupė',
-  companyCode: 'Juridinio asmens kodas',
+  organizationBasis: 'Kokiu pagrindu veikia organizacija',
   organizationType: 'Sporto organizacijos tipas',
   locationAddress: 'Buveinės adresas',
   companyPhone: 'Kontaktinis telefonas',
@@ -156,6 +183,11 @@ export const inputLabels = {
   coordinates: 'Koordinatės',
   coordinateX: 'Koordinatė x',
   coordinateY: 'Koordinatė y',
+  municipality: 'Savivaldybė',
+  town: 'Miestas',
+  street: 'Gatvės pavadinimas',
+  houseNo: 'Namo Nr.',
+  apartmentNo: 'Buto Nr.',
 };
 export const pageTitles = {
   users: 'Naudotojai',
@@ -174,6 +206,15 @@ export const pageTitles = {
   updateInstitution: 'Atnaujinti instituciją',
   myOrganization: 'Mano organizacija',
   sportBases: 'Sporto infrastruktūra',
+  info: 'Informacija',
+  sportBasePhotos: 'Sporto bazės nuotraukos',
+  sportBaseSpecification: 'Techniniai sporto bazės parametrai',
+  sportBaseSpaces: 'Sporto bazių erdvės',
+  owners: 'Savininkai',
+  investments: 'Investicijos',
+  governingBodies: 'Valdymo organai ir asmenys',
+  fundingSources: 'Finasavimo šaltiniai',
+  memberships: 'Narystės',
 };
 
 export const buttonsTitles = {
@@ -183,6 +224,11 @@ export const buttonsTitles = {
   returnToCorrect: 'Grąžinti taisymui',
   reject: 'Atmesti',
   addInvestment: 'Pridėti investiciją',
+  addFundingSource: 'Pridėti finansavimo šaltinį',
+  addGoverningBody: 'Pridėti valdymo organą',
+  addMembership: 'Pridėti narystę',
+  addInvestmentSource: '+ Pridėti investicijų šaltinį',
+  addBodyMember: '+ Pridėti organo narį',
   addOrganization: 'Pridėti organizaciją',
   addSportBaseSpace: '+ Pridėti erdvę',
   addOwner: 'Pridėti savininką',
@@ -280,4 +326,14 @@ export const requestFormHistoryDescriptions = {
   [HistoryTypes.RETURNED]: 'grąžino taisyti pateiktą prašymą įregistruoti sporto bazę',
   [HistoryTypes.REJECTED]: 'atmetė pateiktą prašymą įregistruoti sporto bazę',
   [HistoryTypes.APPROVED]: 'patvirtino prašymą įregistruoti sporto bazę',
+};
+
+export const membershipTypeLabels = {
+  [MembershipTypes.LITHUANIAN]: 'Narystė Lietuvos sporto organizacijose',
+  [MembershipTypes.INTERNATIONAL]: 'Narystė tarptautinėse nevyriausybinėse sporto organizacijose',
+};
+
+export const membershipTypeTableLabels = {
+  [MembershipTypes.LITHUANIAN]: 'LT narystė',
+  [MembershipTypes.INTERNATIONAL]: 'Tarptautinė narystė',
 };

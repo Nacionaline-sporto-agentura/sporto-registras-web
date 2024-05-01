@@ -7,21 +7,24 @@ import { inputLabels, validationTexts } from '../../utils/texts';
 import { FormItem } from '../other/FormItem';
 import FullscreenLoader from '../other/FullscreenLoader';
 import Icon, { IconName } from '../other/Icons';
+import SimpleContainer from '../other/SimpleContainer';
 import TextAreaField from './TextAreaField';
 
 export interface PhotoFielProps {
   photo: Photo;
-  handleDelete: (index: number) => void;
-  handleSetRepresentative: (index: number) => void;
+  handleDelete: (index: string) => void;
+  handleSetRepresentative: (index: string) => void;
   disabled?: boolean;
   index: number;
   onChange: (name: string, props: any) => void;
+  photoKey: string;
 }
 
 const PhotoField = ({
   handleDelete,
   handleSetRepresentative,
   disabled = false,
+  photoKey,
   index,
   photo,
   onChange,
@@ -32,13 +35,13 @@ const PhotoField = ({
 
   const Additional = (
     <Row>
-      <ItemRow onClick={() => handleSetRepresentative(index)}>
+      <ItemRow onClick={() => handleSetRepresentative(photoKey)}>
         <StyledIcon name={representative ? IconName.image : IconName.imageOff} />
         <IconText>
           {representative ? inputLabels.isRepresentative : inputLabels.makeRepresentative}
         </IconText>
       </ItemRow>
-      <ItemRow onClick={() => onChange(`photos.${index}.public`, !isPublic)}>
+      <ItemRow onClick={() => onChange(`photos.${photoKey}.public`, !isPublic)}>
         <StyledIcon name={isPublic ? IconName.visibleOn : IconName.visibleOff} />
         <IconText>{isPublic ? inputLabels.isPublic : inputLabels.makePublic}</IconText>
       </ItemRow>
@@ -46,39 +49,41 @@ const PhotoField = ({
   );
 
   return (
-    <FormItem
-      {...(!disabled && {
-        onDelete: () => handleDelete(index),
-        title: Additional,
-      })}
-      key={`photo-${index}`}
-    >
-      <ContentRow>
-        <StyledImg
-          onError={() => {
-            handleErrorToast(validationTexts.photoNotUploaded);
-            setLoading(false);
-          }}
-          display={!loading}
-          disabled={disabled}
-          key={index}
-          src={url}
-          onLoad={() => setLoading(false)}
-        />
-        <TextAreaField
-          disabled={disabled}
-          label={inputLabels.description}
-          value={description}
-          name="name"
-          onChange={(input) => onChange(`photos.${index}.description`, input)}
-        />
-      </ContentRow>
-      {loading && (
-        <ImageLayer>
-          <FullscreenLoader />
-        </ImageLayer>
-      )}
-    </FormItem>
+    <SimpleContainer>
+      <FormItem
+        {...(!disabled && {
+          onDelete: () => handleDelete(photoKey),
+          title: Additional,
+        })}
+        key={`photo-${photoKey}`}
+      >
+        <ContentRow>
+          <StyledImg
+            onError={() => {
+              handleErrorToast(validationTexts.photoNotUploaded);
+              setLoading(false);
+            }}
+            display={!loading}
+            disabled={disabled}
+            key={index}
+            src={url}
+            onLoad={() => setLoading(false)}
+          />
+          <TextAreaField
+            disabled={disabled}
+            label={inputLabels.description}
+            value={description}
+            name="name"
+            onChange={(input) => onChange(`photos.${photoKey}.description`, input)}
+          />
+        </ContentRow>
+        {loading && (
+          <ImageLayer>
+            <FullscreenLoader />
+          </ImageLayer>
+        )}
+      </FormItem>
+    </SimpleContainer>
   );
 };
 

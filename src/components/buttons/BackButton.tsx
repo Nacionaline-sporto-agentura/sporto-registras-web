@@ -26,6 +26,7 @@ const StyledButton = styled(Button)`
   width: fit-content;
   padding: 0;
   border: none;
+  color: ${({ theme }) => theme.colors.primary};
 `;
 
 const StyledBackIcon = styled(Icon)`
@@ -33,7 +34,7 @@ const StyledBackIcon = styled(Icon)`
   margin-right: 4px;
   font-size: 1.6rem;
   align-self: center;
-  color: #000000;
+  color: ${({ theme }) => theme.colors.primary};
 `;
 
 export default BackButton;

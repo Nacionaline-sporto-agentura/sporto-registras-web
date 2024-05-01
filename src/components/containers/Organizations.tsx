@@ -3,33 +3,44 @@ import { omit } from 'lodash';
 import { useState } from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
-import { sportBaseTabTitles } from '../../pages/SportBase';
-import { FormRow, TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
-import { Source, SportBase } from '../../types';
-import { formatDate } from '../../utils/functions';
-import { buttonsTitles, formLabels, inputLabels, validationTexts } from '../../utils/texts';
+import { FormRow } from '../../styles/CommonStyles';
+import { SportBase } from '../../types';
+import { formatDate, getOrganizationBasisList } from '../../utils/functions';
+import {
+  buttonsTitles,
+  descriptions,
+  formLabels,
+  inputLabels,
+  pageTitles,
+  validationTexts,
+} from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
+import AsyncSelectField from '../fields/AsyncSelectField';
 import DateField from '../fields/DateField';
 import TextField from '../fields/TextField';
+import { generateUniqueString } from '../fields/utils/function';
 import Popup from '../layouts/Popup';
+import InnerContainerRow from '../other/InnerContainerRow';
 import MainTable from '../tables/MainTable';
 
 const organizationsSchema = Yup.object().shape({
-  name: Yup.string().required(validationTexts.requireText),
+  companyName: Yup.string().required(validationTexts.requireText),
+  basis: Yup.object().required(validationTexts.requireText),
   startAt: Yup.date().required(validationTexts.requireText),
   endAt: Yup.date().required(validationTexts.requireText),
 });
 
 const organizationsLabels = {
-  name: { label: inputLabels.name, show: true },
+  companyName: { label: inputLabels.name, show: true },
   startAt: { label: inputLabels.startAt, show: true },
   endAt: { label: inputLabels.endAt, show: true },
+  basis: { label: inputLabels.basis, show: true },
 };
 
-const OrganizationsContainer = ({ organizations, handleChange, counter, setCounter, disabled }) => {
+const OrganizationsContainer = ({ organizations, handleChange, disabled }) => {
   const organizationKeys = Object.keys(organizations);
-
-  const [current, setCurrent] = useState<SportBase['organizations'] | {}>();
+  const [validateOnChange, setValidateOnChange] = useState(false);
+  const [current, setCurrent] = useState<SportBase['tenants'] | {}>();
 
   const onSubmit = async (values: any) => {
     if (typeof values?.index !== 'undefined') {
@@ -37,40 +48,43 @@ const OrganizationsContainer = ({ organizations, handleChange, counter, setCount
 
       const updatedOrganizations = { ...organizations, [index]: rest };
 
-      handleChange('organizations', updatedOrganizations);
+      handleChange('tenants', updatedOrganizations);
     } else {
-      handleChange('organizations', { [counter]: values, ...organizations });
-      setCounter(setCounter + 1);
+      handleChange('tenants', { [generateUniqueString()]: values, ...organizations });
     }
-
+    setValidateOnChange(false);
     setCurrent(undefined);
   };
 
   const initialValues: any = current || {};
 
+  const mappedData = {
+    data: organizationKeys.map((key) => {
+      const organization = organizations?.[key];
+
+      return {
+        ...organizations[key],
+        basis: organization?.basis?.name,
+        startAt: formatDate(organization?.startAt),
+        endAt: formatDate(organization?.endAt),
+        id: key,
+      };
+    }),
+  };
+
   return (
     <>
-      <TableButtonsRow>
-        <TableButtonsInnerRow>
-          <Title>{sportBaseTabTitles.organizations}</Title>
-        </TableButtonsInnerRow>
-        {!disabled && (
-          <Button disabled={disabled} onClick={() => setCurrent({})}>
-            {buttonsTitles.addOrganization}
-          </Button>
-        )}
-      </TableButtonsRow>
+      <InnerContainerRow
+        title={pageTitles.organizations}
+        description={descriptions.organizations}
+        buttonTitle={buttonsTitles.addOrganization}
+        disabled={disabled}
+        onCreateNew={() => setCurrent({})}
+      />
       <MainTable
         notFoundInfo={{ text: 'Nėra sukurtų organizacijų' }}
         isFilterApplied={false}
-        data={{
-          data: organizationKeys.map((key) => ({
-            ...organizations[key],
-            startAt: formatDate(organizations?.[key]?.startAt),
-            endAt: formatDate(organizations?.[key]?.endAt),
-            id: key,
-          })),
-        }}
+        data={mappedData}
         hidePagination={true}
         columns={organizationsLabels}
         onClick={(id) => {
@@ -84,27 +98,42 @@ const OrganizationsContainer = ({ organizations, handleChange, counter, setCount
         onClose={() => setCurrent(undefined)}
       >
         <Formik
-          validateOnChange={false}
+          validateOnChange={validateOnChange}
           enableReinitialize={false}
           initialValues={initialValues}
+          validate={() => {
+            setValidateOnChange(true);
+          }}
           onSubmit={onSubmit}
           validationSchema={organizationsSchema}
         >
           {({ values, errors, setFieldValue }) => {
+            console.log(values, 'values');
             return (
               <Form>
                 <FormRow columns={1}>
                   <TextField
                     disabled={disabled}
                     label={inputLabels.name}
-                    value={values?.name}
-                    error={errors?.name}
+                    value={values?.companyName}
+                    error={errors?.companyName}
                     name="name"
-                    onChange={(source: Source) => {
-                      setFieldValue(`name`, source);
+                    onChange={(name: string) => {
+                      setFieldValue(`companyName`, name);
                     }}
                   />
-
+                  <TextField
+                    disabled={disabled}
+                    label={inputLabels.companyCode}
+                    value={values?.companyCode}
+                    error={errors?.companyCode}
+                    name="name"
+                    onChange={(companyCode: string) => {
+                      setFieldValue(`companyCode`, companyCode);
+                    }}
+                  />
+                </FormRow>
+                <FormRow columns={2}>
                   <DateField
                     disabled={disabled}
                     name={'startAt'}
@@ -123,13 +152,27 @@ const OrganizationsContainer = ({ organizations, handleChange, counter, setCount
                     error={errors?.endAt}
                     onChange={(endAt) => setFieldValue(`endAt`, endAt)}
                   />
+                </FormRow>
+                <FormRow columns={1}>
+                  <AsyncSelectField
+                    disabled={disabled}
+                    label={inputLabels.organizationBasis}
+                    value={values?.basis}
+                    error={errors?.basis}
+                    name="basis"
+                    onChange={(basis) => {
+                      setFieldValue(`basis`, basis);
+                    }}
+                    getOptionLabel={(option) => option?.name}
+                    loadOptions={(input, page) => getOrganizationBasisList(input, page)}
+                  />
                   {!disabled && (
                     <ButtonRow>
                       {values.index && (
                         <Button
                           variant={ButtonColors.DANGER}
                           onClick={() => {
-                            handleChange('organizations', omit(organizations, values.index));
+                            handleChange('tenants', omit(organizations, values.index));
                             setCurrent(undefined);
                           }}
                         >

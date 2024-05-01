@@ -56,6 +56,14 @@ export const validateCreateUserForm = Yup.object().shape({
       }),
     )
     .min(1),
+  duties: Yup.string()
+    .nullable()
+    .test('validDuties', validationTexts.minCharacters, (value) => {
+      if (value && value.length < 3) {
+        return false;
+      }
+      return true;
+    }),
 });
 
 const AdminUserForm = () => {
@@ -82,7 +90,7 @@ const AdminUserForm = () => {
   );
 
   const handleSubmit = async (values: User, { setErrors }) => {
-    const { firstName, lastName, email, phone, groups } = values;
+    const { firstName, lastName, email, phone, groups, duties } = values;
 
     const params = {
       firstName,
@@ -90,6 +98,7 @@ const AdminUserForm = () => {
       email: email?.toLowerCase(),
       phone,
       groups,
+      duties,
     };
 
     if (isNew(id)) {
@@ -102,7 +111,6 @@ const AdminUserForm = () => {
       }
       return;
     }
-
     return await updateUser.mutateAsync(params);
   };
 
@@ -187,8 +195,8 @@ const AdminUserForm = () => {
     email: user?.email || '',
     phone: user?.phone || '',
     groups: getUserGroups(),
+    duties: user?.duties || '',
   };
-
   const renderForm = (values: User, errors: any, handleChange) => {
     return (
       <TitleColumn>
@@ -226,6 +234,15 @@ const AdminUserForm = () => {
               value={values.email}
               error={errors.email}
               onChange={(email) => handleChange('email', email)}
+            />
+          </FormRow>
+          <FormRow columns={1}>
+            <TextField
+              label={inputLabels.duties}
+              value={values.duties}
+              error={errors.duties}
+              name="duties"
+              onChange={(duties) => handleChange('duties', duties)}
             />
           </FormRow>
         </SimpleContainer>
