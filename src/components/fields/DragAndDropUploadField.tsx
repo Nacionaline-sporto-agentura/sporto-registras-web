@@ -36,7 +36,7 @@ const bytesToMb = (bytes: number) => {
 };
 
 const validateFileSizes = (files: File[]) => {
-  const maxSize = 2;
+  const maxSize = 200;
   for (let i = 0; i < files.length; i++) {
     const fileSizeToMb = files[i].size / 1024 / 1024;
     if (fileSizeToMb > maxSize) {

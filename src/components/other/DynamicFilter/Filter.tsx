@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { device } from '../../../styles';
 import { buttonsTitles } from '../../../utils/texts';
 import Button from '../../buttons/Button';
+import AsyncSelectField from '../../fields/AsyncSelectField';
 import MultiSelect from '../../fields/MultiTextField';
 import SelectField from '../../fields/SelectField';
 import TextField from '../../fields/TextField';
@@ -23,6 +24,7 @@ export enum FilterInputTypes {
   text = 'text',
   multiselect = 'multiselect',
   singleSelect = 'singleselect',
+  asyncSingleSelect = 'asyncSingleSelect',
 }
 
 export interface FilterConfig {
@@ -33,7 +35,7 @@ export interface FilterConfig {
   options?: any[];
   customSetValue?: (setFieldValue: () => void, input: string) => void;
   getDependId?: (values: any) => string;
-  optionsApi?: (input?: string, page?: number) => Promise<any>;
+  optionsApi?: (input?: string, page?: any) => Promise<any>;
   refreshOptions?: (input?: string, page?: number) => Promise<any>;
   getOptionValue?: (value: any) => string;
   default?: any;
@@ -79,6 +81,21 @@ const Filter = ({ values, filters, rowConfig, onSubmit }: LoginLayoutProps) => {
                   }
                   getInputLabel={(option) => option.label}
                   refreshOptions={filter.refreshOptions}
+                />
+              </InputWrapper>
+            );
+          } else if (filter.inputType === FilterInputTypes.asyncSingleSelect) {
+            return (
+              <InputWrapper single={singleItem} key={filter.key} isLast={index === row.length - 1}>
+                <AsyncSelectField
+                  name={filter.key}
+                  label={filter.label}
+                  value={values[filter.key]}
+                  onChange={(value) => setFieldValue(filter.key, value)}
+                  getOptionLabel={(option) =>
+                    hasOptionLabelFunction ? optionLabel(option) : option.name
+                  }
+                  loadOptions={(input, page) => filter.optionsApi && filter.optionsApi(input, page)}
                 />
               </InputWrapper>
             );

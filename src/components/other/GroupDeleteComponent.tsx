@@ -28,17 +28,6 @@ interface AdditionalDeleteGroupComponentInterface {
   group?: Group;
 }
 
-const deleteGroupUsersOptions = [
-  {
-    label: 'Narius priskirti grupei',
-    value: false,
-  },
-  {
-    label: 'Ištrinti visus narius',
-    value: true,
-  },
-];
-
 const GroupDeleteComponent = ({ group }: AdditionalDeleteGroupComponentInterface) => {
   const { id, name } = group!;
   const [groupId, setGroupId] = useState();
@@ -86,7 +75,10 @@ const GroupDeleteComponent = ({ group }: AdditionalDeleteGroupComponentInterface
         <SmallDescription>{descriptions.deleteUsersWithGroup}</SmallDescription>
         <Row>
           <StyledRadioOptions
-            options={deleteGroupUsersOptions}
+            options={[false, true]}
+            getOptionLabel={(option) =>
+              !!option ? 'Ištrinti visus narius' : 'Narius priskirti grupei'
+            }
             value={deleteWithUsers}
             onChange={(option: boolean) => setDeleteWithUsers(option)}
           />

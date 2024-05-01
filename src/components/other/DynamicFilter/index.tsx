@@ -21,7 +21,7 @@ const mapFilters = (
       const filter: any = filters?.[config.key];
       if (filter) {
         const multiSelects = [FilterInputTypes.multiselect];
-        const selects = [FilterInputTypes.singleSelect];
+        const selects = [FilterInputTypes.singleSelect, FilterInputTypes.asyncSingleSelect];
 
         const label = `${config.label}:`;
 

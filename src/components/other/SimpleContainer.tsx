@@ -34,6 +34,7 @@ const Container = styled.div<{ margin?: string }>`
   border: 1px solid #dfdfdf;
   border-radius: 4px;
   padding: 16px;
+  width: 100%;
   margin: ${({ margin }) => margin || ''};
 `;
 

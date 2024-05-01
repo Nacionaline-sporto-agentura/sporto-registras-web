@@ -1,46 +1,56 @@
-import * as Yup from 'yup';
-import { Row, TitleColumn } from '../styles/CommonStyles';
-
-import { applyPatch, compare, Operation } from 'fast-json-patch';
+import { applyPatch, compare } from 'fast-json-patch';
 import { Formik, yupToFormErrors } from 'formik';
-import { isEmpty } from 'lodash';
-import { useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import { cloneDeep, isEmpty } from 'lodash';
+import { useMemo, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
-import AdditionalButtons from '../components/buttons/AdditionalButtons';
-import BackButton from '../components/buttons/BackButton';
+import * as Yup from 'yup';
 import Button from '../components/buttons/Button';
-import InvestmentsContainer from '../components/containers/Investments';
 import OrganizationsContainer from '../components/containers/Organizations';
 import OwnersContainer from '../components/containers/Owners';
 import SpecificationContainer from '../components/containers/Specification';
 import SportBaseGeneral from '../components/containers/SportBaseGeneral';
-import SportBaseSpaceContainer from '../components/containers/SportBaseSpace';
+import InvestmentsContainer from '../components/containers/SportBaseInvestments';
+import SportBasePhotos from '../components/containers/SportBasePhotos';
+import SportBaseSpaceContainer, {
+  sportBaseSpaceTabTitles,
+} from '../components/containers/SportBaseSpace';
+import { extractIdKeys, flattenArrays, processDiffs } from '../components/fields/utils/function';
 import { FormErrorMessage } from '../components/other/FormErrorMessage';
 import FormPopUp from '../components/other/FormPopup';
 import FullscreenLoader from '../components/other/FullscreenLoader';
-import HistoryContainer, { ActionTypes } from '../components/other/HistoryContainer';
-import TabBar from '../components/Tabs/TabBar';
+import HistoryContainer from '../components/other/HistoryContainer';
+import RequestFormHeader from '../components/other/RequestFormHeader';
+import { useAppSelector } from '../state/hooks';
 import { device } from '../styles';
 import { SportBase } from '../types';
 import api from '../utils/api';
-import { StatusTypes } from '../utils/constants';
+import { AdminRoleType, StatusTypes } from '../utils/constants';
 import { isNew } from '../utils/functions';
 import { slugs } from '../utils/routes';
-import { buttonsTitles, validationTexts } from '../utils/texts';
+import { buttonsTitles, descriptions, inputLabels, validationTexts } from '../utils/texts';
 
 const generalSchema = Yup.object().shape({
-  address: Yup.string().required(validationTexts.requireText),
+  address: Yup.object().shape({
+    city: Yup.string().required(validationTexts.requireText),
+    municipality: Yup.string().required(validationTexts.requireText),
+    street: Yup.string().required(validationTexts.requireText),
+    house: Yup.string().required(validationTexts.requireText),
+  }),
   name: Yup.string().required(validationTexts.requireText),
   type: Yup.object().required(validationTexts.requireText),
   webPage: Yup.string().required(validationTexts.requireText),
   level: Yup.object().required(validationTexts.requireText),
   technicalCondition: Yup.object().required(validationTexts.requireText),
+
   coordinates: Yup.object().shape({
     x: Yup.string().required(validationTexts.requireText),
     y: Yup.string().required(validationTexts.requireText),
   }),
+});
+
+const photosSchema = Yup.object().shape({
   photos: Yup.object().test(
     'at-least-one-property',
     'Privalo būti bent viena reprezentuojanti nuotrauka',
@@ -52,7 +62,7 @@ const specificationSxhema = Yup.object().shape({
   plotNumber: Yup.string().required(validationTexts.requireText),
   plotArea: Yup.string().required(validationTexts.requireText),
   builtPlotArea: Yup.string().required(validationTexts.requireText),
-  audienceSeats: Yup.string().required(validationTexts.requireText),
+  methodicalClasses: Yup.string().required(validationTexts.requireText),
   parkingPlaces: Yup.string().required(validationTexts.requireText),
   dressingRooms: Yup.string().required(validationTexts.requireText),
   saunas: Yup.string().required(validationTexts.requireText),
@@ -61,11 +71,7 @@ const specificationSxhema = Yup.object().shape({
 });
 
 const spacesSchema = Yup.object().shape({
-  spaces: Yup.object().test(
-    'at-least-one-property',
-    validationTexts.requireSelect,
-    (obj) => !isEmpty(obj),
-  ),
+  spaces: Yup.object().test('at-least-one', validationTexts.requireSelect, (obj) => !isEmpty(obj)),
 });
 
 const sportBaseSchema = Yup.object()
@@ -74,9 +80,10 @@ const sportBaseSchema = Yup.object()
   .concat(specificationSxhema)
   .concat(spacesSchema);
 
-export const sportBaseTabTitles = {
+const sportBaseTabTitles = {
   generalInfo: 'Bendra informacija',
   specification: 'Specifikacija',
+  photos: 'Nuoraukos',
   spaces: 'Erdvės',
   owners: 'Savininkai',
   organizations: 'Organizacijos',
@@ -88,6 +95,7 @@ export const tabs = [
     label: sportBaseTabTitles.generalInfo,
     validation: generalSchema,
   },
+  { label: sportBaseTabTitles.photos, validation: photosSchema },
   {
     label: sportBaseTabTitles.specification,
     validation: specificationSxhema,
@@ -100,13 +108,16 @@ export const tabs = [
 
 const SportBasePage = () => {
   const navigate = useNavigate();
-  const [currentTab, setCurrentTab] = useState(0);
+  const [currentTabIndex, setCurrentTabIndex] = useState(0);
   const { id = '' } = useParams();
   const [searchParams] = useSearchParams();
-  const title = isNew(id) ? 'Įregistruoti naują sporto bazę' : 'Atnaujinti sporto bazę';
+  const title = isNew(id) ? 'Prašymas įregistruoti sporto bazę' : 'Prašymas atnaujinti sporto bazę';
   const { prasymas: queryStringRequestId } = Object.fromEntries([...Array.from(searchParams)]);
   const backUrl = isNew(id) ? slugs.unConfirmedSportBases : slugs.sportBases;
   const [status, setStatus] = useState('');
+  const user = useAppSelector((state) => state.user.userData);
+  const [validateOnChange, setValidateOnChange] = useState<any>({});
+  const queryClient = useQueryClient();
 
   const { isLoading: sportBaseLoading, data: sportBase } = useQuery(
     ['sportBase', id],
@@ -115,6 +126,7 @@ const SportBasePage = () => {
       onError: () => {
         navigate(slugs.sportBases);
       },
+      refetchOnWindowFocus: false,
       enabled: !isNew(id),
     },
   );
@@ -126,6 +138,7 @@ const SportBasePage = () => {
       onError: () => {
         navigate(slugs.unConfirmedSportBases);
       },
+      refetchOnWindowFocus: false,
       enabled: !!queryStringRequestId,
     },
   );
@@ -151,6 +164,8 @@ const SportBasePage = () => {
     {
       onSuccess: () => {
         navigate(backUrl);
+        queryClient.invalidateQueries({ queryKey: ['sportBase', id] });
+        queryClient.invalidateQueries({ queryKey: ['request', queryStringRequestId] });
       },
       retry: false,
     },
@@ -176,137 +191,88 @@ const SportBasePage = () => {
     createOrUpdateRequest.mutateAsync(params);
   };
 
-  const flattenArrays = (data: any): any => {
-    if (Array.isArray(data)) {
-      const obj: any = {};
-      data.forEach((item, index) => {
-        obj[index] = flattenArrays(item);
-      });
-      return obj;
-    } else if (typeof data === 'object' && data !== null) {
-      for (let key in data) {
-        data[key] = flattenArrays(data[key]);
-      }
-    }
-    return data;
-  };
-
-  if (sportBaseLoading || requestLoading) return <FullscreenLoader />;
-
-  const getSportBase = () => {
+  const sportBaseWithoutLastRequest = useMemo(() => {
     if (!sportBase) return {};
 
     const { lastRequest, ...rest } = sportBase;
 
-    return flattenArrays(rest);
-  };
+    return flattenArrays({ ...rest });
+  }, [sportBase]);
 
-  const sportBaseWithoutLastRequest = getSportBase();
+  if (sportBaseLoading || requestLoading) return <FullscreenLoader />;
 
   const getFormValues = () => {
     // Do not apply diff if the last request status type is APPROVED OR REJECTED
     if (lastRequestApprovalOrRejection) {
-      return { ...sportBaseWithoutLastRequest };
+      return cloneDeep(sportBaseWithoutLastRequest);
     }
     if (request) {
-      return applyPatch({ ...sportBaseWithoutLastRequest }, request?.changes || []).newDocument;
+      return applyPatch(cloneDeep(sportBaseWithoutLastRequest), request?.changes || []).newDocument;
     }
 
     return {};
   };
 
-  const initialValues: any = getFormValues();
+  const formValues: any = getFormValues();
   const disabled = !canEdit;
 
   const showDraftButton =
-    isNewRequest || [request?.status].includes(StatusTypes.DRAFT) || lastRequestApprovalOrRejection;
+    user.type === AdminRoleType.USER &&
+    (isNewRequest ||
+      [request?.status].includes(StatusTypes.DRAFT) ||
+      lastRequestApprovalOrRejection);
+
+  const validationSchema =
+    tabs.length - 1 == currentTabIndex ? sportBaseSchema : tabs[currentTabIndex]?.validation;
+
+  const oldData = isEmpty(sportBaseWithoutLastRequest) ? formValues : sportBaseWithoutLastRequest;
 
   return (
     <Formik
       enableReinitialize={false}
-      initialValues={initialValues}
-      validateOnChange={false}
+      initialValues={formValues}
+      validationSchema={validationSchema}
+      validateOnChange={!!validateOnChange?.all || !!validateOnChange[currentTabIndex]}
       onSubmit={() => {}}
     >
       {({ values, errors, setFieldValue, setErrors, setValues }) => {
         const spaceTypeIds = (Object.values(values?.spaces || {}) as SportBase[])?.map(
           (space) => space?.type?.id,
         );
-        const [sportBaseCounter, setSportBaseCounter] = useState(
-          Object.keys(values.spaces || {}).length,
-        );
-        const [photoCounter, setPhotoCounter] = useState(Object.keys(values.photos || {}).length);
-        const [fieldsCounter, setFieldsCounter] = useState(Object.keys(values.plans || {}).length);
-        const [investmentCounter, setInvestmentCounter] = useState(
-          Object.keys(values.investments || {}).length,
-        );
-        const [organizationCounter, setOrganizationCounter] = useState(
-          Object.keys(values.organizations || {}).length,
-        );
-        const [ownersCounter, setOwnersCounter] = useState(Object.keys(values.owners || {}).length);
 
-        const dif = compare(sportBaseWithoutLastRequest, values, true);
-
-        const mergedDiffs: Operation[] = Object.values(
-          dif.reduce((obj, curr) => {
-            obj[curr.path] = obj[curr.path] || {};
-
-            if (curr.op === ActionTypes.TEST) {
-              obj[curr.path] = { ...obj[curr.path], oldValue: curr.value };
-            } else {
-              obj[curr.path] = { ...obj[curr.path], ...curr };
-            }
-
-            return obj;
-          }, {}),
-        );
-
-        const preprocessJsonPatch = (patchOps: Operation[]) => {
+        const mergedDiffs = () => {
           const idKeys = {};
 
-          const diffs: any = [];
+          const obj = {};
 
-          for (const item of patchOps) {
-            if (item.path.endsWith('/id')) {
-              const parentPath = item.path.replace('/id', '');
-              idKeys[parentPath] = 1;
-            }
+          const sportBaseDif = compare(sportBaseWithoutLastRequest, values, true);
+          extractIdKeys(sportBaseDif, idKeys);
+          processDiffs(sportBaseDif, idKeys, 0, obj);
+
+          if (sportBase && !lastRequestApprovalOrRejection) {
+            const requestDif = compare(formValues, values, true);
+            extractIdKeys(requestDif, idKeys);
+            processDiffs(requestDif, idKeys, 1, obj);
           }
 
-          const mergedObjects = Object.values(
-            patchOps.reduce((acc, curr) => {
-              const { path, ...rest } = curr as any;
-              const key = path.split('/');
-              const prop = key.pop();
-              const parentPath = key.join('/');
-
-              if (idKeys[parentPath]) {
-                acc[parentPath] = {
-                  path: parentPath,
-                  op: curr.op,
-                  oldValue: { ...(acc[parentPath]?.oldValue || {}), [prop]: rest?.oldValue },
-                  value: { ...(acc[parentPath]?.value || {}), [prop]: rest?.value },
-                };
-              } else {
-                diffs.push(curr);
-              }
-
-              return acc;
-            }, {}),
-          );
-
-          diffs.push(...mergedObjects);
-
-          return diffs;
+          return Object.values(obj);
         };
 
-        const changes = preprocessJsonPatch(mergedDiffs);
+        const changes = mergedDiffs();
+
+        const submitChanges = changes.map((change: any) => change[0]);
 
         const containers = {
           [sportBaseTabTitles.generalInfo]: (
             <SportBaseGeneral
-              counter={photoCounter}
-              setCounter={setPhotoCounter}
+              sportBase={values}
+              errors={errors}
+              handleChange={setFieldValue}
+              disabled={disabled}
+            />
+          ),
+          [sportBaseTabTitles.photos]: (
+            <SportBasePhotos
               sportBase={values}
               errors={errors}
               handleChange={setFieldValue}
@@ -315,8 +281,6 @@ const SportBasePage = () => {
           ),
           [sportBaseTabTitles.specification]: (
             <SpecificationContainer
-              counter={fieldsCounter}
-              setCounter={setFieldsCounter}
               sportBase={values}
               errors={errors}
               handleChange={setFieldValue}
@@ -325,8 +289,6 @@ const SportBasePage = () => {
           ),
           [sportBaseTabTitles.spaces]: (
             <SportBaseSpaceContainer
-              sportBaseCounter={sportBaseCounter}
-              setSportBaseCounter={setSportBaseCounter}
               spaces={values.spaces || {}}
               sportBaseTypeId={values?.type?.id}
               handleChange={setFieldValue}
@@ -338,17 +300,13 @@ const SportBasePage = () => {
             <OwnersContainer
               owners={values.owners || {}}
               handleChange={setFieldValue}
-              counter={ownersCounter}
-              setCounter={setOwnersCounter}
               disabled={disabled}
             />
           ),
           [sportBaseTabTitles.organizations]: (
             <OrganizationsContainer
-              organizations={values.organizations || {}}
+              organizations={values.tenants || {}}
               handleChange={setFieldValue}
-              counter={organizationCounter}
-              setCounter={setOrganizationCounter}
               disabled={disabled}
             />
           ),
@@ -356,127 +314,222 @@ const SportBasePage = () => {
             <InvestmentsContainer
               investments={values.investments || {}}
               handleChange={setFieldValue}
-              counter={investmentCounter}
-              setCounter={setInvestmentCounter}
               disabled={disabled}
             />
           ),
         };
 
-        const hasNext = tabs[currentTab + 1];
-        const hasPrevious = tabs[currentTab - 1];
+        const hasNext = tabs[currentTabIndex + 1];
+        const hasPrevious = tabs[currentTabIndex - 1];
+
+        const { data: additionalFieldLabels } = useQuery(
+          ['spaceTypeIds', spaceTypeIds],
+          async () =>
+            (await api.getFields({ query: { type: { $in: spaceTypeIds } } })).reduce(
+              (obj, curr) => ({ ...obj, [curr.id]: { name: curr.field.title } }),
+              {},
+            ),
+          { enabled: !isEmpty(spaceTypeIds) },
+        );
+
+        const titles = {
+          name: { name: inputLabels.sportBaseName },
+          photos: {
+            name: inputLabels.photos,
+            labelField: 'description',
+            children: {
+              representative: { name: inputLabels.representative },
+              public: { name: inputLabels.public },
+              description: { name: inputLabels.description },
+            },
+          },
+          address: { name: inputLabels.address },
+          type: { name: inputLabels.type, labelField: 'name' },
+          technicalCondition: { name: inputLabels.technicalCondition, labelField: 'name' },
+          level: { name: inputLabels.level, labelField: 'name' },
+          coordinates: {
+            name: inputLabels.coordinates,
+            children: {
+              x: { name: inputLabels.coordinateX },
+              y: { name: inputLabels.coordinateY },
+            },
+          },
+          webPage: { name: inputLabels.website },
+          plotNumber: { name: inputLabels.plotNumber },
+          plotArea: { name: inputLabels.plotArea },
+          builtPlotArea: { name: inputLabels.builtPlotArea },
+          parkingPlaces: { name: inputLabels.parkingPlaces },
+          dressingRooms: { name: inputLabels.dressingRooms },
+          methodicalClasses: { name: inputLabels.methodicalClasses },
+          saunas: { name: inputLabels.saunas },
+          diningPlaces: { name: inputLabels.diningPlaces },
+          accommodationPlaces: { name: inputLabels.accommodationPlaces },
+          disabledAccessible: { name: descriptions.disabledAccessible },
+          blindAccessible: { name: descriptions.blindAccessible },
+          publicWifi: { name: descriptions.publicWifi },
+          plans: { labelField: 'name', name: descriptions.plans },
+          owners: {
+            labelField: 'name',
+            name: sportBaseTabTitles.owners,
+            children: {
+              name: { name: inputLabels.jarName },
+              companyCode: { name: inputLabels.jarCode },
+              website: { name: inputLabels.website },
+            },
+          },
+          investments: {
+            labelField: 'source.name',
+            name: sportBaseTabTitles.investments,
+            children: {
+              source: { name: inputLabels.source, labelField: 'name' },
+              fundsAmount: { name: inputLabels.fundsAmount },
+              appointedAt: { name: inputLabels.appointedAt },
+            },
+          },
+          tenants: {
+            labelField: 'companyName',
+            name: sportBaseTabTitles.organizations,
+            children: {
+              companyName: { name: inputLabels.name },
+              startAt: { name: inputLabels.startAt },
+              endAt: { name: inputLabels.endAt },
+              basis: { name: inputLabels.basis },
+            },
+          },
+          spaces: {
+            labelField: 'name',
+            name: sportBaseTabTitles.spaces,
+            children: {
+              name: { name: inputLabels.name },
+              type: { name: inputLabels.type },
+              sportTypes: { name: inputLabels.sportTypes, labelField: 'name' },
+              photos: {
+                name: inputLabels.photos,
+                labelField: 'description',
+                children: {
+                  representative: { name: inputLabels.representative },
+                  public: { name: inputLabels.public },
+                  description: { name: inputLabels.description },
+                },
+              },
+              technicalCondition: { name: inputLabels.technicalCondition, labelField: 'name' },
+              buildingNumber: { name: inputLabels.buildingNumber },
+              buildingArea: { name: inputLabels.buildingArea },
+              energyClass: { name: inputLabels.energyClass },
+              energyClassCertificate: { name: descriptions.energyClassCertificate },
+              buildingType: { name: inputLabels.buildingType },
+              buildingPurpose: { name: inputLabels.buildingPurpose },
+              constructionDate: { name: inputLabels.constructionDate },
+              latestRenovationDate: { name: inputLabels.latestRenovationDate },
+              additionalValues: {
+                name: sportBaseSpaceTabTitles.additionalFields,
+                children: additionalFieldLabels,
+              },
+            },
+          },
+        };
+
+        const onSubmit = async () => {
+          let errors = {};
+          try {
+            await validationSchema?.validate(values, { abortEarly: false });
+          } catch (e) {
+            const updatedValidateOnChange = {
+              ...validateOnChange,
+              all: true,
+            };
+            setValidateOnChange(updatedValidateOnChange);
+
+            errors = yupToFormErrors(e);
+          }
+
+          setErrors(errors);
+
+          if (isEmpty(errors)) {
+            if (!isCreateStatus) {
+              return setStatus(StatusTypes.SUBMITTED);
+            }
+
+            handleSubmit({
+              changes: submitChanges,
+              status: StatusTypes.CREATED,
+            });
+          }
+        };
+
+        const handlePrevious = () => {
+          setCurrentTabIndex(currentTabIndex - 1);
+        };
+
+        const handleNext = async () => {
+          if (!validationSchema) return setCurrentTabIndex(currentTabIndex + 1);
+
+          try {
+            await validationSchema?.validate(values, { abortEarly: false });
+            setCurrentTabIndex(currentTabIndex + 1);
+          } catch (e) {
+            const updatedValidateOnChange = {
+              ...validateOnChange,
+              [currentTabIndex]: true,
+            };
+            setValidateOnChange(updatedValidateOnChange);
+            setErrors(yupToFormErrors(e));
+          }
+        };
 
         return (
           <Container>
             <InnerContainer>
-              <TitleColumn>
-                <BackButton />
-                <Row>
-                  <Title>{title}</Title>
-                  {showDraftButton && (
-                    <Button
-                      onClick={() => {
-                        handleDraft(changes);
-                      }}
-                    >
-                      {buttonsTitles.saveAsDraft}
-                    </Button>
-                  )}
-                  {canValidate && (
-                    <AdditionalButtons handleChange={(status) => setStatus(status)} />
-                  )}
-                </Row>
-                <FormPopUp
-                  onClose={() => setStatus('')}
-                  status={status}
-                  onSubmit={({ comment, status }) => {
-                    handleSubmit({
-                      ...(status === StatusTypes.SUBMITTED && { changes }),
-                      status,
-                      comment,
-                    });
-                  }}
-                />
-              </TitleColumn>
+              <RequestFormHeader
+                title={title}
+                request={request}
+                showDraftButton={showDraftButton}
+                disabled={disabled}
+                handleDraft={() => handleDraft(submitChanges)}
+                onSubmit={onSubmit}
+                canValidate={canValidate}
+                currentTabIndex={currentTabIndex}
+                onSetCurrentTabIndex={(_, index) => {
+                  setCurrentTabIndex(index || 0);
+                }}
+                onSetStatus={(status) => setStatus(status)}
+                tabs={tabs}
+              />
 
               <Column>
-                <TabBar
-                  tabs={tabs}
-                  onClick={(_, index) => setCurrentTab(index || 0)}
-                  isActive={(_, index) => currentTab == index}
-                />
-                {containers[tabs[currentTab]?.label]}
+                {containers[tabs[currentTabIndex]?.label]}
                 <FormErrorMessage errors={errors} />
                 <ButtonRow>
-                  {hasPrevious && (
-                    <Button
-                      onClick={async () => {
-                        setCurrentTab(currentTab - 1);
-                      }}
-                    >
-                      {buttonsTitles.back}
-                    </Button>
-                  )}
-
-                  {hasNext && (
-                    <Button
-                      onClick={async () => {
-                        const partialValidationSchema = tabs[currentTab]?.validation;
-                        if (!partialValidationSchema) return setCurrentTab(currentTab + 1);
-
-                        partialValidationSchema
-                          .validate(values, { abortEarly: false })
-                          .then(() => setCurrentTab(currentTab + 1))
-                          .catch((error) => {
-                            setErrors(yupToFormErrors(error));
-                          });
-                      }}
-                    >
-                      {buttonsTitles.next}
-                    </Button>
-                  )}
-
+                  {hasPrevious && <Button onClick={handlePrevious}>{buttonsTitles.back}</Button>}
+                  {hasNext && <Button onClick={handleNext}>{buttonsTitles.next}</Button>}
                   {!disabled && !hasNext && (
-                    <Button
-                      onClick={async () => {
-                        let errors: any = {};
-
-                        try {
-                          await sportBaseSchema.validate(values, { abortEarly: false });
-                        } catch (e) {
-                          errors = yupToFormErrors(e);
-                        }
-
-                        setErrors(errors);
-
-                        if (isEmpty(errors)) {
-                          if (!isCreateStatus) {
-                            return setStatus(StatusTypes.SUBMITTED);
-                          }
-
-                          handleSubmit({
-                            changes,
-                            status: StatusTypes.CREATED,
-                          });
-                        }
-                      }}
-                    >
-                      {buttonsTitles.save}
-                    </Button>
+                    <Button onClick={onSubmit}>{buttonsTitles.save}</Button>
                   )}
                 </ButtonRow>
               </Column>
             </InnerContainer>
+            <FormPopUp
+              onClose={() => setStatus('')}
+              status={status}
+              onSubmit={({ comment, status }) => {
+                handleSubmit({
+                  ...(status === StatusTypes.SUBMITTED && { changes: submitChanges }),
+                  status,
+                  comment,
+                });
+              }}
+            />
             {!isNewRequest && (
               <HistoryContainer
                 handleClear={() => {
                   setValues(sportBaseWithoutLastRequest);
                 }}
+                oldData={oldData}
                 requestId={request?.id}
                 disabled={disabled}
                 handleChange={setFieldValue}
                 open={!lastRequestApprovalOrRejection}
-                spaceTypeIds={spaceTypeIds}
+                titles={titles}
                 diff={changes as any}
                 data={values}
               />
@@ -501,7 +554,6 @@ const InnerContainer = styled.div`
   padding: 16px 16px;
   margin: 0 auto;
   width: 100%;
-  max-width: 1000px;
 `;
 
 const Container = styled.div`
@@ -509,7 +561,6 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
 
-  gap: 16px;
   @media ${device.mobileL} {
     flex-wrap: wrap;
     justify-content: flex-end;
@@ -520,16 +571,6 @@ const Column = styled.div`
   display: flex;
   gap: 12px;
   flex-direction: column;
-`;
-
-const Title = styled.div`
-  font-size: 3.2rem;
-  font-weight: bold;
-  color: #121926;
-  opacity: 1;
-  @media ${device.mobileL} {
-    font-size: 2.4rem;
-  }
 `;
 
 export default SportBasePage;

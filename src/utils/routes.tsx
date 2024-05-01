@@ -46,6 +46,7 @@ export const slugs = {
   updateInstitution: (id: string) => `/istaigos/${id}/atnaujinti`,
   newInstitutions: `/istaigos/naujas`,
   organizations: `/organizacijos`,
+  unConfirmedOrganizations: '/nepatvirtintos-organizacijos',
   organization: (id: string) => `/organizacijos/${id}`,
   updateOrganization: (id: string) => `/organizacijos/${id}/atnaujinti`,
   organizationUsers: (id: string) => `/organizacijos/${id}/nariai`,
@@ -75,6 +76,10 @@ export const routes = [
     name: pageTitles.organizations,
     slug: slugs.organizations,
     sidebar: true,
+    component: <OrganizationList />,
+  },
+  {
+    slug: slugs.unConfirmedOrganizations,
     component: <OrganizationList />,
   },
 

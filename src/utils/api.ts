@@ -18,7 +18,8 @@ export enum Resources {
   REMIND_PASSWORD = 'auth/remind',
   REQUESTS = 'api/requests',
   SPORT_BASES = 'api/sportsBases',
-  SOURCES = 'api/sportsBases/investments/sources',
+  SPORT_BASE_INVESTMENTS_SOURCES = 'api/sportsBases/investments/sources',
+  TENANT_INVESTMENTS_SOURCES = 'api/tenants/investments/sources',
   LEVELS = 'api/sportsBases/levels',
   TECHNICAL_CONDITIONS = 'api/sportsBases/technicalConditions',
   TYPES = 'api/sportsBases/types',
@@ -33,6 +34,7 @@ export enum Resources {
   ORGANIZATIONS = 'api/tenants/organizations',
   INSTITUTIONS = 'api/tenants/institutions',
   PROFILES = 'api/profiles',
+  ORGANIZATION_BASIS = '/api/sportsBases/tenants/basis',
 }
 
 export enum Populations {
@@ -43,6 +45,9 @@ export enum Populations {
   ENTITY = 'entity',
   TYPE = 'type',
   LAST_REQUEST = 'lastRequest',
+  CAN_EDIT = 'canEdit',
+  CAN_CREATE_REQUEST = 'canCreateRequest',
+  CAN_VALIDATE = 'canValidate',
 }
 
 export enum SortAscFields {
@@ -153,11 +158,12 @@ class Api {
     return res.data;
   };
 
-  getList = async ({ resource, page, pageSize, ...rest }: GetAllProps): Promise<any> => {
+  getList = async ({ resource, page, filter, pageSize, ...rest }: GetAllProps): Promise<any> => {
     const config = {
       params: {
         pageSize: pageSize || 10,
         page: page || 1,
+        filter: JSON.stringify(filter),
         ...rest,
       },
     };
@@ -414,21 +420,23 @@ class Api {
     });
   };
 
-  getSportBases = async ({ page, filter }: TableList) =>
+  getSportBases = async ({ page, filter, query }: TableList) =>
     await this.getList({
       resource: Resources.SPORT_BASES,
       populate: [Populations.TYPE, Populations.LAST_REQUEST],
       sort: [SortDescFields.ID],
       page,
       filter,
+      query,
     });
 
-  getNewRequests = async ({ page, filter }: TableList) =>
+  getNewRequests = async ({ page, filter, query }: TableList) =>
     await this.getList({
       resource: Resources.REQUESTS + '/new',
       populate: [Populations.ENTITY],
       sort: [SortDescFields.ID],
       page,
+      query,
       filter,
     });
 
@@ -442,6 +450,7 @@ class Api {
         'technicalCondition',
         'spaces',
         'investments',
+        'tenants',
         'owners',
         'canEdit',
         'canCreateRequest',
@@ -569,10 +578,16 @@ class Api {
       sort: [SortAscFields.NAME],
     });
 
-  getTenant = async ({ id }: { id: string }): Promise<any> => {
+  getTenant = async ({ id }: { id: string }): Promise<Tenant> => {
     return await this.getOne({
       resource: Resources.TENANTS,
-      populate: [Populations.CHILDREN],
+      populate: [
+        Populations.CHILDREN,
+        Populations.LAST_REQUEST,
+        Populations.CAN_EDIT,
+        Populations.CAN_CREATE_REQUEST,
+        Populations.CAN_VALIDATE,
+      ],
       id,
     });
   };
@@ -601,13 +616,23 @@ class Api {
       resource: Resources.PROFILES,
     });
 
-  getSources = async ({ filter, page }) =>
+  getSportBaseSources = async ({ filter, page, query }) =>
+    await this.getList({
+      filter,
+      page,
+      query,
+      fields: ['id', 'name'],
+      resource: Resources.SPORT_BASE_INVESTMENTS_SOURCES,
+    });
+
+  getTenantSources = async ({ filter, page }) =>
     await this.getList({
       filter,
       page,
       fields: ['id', 'name'],
-      resource: Resources.SOURCES,
+      resource: Resources.TENANT_INVESTMENTS_SOURCES,
     });
+
   getSportBaseLevels = async ({ filter, page }) =>
     await this.getList({
       filter,
@@ -631,6 +656,14 @@ class Api {
       resource: Resources.TYPES,
     });
 
+  getOrganizationBasis = async ({ filter, page }) =>
+    await this.getList({
+      filter,
+      page,
+      fields: ['id', 'name'],
+      resource: Resources.ORGANIZATION_BASIS,
+    });
+
   getSportBaseSpaceBuildingTypes = async ({ filter, page }) =>
     await this.getList({
       filter,
@@ -650,7 +683,8 @@ class Api {
   getSportBaseSpaceTypes = async ({ page, filter, query }) =>
     await this.getList({
       page,
-      fields: ['id', 'name'],
+      fields: ['id', 'name', 'type'],
+
       query,
       filter,
       resource: Resources.SPACE_TYPES,

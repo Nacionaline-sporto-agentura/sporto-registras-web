@@ -15,6 +15,7 @@ export const organizationColumns = {
   email: { label: 'El. paštas', show: true },
   phone: { label: 'Telefonas', show: true },
   parentName: { label: 'Tėvinė organizacija', show: true },
+  status: { label: 'Būsena', show: true },
 };
 
 export const institutionColumns = {

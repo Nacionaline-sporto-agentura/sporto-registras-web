@@ -1,83 +1,41 @@
-import { isEmpty } from 'lodash';
-
-import Button from '../components/buttons/Button';
+import styled from 'styled-components';
+import Organizations from '../components/containers/OrganizationList';
+import UnconfirmedOrganizations from '../components/containers/UnconfirmedOrganizations';
 import TablePageLayout from '../components/layouts/TablePageLayout';
-import DynamicFilter from '../components/other/DynamicFilter';
-import { FilterInputTypes } from '../components/other/DynamicFilter/Filter';
-import MainTable from '../components/tables/MainTable';
-import { actions as filterActions } from '../state/filters/reducer';
-import { useAppSelector } from '../state/hooks';
-import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
-import { NotFoundInfoProps } from '../types';
-import Api from '../utils/api';
-import { organizationColumns } from '../utils/columns';
-import { useGenericTablePageHooks, useTableData } from '../utils/hooks';
-import { mapOrganizationList } from '../utils/mapFunctions';
+import NavigateTabBar from '../components/Tabs/NavigateTabBar';
+import { useGetCurrentRoute } from '../utils/hooks';
 import { slugs } from '../utils/routes';
-import { buttonsTitles, emptyState, emptyStateUrl, inputLabels, pageTitles } from '../utils/texts';
-
-const filterConfig = () => ({
-  name: {
-    label: inputLabels.name,
-    key: 'name',
-    inputType: FilterInputTypes.text,
-  },
-});
-
-const rowConfig = [['name']];
+import { pageTitles } from '../utils/texts';
 
 const OrganizationList = () => {
-  const { dispatch, navigate, page } = useGenericTablePageHooks();
+  const tabs = [
+    {
+      label: 'Organizacijos',
+      slug: slugs.organizations,
+    },
+    {
+      label: 'Nepatvirtintos organizacijos',
+      slug: slugs.unConfirmedOrganizations,
+    },
+  ];
 
-  const filters = useAppSelector((state) => state.filters.institutionFilters);
-
-  const { tableData, loading } = useTableData({
-    name: 'organizations',
-    endpoint: () =>
-      Api.getOrganizations({
-        page,
-        filter: filters,
-      }),
-    mapData: (list) => mapOrganizationList(list),
-    dependencyArray: [filters, page],
-  });
-
-  const handleSetFilters = (filters) => {
-    dispatch(filterActions.setInstitutionFilters(filters));
+  const containers = {
+    [slugs.organizations]: <Organizations />,
+    [slugs.unConfirmedOrganizations]: <UnconfirmedOrganizations />,
   };
 
-  const notFoundInfo: NotFoundInfoProps = {
-    text: emptyState.organizations,
-    url: slugs.newOrganization,
-    urlText: emptyStateUrl.organization,
-  };
+  const currentTab = useGetCurrentRoute(tabs);
 
   return (
     <TablePageLayout title={pageTitles.organizations}>
-      <TableButtonsRow>
-        <TableButtonsInnerRow>
-          <DynamicFilter
-            filters={filters}
-            filterConfig={filterConfig()}
-            rowConfig={rowConfig}
-            onSetFilters={(filters) => handleSetFilters(filters)}
-            disabled={loading}
-          />
-        </TableButtonsInnerRow>
-        <Button onClick={() => navigate(slugs.newOrganization)} disabled={loading}>
-          {buttonsTitles.newOrganization}
-        </Button>
-      </TableButtonsRow>
-      <MainTable
-        onClick={(id) => navigate(slugs.organizationUsers(id))}
-        loading={loading}
-        data={tableData}
-        columns={organizationColumns}
-        isFilterApplied={!isEmpty(filters)}
-        notFoundInfo={notFoundInfo}
-      />
+      <StyledTabBar tabs={tabs} />
+      {currentTab && containers[currentTab?.slug as any]}
     </TablePageLayout>
   );
 };
+
+export const StyledTabBar = styled(NavigateTabBar)`
+  margin: 16px 0px;
+`;
 
 export default OrganizationList;

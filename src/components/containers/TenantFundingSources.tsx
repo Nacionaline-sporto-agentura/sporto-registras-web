@@ -3,93 +3,114 @@ import { omit } from 'lodash';
 import { useState } from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
-import { sportBaseTabTitles } from '../../pages/SportBase';
-import { FormRow, TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
-import { Source, SportBase } from '../../types';
-import { formatDate, getSourcesList } from '../../utils/functions';
-import { buttonsTitles, formLabels, inputLabels, validationTexts } from '../../utils/texts';
+import { FormRow } from '../../styles/CommonStyles';
+import { Source, TenantFundingSource } from '../../types';
+import { getTenantSourcesList } from '../../utils/functions';
+import {
+  buttonsTitles,
+  descriptions,
+  formLabels,
+  inputLabels,
+  pageTitles,
+  validationTexts,
+} from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
 import AsyncSelectField from '../fields/AsyncSelectField';
 import DateField from '../fields/DateField';
 import NumericTextField from '../fields/NumericTextField';
+import TextAreaField from '../fields/TextAreaField';
+import { generateUniqueString } from '../fields/utils/function';
 import Popup from '../layouts/Popup';
+import InnerContainerRow from '../other/InnerContainerRow';
 import MainTable from '../tables/MainTable';
 
-const investmentsSchema = Yup.object().shape({
+interface TenantFundingSourceForm extends TenantFundingSource {
+  index: number;
+}
+
+const fundingSourceSchema = Yup.object().shape({
   source: Yup.object().required(validationTexts.requireText),
   fundsAmount: Yup.string().required(validationTexts.requireText),
+  description: Yup.string().required(validationTexts.requireText),
   appointedAt: Yup.date().required(validationTexts.requireText),
 });
 
-const investmentsLabels = {
-  source: { label: inputLabels.source, show: true },
-  fundsAmount: { label: inputLabels.fundsAmount, show: true },
-  appointedAt: { label: inputLabels.appointedAt, show: true },
+const fundingSourceLabels = {
+  source: { label: inputLabels.fundingSource, show: true },
 };
 
-const InvestmentsContainer = ({ investments, handleChange, counter, setCounter, disabled }) => {
-  const investmentKeys = Object.keys(investments);
+const TenantFundingSourcesContainer = ({
+  fundingSources = {},
+  handleChange,
+  disabled,
+}: {
+  fundingSources: { [key: string]: TenantFundingSource };
+  handleChange: any;
+  disabled: boolean;
+}) => {
+  const fundingSourceKeys = Object.keys(fundingSources);
+  const [validateOnChange, setValidateOnChange] = useState(false);
 
-  const [current, setCurrent] = useState<SportBase['investments'] | {}>();
+  const [current, setCurrent] = useState<TenantFundingSourceForm | {}>();
 
   const onSubmit = async (values: any) => {
     if (typeof values?.index !== 'undefined') {
       const { index, ...rest } = values;
 
-      const updatedOrganizations = { ...investments, [index]: rest };
+      const updatedInvestments = { ...fundingSources, [index]: rest };
 
-      handleChange('investments', updatedOrganizations);
+      handleChange('fundingSources', updatedInvestments);
     } else {
-      handleChange('investments', { [counter]: values, ...investments });
-      setCounter(setCounter + 1);
+      handleChange('fundingSources', { [generateUniqueString()]: values, ...fundingSources });
     }
-
+    setValidateOnChange(false);
     setCurrent(undefined);
   };
 
   const initialValues: any = current || {};
 
+  const mappedData = {
+    data: fundingSourceKeys.map((key) => ({
+      source: fundingSources?.[key]?.source?.name,
+      id: key,
+    })),
+  };
+
   return (
     <>
-      <TableButtonsRow>
-        <TableButtonsInnerRow>
-          <Title>{sportBaseTabTitles.investments}</Title>
-        </TableButtonsInnerRow>
-        {!disabled && (
-          <Button disabled={disabled} onClick={() => setCurrent({})}>
-            {buttonsTitles.addOrganization}
-          </Button>
-        )}
-      </TableButtonsRow>
+      <InnerContainerRow
+        title={pageTitles.fundingSources}
+        description={descriptions.fundingSources}
+        buttonTitle={buttonsTitles.addFundingSource}
+        disabled={disabled}
+        onCreateNew={() => setCurrent({})}
+      />
+
       <MainTable
-        notFoundInfo={{ text: 'Nėra sukurtų investicijų' }}
+        notFoundInfo={{ text: 'Nėra sukurtų finansavimo šaltinių' }}
         isFilterApplied={false}
-        data={{
-          data: investmentKeys.map((key) => ({
-            ...investments[key],
-            source: investments?.[key]?.source?.name,
-            appointedAt: formatDate(investments?.[key]?.appointedAt),
-            id: key,
-          })),
-        }}
+        data={mappedData}
         hidePagination={true}
-        columns={investmentsLabels}
+        columns={fundingSourceLabels}
         onClick={(id) => {
-          setCurrent({ ...investments[id], index: id });
+          setCurrent({ ...fundingSources[id], index: id });
         }}
       />
 
       <Popup
-        title={formLabels.sportOrganizations}
+        title={formLabels.addGoverningBody}
         visible={!!current}
         onClose={() => setCurrent(undefined)}
       >
         <Formik
-          validateOnChange={false}
+          validateOnChange={validateOnChange}
           enableReinitialize={false}
           initialValues={initialValues}
           onSubmit={onSubmit}
-          validationSchema={investmentsSchema}
+          validate={() => {
+            setValidateOnChange(true);
+          }}
+          validationSchema={fundingSourceSchema}
         >
           {({ values, errors, setFieldValue }) => {
             return (
@@ -99,18 +120,20 @@ const InvestmentsContainer = ({ investments, handleChange, counter, setCounter, 
                     disabled={disabled}
                     label={inputLabels.source}
                     value={values?.source}
+                    showError={false}
                     error={errors?.source}
                     name="source"
                     onChange={(source: Source) => {
                       setFieldValue(`source`, source);
                     }}
                     getOptionLabel={(option) => option?.name}
-                    loadOptions={(input, page) => getSourcesList(input, page)}
+                    loadOptions={(input, page) => getTenantSourcesList(input, page)}
                   />
                   <NumericTextField
                     disabled={disabled}
                     label={inputLabels.fundsAmount}
                     value={values?.fundsAmount}
+                    showError={false}
                     error={errors?.fundsAmount}
                     onChange={(e: string) => {
                       setFieldValue(`fundsAmount`, e);
@@ -123,6 +146,16 @@ const InvestmentsContainer = ({ investments, handleChange, counter, setCounter, 
                     error={errors?.appointedAt}
                     onChange={(appointedAt) => setFieldValue(`appointedAt`, appointedAt)}
                   />
+
+                  <TextAreaField
+                    disabled={disabled}
+                    label={inputLabels.description}
+                    error={errors?.description}
+                    value={values.description}
+                    name="improvements"
+                    onChange={(input) => setFieldValue(`improvements`, input)}
+                  />
+
                   {!disabled && (
                     <ButtonRow>
                       {values.index && (
@@ -130,7 +163,7 @@ const InvestmentsContainer = ({ investments, handleChange, counter, setCounter, 
                           disabled={disabled}
                           variant={ButtonColors.DANGER}
                           onClick={() => {
-                            handleChange('investments', omit(investments, values.index));
+                            handleChange('fundingSources', omit(fundingSources, values.index));
                             setCurrent(undefined);
                           }}
                         >
@@ -159,12 +192,4 @@ const ButtonRow = styled.div`
   margin: 16px 0;
 `;
 
-const Title = styled.div`
-  font-size: 2rem;
-  line-height: 25px;
-  font-weight: bold;
-  color: #231f20;
-  margin-right: 16px;
-`;
-
-export default InvestmentsContainer;
+export default TenantFundingSourcesContainer;

@@ -1,46 +1,41 @@
 import { FormRow } from '../../styles/CommonStyles';
-import {
-  Photo,
-  SportBase,
-  SportsBasesCondition,
-  SportsBasesLevel,
-  SportsBasesType,
-} from '../../types';
+import { SportBase, SportsBasesCondition, SportsBasesLevel, SportsBasesType } from '../../types';
 import {
   getSportBaseLevelsList,
   getSportBaseTechnicalConditionList,
   getSportBaseTypesList,
 } from '../../utils/functions';
-import { formLabels, inputLabels } from '../../utils/texts';
+import { descriptions, formLabels, inputLabels, pageTitles } from '../../utils/texts';
 import AsyncSelectField from '../fields/AsyncSelectField';
-import NumericTextField from '../fields/NumericTextField';
-import PhotoUploadField from '../fields/PhotoUploadField';
 import TextField from '../fields/TextField';
 import UrlField from '../fields/UrlField';
+import InnerContainerRow from '../other/InnerContainerRow';
+import MapField from '../other/MapField';
 import SimpleContainer from '../other/SimpleContainer';
 
 const SportBaseGeneralContainer = ({
   sportBase,
   errors,
   handleChange,
-  setCounter,
-  counter,
   disabled,
 }: {
   disabled: boolean;
   sportBase: SportBase;
   errors: any;
   handleChange: any;
-  counter: number;
-  setCounter: (num: number) => void;
 }) => {
-  const photos = sportBase?.photos || {};
-  const photoValues = Object.values(photos);
+  const address = sportBase?.address;
+
+  const formattedAddress =
+    address?.street && address?.house && address?.city && address?.municipality
+      ? `${address.street} ${address.house}, ${address.city}`
+      : '';
 
   return (
     <>
+      <InnerContainerRow title={pageTitles.info} description={descriptions.sportBaseGeneral} />
       <SimpleContainer title={formLabels.sportBaseInfo}>
-        <FormRow columns={2}>
+        <FormRow columns={3}>
           <TextField
             disabled={disabled}
             label={inputLabels.sportBaseName}
@@ -51,17 +46,6 @@ const SportBaseGeneralContainer = ({
               handleChange(`name`, name);
             }}
           />
-          <TextField
-            disabled={disabled}
-            label={inputLabels.address}
-            value={sportBase?.address}
-            error={errors?.address}
-            name="address"
-            onChange={(name) => {
-              handleChange(`address`, name);
-            }}
-          />
-
           <AsyncSelectField
             disabled={disabled}
             label={inputLabels.type}
@@ -108,63 +92,69 @@ const SportBaseGeneralContainer = ({
             onChange={(endAt) => handleChange(`webPage`, endAt)}
           />
         </FormRow>
-        <FormRow columns={2}>
-          <NumericTextField
-            digitsAfterComma={12}
+        <FormRow columns={5}>
+          <TextField
             disabled={disabled}
-            label={inputLabels.coordinateX}
-            value={sportBase?.coordinates?.x || ''}
-            error={errors?.coordinates?.x}
-            name="coordinates.x"
-            onChange={(coordinateX) => {
-              handleChange(`coordinates.x`, coordinateX);
+            label={inputLabels.municipality}
+            value={sportBase?.address?.municipality}
+            error={errors?.address?.municipality}
+            name="address.municipality"
+            onChange={(name) => {
+              handleChange(`address.municipality`, name);
             }}
           />
-          <NumericTextField
-            digitsAfterComma={12}
+          <TextField
             disabled={disabled}
-            label={inputLabels.coordinateY}
-            value={sportBase?.coordinates?.y || ''}
-            error={errors?.coordinates?.y}
-            name="coordinates.y"
-            onChange={(coordinateY) => {
-              handleChange(`coordinates.y`, coordinateY);
+            label={inputLabels.town}
+            value={sportBase?.address?.city}
+            error={errors?.address?.city}
+            name="address.city"
+            onChange={(name) => {
+              handleChange(`address.city`, name);
+            }}
+          />
+
+          <TextField
+            disabled={disabled}
+            label={inputLabels.street}
+            value={sportBase?.address?.street}
+            error={errors?.address?.street}
+            name="address.street"
+            onChange={(name) => {
+              handleChange(`address.street`, name);
+            }}
+          />
+          <TextField
+            disabled={disabled}
+            label={inputLabels.houseNo}
+            value={sportBase?.address?.house}
+            error={errors?.address?.house}
+            name="address.house"
+            onChange={(name) => {
+              handleChange(`address.house`, name);
+            }}
+          />
+          <TextField
+            disabled={disabled}
+            label={inputLabels.apartmentNo}
+            value={sportBase?.address?.apartment}
+            error={errors?.address?.apartment}
+            name="address.apartment"
+            onChange={(name) => {
+              handleChange(`address.apartment`, name);
             }}
           />
         </FormRow>
-      </SimpleContainer>
-      <SimpleContainer>
-        <PhotoUploadField
-          disabled={disabled}
-          name={'photos'}
-          error={errors?.photos}
-          photos={photoValues}
-          onChange={(name, value: Photo[]) => {
-            if (typeof value !== 'object') {
-              return handleChange(name, value);
-            }
-
-            const filteredPhotos = {};
-            let tempCounter = counter;
-
-            Object.entries(photos).forEach(([key, type]) => {
-              const found = value.find((c) => c.url === (type as any)?.url);
-
-              if (found) {
-                filteredPhotos[key] = found;
-              }
-            });
-
-            value.forEach((type) => {
-              if (photoValues.every((sportValue: any) => sportValue.url !== type.url)) {
-                filteredPhotos[tempCounter] = type;
-                tempCounter++;
-              }
-            });
-            setCounter(tempCounter);
-            handleChange(name, filteredPhotos);
-          }}
-        />
+        <FormRow columns={1}>
+          <MapField
+            address={formattedAddress}
+            onChange={(address) => {
+              const coordinates = address?.features?.[0]?.geometry?.coordinates;
+              handleChange('coordinates', { x: coordinates[0], y: coordinates[1] });
+            }}
+            disabled={disabled}
+          />
+        </FormRow>
       </SimpleContainer>
     </>
   );

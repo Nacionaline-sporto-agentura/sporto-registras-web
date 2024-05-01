@@ -146,7 +146,7 @@ const UpdateOrganizationForm = () => {
     handleDelete: !isNew(id) ? handleDelete.mutateAsync : undefined,
   };
 
-  const initialValues: InstitutionProps = {
+  const initialValues: any = {
     companyName: institution?.name || '',
     companyCode: institution?.code || '',
     companyPhone: institution?.phone || '',

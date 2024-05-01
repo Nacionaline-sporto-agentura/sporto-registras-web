@@ -15,7 +15,7 @@ const OrganizationForm = ({
   groupOptions,
   toggleCanHaveChildren = false,
   disabled,
-  treeSelectDisabled = false,
+  toggleShowParentOrganization = true,
 }: {
   values: any;
   errors: any;
@@ -23,7 +23,7 @@ const OrganizationForm = ({
   toggleCanHaveChildren?: boolean;
   groupOptions;
   disabled?: boolean;
-  treeSelectDisabled?: boolean;
+  toggleShowParentOrganization?: boolean;
 }) => {
   return (
     <>
@@ -37,17 +37,19 @@ const OrganizationForm = ({
             name="name"
             onChange={(name) => handleChange('companyName', name)}
           />
-          <TreeSelectField
-            label={inputLabels.parentOrganization}
-            name={`parentOrganization`}
-            error={errors?.parent}
-            groupOptions={groupOptions}
-            disabled={treeSelectDisabled}
-            value={values.parent}
-            onChange={(value) => {
-              handleChange('parent', value.id);
-            }}
-          />
+          {toggleShowParentOrganization && (
+            <TreeSelectField
+              label={inputLabels.parentOrganization}
+              name={`parentOrganization`}
+              error={errors?.parent}
+              groupOptions={groupOptions}
+              disabled={disabled}
+              value={values.parent}
+              onChange={(value) => {
+                handleChange('parent', value.id);
+              }}
+            />
+          )}
           <TextField
             label={inputLabels.companyCode}
             value={values.companyCode}

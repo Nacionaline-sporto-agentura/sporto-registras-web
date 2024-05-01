@@ -31,6 +31,11 @@ export enum TenantTypes {
   ORGANIZATION = 'ORGANIZATION',
 }
 
+export enum MembershipTypes {
+  LITHUANIAN = 'LITHUANIAN',
+  INTERNATIONAL = 'INTERNATIONAL',
+}
+
 export enum Apps {
   USERS = 'USERS',
   REGISTRAS = 'REGISTRAS',
@@ -38,7 +43,7 @@ export enum Apps {
 
 export enum FieldTypes {
   SELECT = 'SELECT',
-  TEXT = 'TEXT',
+  TEXT_AREA = 'TEXT_AREA',
   BOOLEAN = 'BOOLEAN',
   NUMBER = 'NUMBER',
   DECIMAL = 'DECIMAL',

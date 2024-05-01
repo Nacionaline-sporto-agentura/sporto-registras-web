@@ -61,7 +61,10 @@ export const handleUpdateTokens = (data: UpdateTokenProps) => {
 export const handleSelectProfile = (profileId: ProfileId) => {
   if (cookies.get('profileId')?.toString() === profileId?.toString()) return;
 
-  cookies.set('profileId', `${profileId}`, { path: '/' });
+  cookies.set('profileId', `${profileId}`, {
+    path: '/',
+    expires: new Date(new Date().getTime() + 60 * 60 * 24 * 1000 * 30),
+  });
 
   window.location.reload();
 };

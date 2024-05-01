@@ -1,16 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { GroupFilters, UserFilters } from '../../types';
+import { SimpleFilters, UnconfirmedRequestFilters, UserFilters } from '../../types';
 
 interface UsersFiltersState {
   userFilters: UserFilters;
-  groupFilters: GroupFilters;
-  institutionFilters: GroupFilters;
+  groupFilters: SimpleFilters;
+  institutionFilters: SimpleFilters;
+  organizationFilters: SimpleFilters;
+  sportBaseFilters: SimpleFilters;
+  unconfirmedOrganizationFilters: UnconfirmedRequestFilters;
+  unconfirmedSportBaseFilters: UnconfirmedRequestFilters;
 }
 
 const initialState: UsersFiltersState = {
   userFilters: {},
   groupFilters: {},
   institutionFilters: {},
+  organizationFilters: {},
+  unconfirmedOrganizationFilters: {},
+  unconfirmedSportBaseFilters: {},
+  sportBaseFilters: {},
 };
 
 export const filtersReducer = createSlice({
@@ -25,6 +33,18 @@ export const filtersReducer = createSlice({
     },
     setInstitutionFilters: (state, action) => {
       return { ...state, institutionFilters: action.payload };
+    },
+    setOrganizationFilters: (state, action) => {
+      return { ...state, organizationFilters: action.payload };
+    },
+    setSportBaseFilters: (state, action) => {
+      return { ...state, sportBaseFilters: action.payload };
+    },
+    setUnconfirmedOrganizationFilters: (state, action) => {
+      return { ...state, unconfirmedOrganizationFilters: action.payload };
+    },
+    setUnconfirmedSportBaseFilters: (state, action) => {
+      return { ...state, unconfirmedSportBaseFilters: action.payload };
     },
   },
 });

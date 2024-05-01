@@ -189,6 +189,7 @@ export const useInfinityLoad = (
   fn: (params: { page: number }) => any,
   observerRef: any,
   filters = {},
+  enabled = true,
 ) => {
   const queryFn = async (page: number) => {
     const data = await fn({
@@ -207,6 +208,7 @@ export const useInfinityLoad = (
     getNextPageParam: (lastPage: any) => {
       return lastPage?.page < lastPage?.totalPages ? lastPage.page + 1 : undefined;
     },
+    enabled,
   });
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = result;

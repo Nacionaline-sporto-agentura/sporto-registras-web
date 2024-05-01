@@ -17,7 +17,7 @@ const OwnerForm = ({
   const showPersonalCodeField = !values.ownerWithPassword;
   return (
     <TitleColumn>
-      <SimpleContainer title={formLabels.infoAboutOwner}>
+      <SimpleContainer title={formLabels.addOwner}>
         <FormRow columns={2}>
           <TextField
             label={inputLabels.firstName}

@@ -27,7 +27,7 @@ const Container = styled.div`
   padding: 12px 17px;
   position: relative;
   :hover {
-    background-color: #febc1d14;
+    background-color: ${({ theme }) => `${theme.colors.primary}14`};
     box-shadow: 0px 4px 8px ${({ theme }) => `${theme.colors.primary}33`};
     border: 1px solid ${({ theme }) => theme.colors.primary};
     cursor: pointer;
