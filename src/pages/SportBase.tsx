@@ -26,7 +26,7 @@ import { useAppSelector } from '../state/hooks';
 import { device } from '../styles';
 import { SportBase } from '../types';
 import api from '../utils/api';
-import { AdminRoleType, StatusTypes } from '../utils/constants';
+import { AdminRoleType, RequestEntityTypes, StatusTypes } from '../utils/constants';
 import { isNew } from '../utils/functions';
 import { slugs } from '../utils/routes';
 import { buttonsTitles, descriptions, inputLabels, validationTexts } from '../utils/texts';
@@ -177,6 +177,7 @@ const SportBasePage = () => {
 
   const handleSubmit = async ({ changes, status, comment }: any) => {
     const params = {
+      entityType: RequestEntityTypes.SPORTS_BASES,
       ...(!isNew(id) && { entity: id }),
       status,
       comment,
