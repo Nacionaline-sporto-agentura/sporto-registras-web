@@ -108,7 +108,6 @@ const OrganizationsContainer = ({ organizations, handleChange, disabled }) => {
           validationSchema={organizationsSchema}
         >
           {({ values, errors, setFieldValue }) => {
-            console.log(values, 'values');
             return (
               <Form>
                 <FormRow columns={1}>
