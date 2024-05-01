@@ -19,7 +19,7 @@ export enum Resources {
   REQUESTS = 'api/requests',
   SPORT_BASES = 'api/sportsBases',
   SPORT_BASE_INVESTMENTS_SOURCES = 'api/sportsBases/investments/sources',
-  TENANT_INVESTMENTS_SOURCES = 'api/tenants/fundingSources/sources',
+  TENANT_INVESTMENTS_SOURCES = 'api/tenants/fundingSources/types',
   LEVELS = 'api/sportsBases/levels',
   TECHNICAL_CONDITIONS = 'api/sportsBases/technicalConditions',
   TYPES = 'api/sportsBases/types',
@@ -189,7 +189,7 @@ class Api {
       },
     };
 
-    return this.errorWrapper(() => this.axios.get(`/${resource}/${id}`, config));
+    return this.errorWrapper(() => this.axios.get(`/${resource}/${id ? `/${id}` : ''}`, config));
   };
 
   patch = async ({ resource, id, params }: Update) => {
@@ -442,9 +442,11 @@ class Api {
 
   getSportBase = async (id: string): Promise<SportBase> =>
     await this.getOne({
-      resource: Resources.SPORT_BASES,
+      resource: `${Resources.SPORT_BASES}/${id}/base`,
       populate: [
         Populations.LAST_REQUEST,
+        Populations.CAN_EDIT,
+        Populations.CAN_CREATE_REQUEST,
         'type',
         'level',
         'technicalCondition',
@@ -452,11 +454,8 @@ class Api {
         'investments',
         'tenants',
         'owners',
-        'canEdit',
-        'canCreateRequest',
         'canValidate',
       ],
-      id,
     });
 
   getRequest = async (id: string): Promise<Request> =>
@@ -581,6 +580,14 @@ class Api {
   getTenant = async ({ id }: { id: string }): Promise<Tenant> => {
     return await this.getOne({
       resource: Resources.TENANTS,
+      populate: [Populations.CHILDREN],
+      id,
+    });
+  };
+
+  getRequestTenant = async ({ id }: { id: string }): Promise<Tenant> => {
+    return await this.getOne({
+      resource: `${Resources.TENANTS}/${id}/base`,
       populate: [
         Populations.CHILDREN,
         Populations.LAST_REQUEST,
@@ -588,7 +595,6 @@ class Api {
         Populations.CAN_CREATE_REQUEST,
         Populations.CAN_VALIDATE,
       ],
-      id,
     });
   };
 
@@ -623,6 +629,7 @@ class Api {
       query,
       fields: ['id', 'name'],
       resource: Resources.SPORT_BASE_INVESTMENTS_SOURCES,
+      sort: [SortAscFields.NAME],
     });
 
   getTenantSources = async ({ filter, page }) =>
@@ -631,6 +638,7 @@ class Api {
       page,
       fields: ['id', 'name'],
       resource: Resources.TENANT_INVESTMENTS_SOURCES,
+      sort: [SortAscFields.NAME],
     });
 
   getSportBaseLevels = async ({ filter, page }) =>
@@ -639,6 +647,7 @@ class Api {
       page,
       fields: ['id', 'name'],
       resource: Resources.LEVELS,
+      sort: [SortAscFields.NAME],
     });
   getSportBaseTechnicalConditions = async ({ filter, page }) =>
     await this.getList({
@@ -646,6 +655,7 @@ class Api {
       page,
       fields: ['id', 'name'],
       resource: Resources.TECHNICAL_CONDITIONS,
+      sort: [SortAscFields.NAME],
     });
 
   getSportBaseTypes = async ({ filter, page }) =>
@@ -654,6 +664,7 @@ class Api {
       page,
       fields: ['id', 'name'],
       resource: Resources.TYPES,
+      sort: [SortAscFields.NAME],
     });
 
   getOrganizationBasis = async ({ filter, page }) =>
@@ -670,6 +681,7 @@ class Api {
       page,
       fields: ['id', 'name'],
       resource: Resources.BUILDING_TYPES,
+      sort: [SortAscFields.NAME],
     });
 
   getSportBaseSpaceSportTypes = async ({ filter, page }) =>
@@ -678,16 +690,17 @@ class Api {
       page,
       fields: ['id', 'name'],
       resource: Resources.SPORT_TYPES,
+      sort: [SortAscFields.NAME],
     });
 
   getSportBaseSpaceTypes = async ({ page, filter, query }) =>
     await this.getList({
       page,
       fields: ['id', 'name', 'type'],
-
       query,
       filter,
       resource: Resources.SPACE_TYPES,
+      sort: [SortAscFields.NAME],
     });
 
   getFields = async ({ query }): Promise<TypesAndFields[]> =>

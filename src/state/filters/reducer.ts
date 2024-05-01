@@ -1,5 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { SimpleFilters, UnconfirmedRequestFilters, UserFilters } from '../../types';
+import {
+  ClassifierFilters,
+  SimpleFilters,
+  UnconfirmedRequestFilters,
+  UserFilters,
+} from '../../types';
+import { ClassifierTypes } from '../../utils/constants';
 
 interface UsersFiltersState {
   userFilters: UserFilters;
@@ -9,6 +15,7 @@ interface UsersFiltersState {
   sportBaseFilters: SimpleFilters;
   unconfirmedOrganizationFilters: UnconfirmedRequestFilters;
   unconfirmedSportBaseFilters: UnconfirmedRequestFilters;
+  classifierFilters: ClassifierFilters;
 }
 
 const initialState: UsersFiltersState = {
@@ -19,6 +26,15 @@ const initialState: UsersFiltersState = {
   unconfirmedOrganizationFilters: {},
   unconfirmedSportBaseFilters: {},
   sportBaseFilters: {},
+  classifierFilters: {
+    [ClassifierTypes.LEVEL]: {},
+    [ClassifierTypes.TECHNICAL_CONDITION]: {},
+    [ClassifierTypes.SPACE_TYPE]: {},
+    [ClassifierTypes.SOURCE]: {},
+    [ClassifierTypes.SPORTS_BASE_TYPE]: {},
+    [ClassifierTypes.BUILDING_TYPE]: {},
+    [ClassifierTypes.SPORT_TYPE]: {},
+  },
 };
 
 export const filtersReducer = createSlice({
@@ -45,6 +61,16 @@ export const filtersReducer = createSlice({
     },
     setUnconfirmedSportBaseFilters: (state, action) => {
       return { ...state, unconfirmedSportBaseFilters: action.payload };
+    },
+    seClassifierFilters: (state, action) => {
+      console.log('state update', action.payload);
+      return {
+        ...state,
+        classifierFilters: {
+          ...state.classifierFilters,
+          ...action.payload,
+        },
+      };
     },
   },
 });

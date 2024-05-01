@@ -94,8 +94,8 @@ const getLabel = (diff: Diff, titles, oldData) => {
     return extractFunc(diff, labelField);
   };
 
-  const oldValue = extractAndFormat(diff.oldValue, labelField);
-  const value = extractAndFormat(diff.value, labelField);
+  const oldValue = extractAndFormat(diff?.oldValue || '', labelField);
+  const value = extractAndFormat(diff.value || '', labelField);
 
   if (diff.op == ActionTypes.REPLACE) {
     label = [...label, ` pasikeitė iš ${oldValue} į ${value}`];
