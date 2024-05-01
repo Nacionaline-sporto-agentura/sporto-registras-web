@@ -84,3 +84,8 @@ export enum HistoryTypes {
   RETURNED = 'RETURNED',
   APPROVED = 'APPROVED',
 }
+
+export enum RequestEntityTypes {
+  SPORTS_BASES = 'SPORTS_BASES',
+  TENANTS = 'TENANTS',
+}
