@@ -94,6 +94,7 @@ export const deleteDescriptionSecondPart = {
 };
 
 export const inputLabels = {
+  users: 'naudotojai',
   basis: 'Pagrindas',
   spaces: 'Erdvės',
   status: 'Būsena',

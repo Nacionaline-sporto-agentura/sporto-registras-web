@@ -43,7 +43,6 @@ const generalSchema = Yup.object().shape({
   webPage: Yup.string().required(validationTexts.requireText),
   level: Yup.object().required(validationTexts.requireText),
   technicalCondition: Yup.object().required(validationTexts.requireText),
-
   coordinates: Yup.object().shape({
     x: Yup.string().required(validationTexts.requireText),
     y: Yup.string().required(validationTexts.requireText),
@@ -382,8 +381,13 @@ const SportBasePage = () => {
             labelField: 'source.name',
             name: sportBaseTabTitles.investments,
             children: {
-              source: { name: inputLabels.source, labelField: 'name' },
-              fundsAmount: { name: inputLabels.fundsAmount },
+              items: {
+                children: {
+                  name: 'Šaltiniai',
+                  source: { name: inputLabels.source, labelField: 'name' },
+                  fundsAmount: { name: inputLabels.fundsAmount },
+                },
+              },
               appointedAt: { name: inputLabels.appointedAt },
             },
           },

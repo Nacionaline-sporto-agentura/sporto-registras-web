@@ -1,9 +1,8 @@
-import { applyPatch } from 'fast-json-patch';
 import { isEmpty } from 'lodash';
 import { actions as filterActions } from '../../state/filters/reducer';
 import { useAppSelector } from '../../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
-import { NotFoundInfoProps, Request, TableRow, UnconfirmedRequestFilters } from '../../types';
+import { NotFoundInfoProps, TableRow, Tenant } from '../../types';
 import api from '../../utils/api';
 import { organizationColumns } from '../../utils/columns';
 import { colorsByStatus, TenantTypes } from '../../utils/constants';
@@ -18,7 +17,7 @@ import {
   tenantTypeLabels,
 } from '../../utils/texts';
 import Button from '../buttons/Button';
-import { getRequestStatusTypes, mapRequestFormFilters } from '../fields/utils/function';
+import { getRequestStatusTypes } from '../fields/utils/function';
 import DynamicFilter from '../other/DynamicFilter';
 import { FilterInputTypes } from '../other/DynamicFilter/Filter';
 import StatusTag from '../other/StatusTag';
@@ -36,27 +35,26 @@ const filterConfig = () => ({
 
 const rowConfig = [['status']];
 
-const mapTenantRequestList = (requests: Request[]): TableRow[] =>
-  requests.map((request: Request) => {
-    const data = applyPatch(request.entity, request.changes).newDocument;
-    const parent = data?.parent;
-    const status = request?.status;
+export const mapOrganizationList = (tenants: Tenant[]): TableRow[] => {
+  return tenants.map((tenant: Tenant) => {
+    const status = tenant?.lastRequest?.status;
     return {
-      id: request.id,
-      email: data?.email,
-      name: data.name,
-      code: data.code,
-      parentName: parent && (
+      id: tenant.id,
+      name: tenant.name,
+      code: tenant.code,
+      phone: tenant.phone,
+      email: tenant.email,
+      parentName: tenant?.parent && (
         <TableItem
-          label={`${parent?.name}${
-            parent?.tenantType === TenantTypes.MUNICIPALITY
+          label={`${tenant?.parent?.name}${
+            tenant?.parent?.tenantType === TenantTypes.MUNICIPALITY
               ? ` (${tenantTypeLabels.MUNICIPALITY})`
               : ''
           }`}
           url={
-            parent?.tenantType === TenantTypes.MUNICIPALITY
-              ? slugs.institutionUsers(parent?.id || '')
-              : slugs.organizationUsers(parent?.id || '')
+            tenant?.parent?.tenantType === TenantTypes.ORGANIZATION
+              ? slugs.organizationUsers(tenant?.parent?.id || '')
+              : slugs.institutionUsers(tenant?.parent?.id || '')
           }
         />
       ),
@@ -66,25 +64,25 @@ const mapTenantRequestList = (requests: Request[]): TableRow[] =>
       }),
     };
   });
-
+};
 const UnconfirmedOrganizations = () => {
   const { navigate, page, dispatch } = useGenericTablePageHooks();
 
-  const filters = useAppSelector((state) => state.filters.unconfirmedOrganizationFilters);
+  const filters = useAppSelector((state) => state.filters.organizationFilters);
 
   const handleSetFilters = (filters) => {
-    dispatch(filterActions.setUnconfirmedOrganizationFilters(filters));
+    dispatch(filterActions.setOrganizationFilters(filters));
   };
 
   const { tableData, loading } = useTableData({
-    name: 'newTenantRequests',
+    name: 'organizations',
     endpoint: () =>
-      api.getNewRequests({
+      api.getOrganizations({
         page,
-        query: mapRequestFormFilters(filters),
+        filter: filters,
       }),
-    mapData: (list) => mapTenantRequestList(list),
-    dependencyArray: [page, filters],
+    mapData: (list) => mapOrganizationList(list),
+    dependencyArray: [filters, page],
   });
 
   const notFoundInfo: NotFoundInfoProps = {
@@ -116,7 +114,7 @@ const UnconfirmedOrganizations = () => {
         isFilterApplied={!isEmpty(filters)}
         data={tableData}
         columns={organizationColumns}
-        onClick={(id) => navigate(`${slugs.newOrganization}?prasymas=${id}`)}
+        onClick={(id) => navigate(slugs.unConfirmedOrganization(id))}
       />
     </>
   );

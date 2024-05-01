@@ -14,7 +14,7 @@ const OrganizationList = () => {
       slug: slugs.organizations,
     },
     {
-      label: 'Nepatvirtintos organizacijos',
+      label: 'Organizacijų prašymai',
       slug: slugs.unConfirmedOrganizations,
     },
   ];

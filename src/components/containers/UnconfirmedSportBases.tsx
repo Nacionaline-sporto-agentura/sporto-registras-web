@@ -4,7 +4,7 @@ import { useAppSelector } from '../../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { NotFoundInfoProps, Request, TableRow } from '../../types';
 import api from '../../utils/api';
-import { AdminRoleType, colorsByStatus } from '../../utils/constants';
+import { AdminRoleType, colorsByStatus, RequestEntityTypes } from '../../utils/constants';
 import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, emptyState, inputLabels, requestStatusLabels } from '../../utils/texts';
@@ -73,7 +73,7 @@ const UnconfirmedSportBases = () => {
     endpoint: () =>
       api.getNewRequests({
         page,
-        query: mapRequestFormFilters(filters),
+        query: { ...mapRequestFormFilters(filters), entityType: RequestEntityTypes.SPORTS_BASES },
       }),
     mapData: (list) => mapRequestList(list),
     dependencyArray: [page, filters],

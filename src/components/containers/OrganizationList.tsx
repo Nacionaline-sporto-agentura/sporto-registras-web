@@ -4,8 +4,7 @@ import { useAppSelector } from '../../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { NotFoundInfoProps, TableRow, Tenant } from '../../types';
 import api from '../../utils/api';
-import { organizationColumns } from '../../utils/columns';
-import { colorsByStatus, TenantTypes } from '../../utils/constants';
+import { TenantTypes } from '../../utils/constants';
 import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
 import {
@@ -13,15 +12,21 @@ import {
   emptyState,
   emptyStateUrl,
   inputLabels,
-  requestStatusLabels,
   tenantTypeLabels,
 } from '../../utils/texts';
 import Button from '../buttons/Button';
 import DynamicFilter from '../other/DynamicFilter';
 import { FilterInputTypes } from '../other/DynamicFilter/Filter';
-import StatusTag from '../other/StatusTag';
 import MainTable from '../tables/MainTable';
 import TableItem from '../tables/TableItem';
+
+const organizationColumns = {
+  name: { label: 'Sporto organizacijos pavadinimas', show: true },
+  code: { label: 'Kodas', show: true },
+  email: { label: 'El. paštas', show: true },
+  phone: { label: 'Telefonas', show: true },
+  parentName: { label: 'Tėvinė organizacija', show: true },
+};
 
 const filterConfig = () => ({
   name: {
@@ -74,10 +79,6 @@ export const mapOrganizationList = (tenants: Tenant[]): TableRow[] => {
           }
         />
       ),
-
-      ...(status && {
-        status: <StatusTag label={requestStatusLabels[status]} color={colorsByStatus[status]} />,
-      }),
     };
   });
 };
@@ -131,7 +132,7 @@ const Organizations = () => {
         isFilterApplied={!isEmpty(filters)}
         data={tableData}
         columns={organizationColumns}
-        onClick={(id) => navigate(`${slugs.organization(id)}`)}
+        onClick={(id) => navigate(`${slugs.organizationUsers(id)}`)}
       />
     </>
   );
