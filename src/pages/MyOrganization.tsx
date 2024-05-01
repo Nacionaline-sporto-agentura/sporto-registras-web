@@ -2,7 +2,6 @@ import { useMutation, useQuery } from 'react-query';
 import * as Yup from 'yup';
 import Api from '../utils/api';
 import {
-  filterOutGroup,
   getReactQueryErrorMessage,
   handleErrorToastFromServer,
   handleSuccessToast,
@@ -80,7 +79,6 @@ export interface InstitutionProps {
 const MyOrganization = () => {
   const title = pageTitles.myOrganization;
   const isTenantAdmin = useIsTenantAdmin();
-  const disabled = !isTenantAdmin;
   const { isFetching, data: organization } = useQuery(
     ['organization', profileId],
     () => Api.getTenant({ id: profileId }),
@@ -88,17 +86,22 @@ const MyOrganization = () => {
       onError: () => {
         handleErrorToastFromServer();
       },
+      refetchOnWindowFocus: false,
     },
   );
-  const { data: groupOptions = [] } = useQuery(
-    ['tenantOption', profileId],
-    async () => filterOutGroup((await Api.getTenantOptions())?.rows, profileId),
-    {
-      onError: () => {
-        handleErrorToastFromServer();
-      },
-    },
-  );
+
+  const disabled = !isTenantAdmin || !organization?.lastRequest?.canEdit;
+
+  const initialValues: any = {
+    companyName: organization?.name || '',
+    companyCode: organization?.code || '',
+    companyPhone: organization?.phone || '',
+    companyEmail: organization?.email || '',
+    address: organization?.address || '',
+    parent: organization?.parent || '',
+    tenantType: organization?.tenantType || '',
+    data: { ...organization?.data },
+  };
 
   if (organization?.tenantType === TenantTypes.MUNICIPALITY) {
     const handleSubmit = async (values: InstitutionProps, { setErrors }) => {
@@ -134,17 +137,6 @@ const MyOrganization = () => {
       retry: false,
     });
 
-    const initialValues: any = {
-      companyName: organization?.name || '',
-      companyCode: organization?.code || '',
-      companyPhone: organization?.phone || '',
-      companyEmail: organization?.email || '',
-      address: organization?.address || '',
-      parent: organization?.parent || parent || '',
-      tenantType: organization?.tenantType || '',
-      data: { ...organization?.data },
-    };
-
     const renderForm = (values: InstitutionProps, errors: any, handleChange) => {
       return (
         <TitleColumn>
@@ -154,7 +146,7 @@ const MyOrganization = () => {
             values={values}
             errors={errors}
             handleChange={handleChange}
-            groupOptions={groupOptions}
+            groupOptions={[]}
           />
         </TitleColumn>
       );
@@ -180,9 +172,9 @@ const MyOrganization = () => {
   return (
     <OrganizationExtendedForm
       title={title}
-      groupOptions={groupOptions}
+      groupOptions={[]}
       disabled={disabled}
-      organization={organization}
+      organization={{ ...initialValues, ...organization }}
       isLoading={isFetching}
       id={profileId}
     />

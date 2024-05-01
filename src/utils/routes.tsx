@@ -14,6 +14,7 @@ import OrganizationUser from '../pages/OrganizationUser';
 import Profile from '../pages/Profile';
 import SportBase from '../pages/SportBase';
 import SportBaseList from '../pages/SportBaseList';
+import UnconfirmedOrganization from '../pages/UnconfirmedOrganization';
 import UpdateInstitutionForm from '../pages/UpdateInstitutionForm';
 import UpdateOrganizationForm from '../pages/UpdateOrganizationForm';
 import UserFormPage from '../pages/UserForm';
@@ -46,7 +47,8 @@ export const slugs = {
   updateInstitution: (id: string) => `/istaigos/${id}/atnaujinti`,
   newInstitutions: `/istaigos/naujas`,
   organizations: `/organizacijos`,
-  unConfirmedOrganizations: '/nepatvirtintos-organizacijos',
+  unConfirmedOrganizations: '/organizaciju-prasymai',
+  unConfirmedOrganization: (id: string) => `/organizaciju-prasymai/${id}`,
   organization: (id: string) => `/organizacijos/${id}`,
   updateOrganization: (id: string) => `/organizacijos/${id}/atnaujinti`,
   organizationUsers: (id: string) => `/organizacijos/${id}/nariai`,
@@ -81,6 +83,11 @@ export const routes = [
   {
     slug: slugs.unConfirmedOrganizations,
     component: <OrganizationList />,
+  },
+
+  {
+    slug: slugs.unConfirmedOrganization(':id'),
+    component: <UnconfirmedOrganization />,
   },
 
   {

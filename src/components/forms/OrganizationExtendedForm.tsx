@@ -1,4 +1,4 @@
-import { applyPatch } from 'fast-json-patch';
+import { applyPatch, compare } from 'fast-json-patch';
 import { Formik, yupToFormErrors } from 'formik';
 import { cloneDeep, isEmpty } from 'lodash';
 import { companyCode } from 'lt-codes';
@@ -7,9 +7,10 @@ import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import * as Yup from 'yup';
+import { useAppSelector } from '../../state/hooks';
 import { device } from '../../styles';
 import api from '../../utils/api';
-import { StatusTypes, TenantTypes } from '../../utils/constants';
+import { AdminRoleType, RequestEntityTypes, StatusTypes, TenantTypes } from '../../utils/constants';
 import { isNew } from '../../utils/functions';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, inputLabels, validationTexts } from '../../utils/texts';
@@ -17,13 +18,13 @@ import Button from '../buttons/Button';
 import GoverningBodiesContainer from '../containers/GoverningBodies';
 import TenantFundingSourcesContainer from '../containers/TenantFundingSources';
 import TenantMembershipsContainer from '../containers/TenantMemberships';
-import { flattenArrays } from '../fields/utils/function';
+import { extractIdKeys, flattenArrays, processDiffs } from '../fields/utils/function';
 import { FormErrorMessage } from '../other/FormErrorMessage';
 import FormPopUp from '../other/FormPopup';
 import FullscreenLoader from '../other/FullscreenLoader';
 import HistoryContainer from '../other/HistoryContainer';
 import RequestFormHeader from '../other/RequestFormHeader';
-import OrganizationForm from './OrganizationForm';
+import RequestOrganizationForm from './RequestOrganizationForm';
 
 export const validateOrganizationForm = Yup.object().shape({
   companyName: Yup.string().required(validationTexts.requireText).trim(),
@@ -78,20 +79,14 @@ export interface InstitutionProps {
   };
 }
 
-const OrganizationExtendedForm = ({
-  title,
-  disabled,
-  organization,
-  groupOptions = [],
-  isLoading,
-  id,
-}) => {
+const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id }: any) => {
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
-  const [validateOnChange, setValidateOnChange] = useState<any>({});
+  const [validateOnChange, setValidateOnChange] = useState<any>(false);
   const [status, setStatus] = useState('');
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const backUrl = slugs.organizations;
+  const user = useAppSelector((state) => state.user.userData);
 
   const lastRequestApprovalOrRejection =
     organization &&
@@ -99,11 +94,13 @@ const OrganizationExtendedForm = ({
 
   const request = organization?.lastRequest;
 
-  const canCreateRequest = true;
+  const canCreateRequest = organization?.canCreateRequest || !request?.id;
+
+  const isCreateStatus = canCreateRequest || request?.status === StatusTypes.DRAFT;
 
   const createOrUpdateRequest = useMutation(
     (params: any) =>
-      canCreateRequest ? api.createRequests(params) : api.updateRequest(params, id),
+      canCreateRequest ? api.createRequests(params) : api.updateRequest(params, request?.id),
     {
       onSuccess: () => {
         navigate(backUrl);
@@ -119,6 +116,7 @@ const OrganizationExtendedForm = ({
 
   const handleSubmit = async ({ changes, status, comment }: any) => {
     const params = {
+      entityType: RequestEntityTypes.TENANTS,
       ...(!isNew(id) && { entity: id }),
       status,
       comment,
@@ -136,14 +134,14 @@ const OrganizationExtendedForm = ({
   const organizationWithoutLastRequest = useMemo(() => {
     if (!organization) return {};
 
-    const { ...rest } = organization;
+    const { lastRequest, ...rest } = organization;
 
     return flattenArrays({ ...rest });
   }, [organization]);
 
   const getFormValues = () => {
     // Do not apply diff if the last request status type is APPROVED OR REJECTED
-    if (lastRequestApprovalOrRejection) {
+    if (!request?.id || lastRequestApprovalOrRejection) {
       return cloneDeep(organizationWithoutLastRequest);
     }
     if (request) {
@@ -160,6 +158,10 @@ const OrganizationExtendedForm = ({
   const oldData = isEmpty(organizationWithoutLastRequest)
     ? formValues
     : organizationWithoutLastRequest;
+
+  const showDraftButton =
+    user.type === AdminRoleType.USER &&
+    ([request?.status].includes(StatusTypes.DRAFT) || lastRequestApprovalOrRejection);
 
   if (isLoading) {
     return <FullscreenLoader />;
@@ -179,6 +181,16 @@ const OrganizationExtendedForm = ({
 
           const obj = {};
 
+          const sportBaseDif = compare(organizationWithoutLastRequest, values, true);
+          extractIdKeys(sportBaseDif, idKeys);
+          processDiffs(sportBaseDif, idKeys, 0, obj);
+
+          if (organization && !lastRequestApprovalOrRejection) {
+            const requestDif = compare(formValues, values, true);
+            extractIdKeys(requestDif, idKeys);
+            processDiffs(requestDif, idKeys, 1, obj);
+          }
+
           return Object.values(obj);
         };
 
@@ -188,13 +200,11 @@ const OrganizationExtendedForm = ({
 
         const containers = {
           [organizationTabTitles.generalInfo]: (
-            <OrganizationForm
+            <RequestOrganizationForm
               disabled={disabled}
-              toggleShowParentOrganization={false}
               values={values}
               errors={errors}
               handleChange={setFieldValue}
-              groupOptions={groupOptions}
             />
           ),
           [organizationTabTitles.governingBodies]: (
@@ -225,6 +235,56 @@ const OrganizationExtendedForm = ({
 
         const titles = {
           name: { name: inputLabels.organizationName },
+          code: { name: inputLabels.companyCode },
+          phone: { name: inputLabels.companyPhone },
+          email: { name: inputLabels.companyEmail },
+          data: {
+            labelField: 'type',
+            legalForm: { name: inputLabels.legalForm },
+            type: { name: inputLabels.organizationType },
+            address: { name: inputLabels.locationAddress },
+            foundedAt: { name: inputLabels.foundedAt },
+            url: { name: inputLabels.url },
+            hasBeneficiaryStatus: { name: inputLabels.hasBeneficiaryStatus },
+            nonGovernmentalOrganization: { name: inputLabels.nonGovernmentalOrganization },
+            nonFormalEducation: { name: inputLabels.nonFormalEducation },
+          },
+          governingBodies: {
+            labelField: 'name',
+            name: organizationTabTitles.governingBodies,
+            children: {
+              name: { name: inputLabels.name },
+              users: {
+                name: inputLabels.users,
+                children: {
+                  firstName: { name: inputLabels.firstName },
+                  lastName: { name: inputLabels.lastName },
+                  duties: { name: inputLabels.duties },
+                  personalCode: { name: inputLabels.personalCode },
+                },
+              },
+            },
+          },
+          fundingSources: {
+            labelField: 'source.name',
+            name: organizationTabTitles.fundingSources,
+            children: {
+              source: { name: inputLabels.source },
+              fundsAmount: { name: inputLabels.fundsAmount },
+              appointedAt: { name: inputLabels.appointedAt },
+              description: { name: inputLabels.description },
+            },
+          },
+          memberships: {
+            labelField: 'name',
+            name: organizationTabTitles.memberships,
+            children: {
+              name: { name: inputLabels.organizationName },
+              startAt: { name: inputLabels.membershipStart },
+              endAt: { name: inputLabels.membershipEnd },
+              companyCode: { name: inputLabels.companyCode },
+            },
+          },
         };
 
         const onSubmit = async () => {
@@ -232,27 +292,23 @@ const OrganizationExtendedForm = ({
           try {
             await validationSchema?.validate(values, { abortEarly: false });
           } catch (e) {
-            const updatedValidateOnChange = {
-              ...validateOnChange,
-              all: true,
-            };
-            setValidateOnChange(updatedValidateOnChange);
+            setValidateOnChange(true);
 
             errors = yupToFormErrors(e);
           }
 
           setErrors(errors);
 
-          // if (isEmpty(errors)) {
-          //   if (!isCreateStatus) {
-          //     return setStatus(StatusTypes.SUBMITTED);
-          //   }
+          if (isEmpty(errors)) {
+            if (!isCreateStatus) {
+              return setStatus(StatusTypes.SUBMITTED);
+            }
+          }
 
           handleSubmit({
             changes: submitChanges,
             status: StatusTypes.CREATED,
           });
-          // }
         };
 
         const handlePrevious = () => {
@@ -266,11 +322,7 @@ const OrganizationExtendedForm = ({
             await validationSchema?.validate(values, { abortEarly: false });
             setCurrentTabIndex(currentTabIndex + 1);
           } catch (e) {
-            const updatedValidateOnChange = {
-              ...validateOnChange,
-              [currentTabIndex]: true,
-            };
-            setValidateOnChange(updatedValidateOnChange);
+            setValidateOnChange(true);
             setErrors(yupToFormErrors(e));
           }
         };
@@ -280,12 +332,12 @@ const OrganizationExtendedForm = ({
             <InnerContainer>
               <RequestFormHeader
                 title={title}
-                request={undefined}
-                showDraftButton={false}
+                request={request}
+                showDraftButton={showDraftButton}
                 disabled={disabled}
                 handleDraft={() => handleDraft(submitChanges)}
                 onSubmit={onSubmit}
-                canValidate={false}
+                canValidate={request?.canValidate}
                 currentTabIndex={currentTabIndex}
                 onSetCurrentTabIndex={(_, index) => {
                   setCurrentTabIndex(index || 0);
@@ -310,26 +362,28 @@ const OrganizationExtendedForm = ({
               onClose={() => setStatus('')}
               status={status}
               onSubmit={({ comment, status }) => {
-                // handleSubmit({
-                //   ...(status === StatusTypes.SUBMITTED && { changes: submitChanges }),
-                //   status,
-                //   comment,
-                // });
+                handleSubmit({
+                  ...(status === StatusTypes.SUBMITTED && { changes: submitChanges }),
+                  status,
+                  comment,
+                });
               }}
             />
-            <HistoryContainer
-              handleClear={() => {
-                setValues(organizationWithoutLastRequest);
-              }}
-              oldData={oldData}
-              requestId={1}
-              disabled={disabled}
-              handleChange={setFieldValue}
-              open={!lastRequestApprovalOrRejection}
-              titles={titles}
-              diff={changes as any}
-              data={values}
-            />
+            {!!request && (
+              <HistoryContainer
+                handleClear={() => {
+                  setValues(organizationWithoutLastRequest);
+                }}
+                oldData={oldData}
+                requestId={request?.id}
+                disabled={disabled}
+                handleChange={setFieldValue}
+                open={!lastRequestApprovalOrRejection}
+                titles={titles}
+                diff={changes as any}
+                data={values}
+              />
+            )}
           </Container>
         );
       }}
