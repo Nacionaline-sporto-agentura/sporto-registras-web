@@ -343,7 +343,16 @@ const SportBasePage = () => {
               description: { name: inputLabels.description },
             },
           },
-          address: { name: inputLabels.address },
+          address: {
+            name: inputLabels.address,
+            children: {
+              city: { name: inputLabels.town },
+              house: { name: inputLabels.houseNo },
+              apartment: { name: inputLabels.apartmentNo },
+              street: { name: inputLabels.street },
+              municipality: { name: inputLabels.municipality },
+            },
+          },
           type: { name: inputLabels.type, labelField: 'name' },
           technicalCondition: { name: inputLabels.technicalCondition, labelField: 'name' },
           level: { name: inputLabels.level, labelField: 'name' },
