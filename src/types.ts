@@ -2,6 +2,7 @@ import { Operation } from 'fast-json-patch';
 import {
   AdminRoleType,
   AuthStrategy,
+  ClassifierTypes,
   FieldTypes,
   HistoryTypes,
   MembershipTypes,
@@ -216,6 +217,16 @@ export interface SimpleFilters {
 
 export interface UnconfirmedRequestFilters {
   status?: { id: StatusTypes; label: string }[];
+}
+
+export interface ClassifierFilters {
+  [ClassifierTypes.LEVEL]: SimpleFilters;
+  [ClassifierTypes.TECHNICAL_CONDITION]: SimpleFilters;
+  [ClassifierTypes.SPACE_TYPE]: SimpleFilters;
+  [ClassifierTypes.SOURCE]: SimpleFilters;
+  [ClassifierTypes.SPORTS_BASE_TYPE]: SimpleFilters;
+  [ClassifierTypes.BUILDING_TYPE]: SimpleFilters;
+  [ClassifierTypes.SPORT_TYPE]: SimpleFilters;
 }
 
 export interface UnconfirmedRequestFiltersProps {

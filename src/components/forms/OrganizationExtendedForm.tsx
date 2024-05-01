@@ -27,20 +27,18 @@ import RequestFormHeader from '../other/RequestFormHeader';
 import RequestOrganizationForm from './RequestOrganizationForm';
 
 export const validateOrganizationForm = Yup.object().shape({
-  companyName: Yup.string().required(validationTexts.requireText).trim(),
-  companyCode: Yup.string()
+  name: Yup.string().required(validationTexts.requireText).trim(),
+  code: Yup.string()
     .required(validationTexts.requireText)
     .trim()
     .test('validateCompanyCode', validationTexts.companyCode, (value) => {
       return companyCode.validate(value).isValid;
     }),
-  companyPhone: Yup.string()
+  phone: Yup.string()
     .required(validationTexts.requireText)
     .trim()
     .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
-  companyEmail: Yup.string()
-    .email(validationTexts.badEmailFormat)
-    .required(validationTexts.requireText),
+  email: Yup.string().email(validationTexts.badEmailFormat).required(validationTexts.requireText),
 });
 
 const organizationTabTitles = {
@@ -181,9 +179,9 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
 
           const obj = {};
 
-          const sportBaseDif = compare(organizationWithoutLastRequest, values, true);
-          extractIdKeys(sportBaseDif, idKeys);
-          processDiffs(sportBaseDif, idKeys, 0, obj);
+          const OrganizationDif = compare(organizationWithoutLastRequest, values, true);
+          extractIdKeys(OrganizationDif, idKeys);
+          processDiffs(OrganizationDif, idKeys, 0, obj);
 
           if (organization && !lastRequestApprovalOrRejection) {
             const requestDif = compare(formValues, values, true);

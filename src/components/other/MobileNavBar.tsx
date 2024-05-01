@@ -47,10 +47,14 @@ const MobileNavbar = ({ className }: MobileHeaderInterface) => {
             {(routes || [])
               .filter((route) => route.sidebar)
               .map((route, index) => {
+                let slug = route.slug;
+                if(route.slug.includes(':dynamic') && route.default) {
+                  slug = route.slug.replace(':dynamic', route.default);
+                }
                 return (
                   <Tab
-                    isActive={location.pathname.includes(route.slug)}
-                    onClick={() => handleNavigate(route.slug)}
+                    isActive={location.pathname.includes(slug)}
+                    onClick={() => handleNavigate(slug)}
                     key={`tab-${index}`}
                   >
                     {route.name}

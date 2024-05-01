@@ -25,8 +25,12 @@ const SideBar = ({ className }: ModuleMenuProps) => {
       .filter((route) => route.sidebar)
       .map((route) => {
         const isActive = route.slug.split('/')[1] === currentLocation.pathname.split('/')[1];
+        let slug = route.slug;
+        if (route.slug.includes(':dynamic') && route.default) {
+          slug = route.slug.replace(':dynamic', route.default);
+        }
         return (
-          <Link to={route.slug} key={route.slug}>
+          <Link to={slug} key={route.slug}>
             <Tab isActive={isActive}>{route.name}</Tab>
           </Link>
         );

@@ -21,7 +21,9 @@ import UserFormPage from '../pages/UserForm';
 import UserList from '../pages/UserList';
 import { useAppSelector } from '../state/hooks';
 import { AdminRoleType, Apps } from './constants';
-import { pageTitles } from './texts';
+import { pageTitles, url } from './texts';
+import ClassifierList from '../pages/ClassifierList';
+import Classifier from '../pages/Classifier';
 
 export const slugs = {
   cantLogin: '/negalima_jungtis',
@@ -63,6 +65,9 @@ export const slugs = {
   unConfirmedSportBases: '/nepatvirtinta-sporto-infrastruktura',
   newSportBase: '/sporto-bazes/naujas',
   sportBase: (id: string) => `/sporto-bazes/${id}`,
+  classifiers: (classifier: string) => `/klasifikatoriai/${classifier}`,
+  newClassifier: (classifier: string) => `/klasifikatoriai/${classifier}/${url.new}`,
+  classifier: (classifier: string, id: string) => `/klasifikatoriai/${classifier}/${id}`,
 };
 
 export const routes = [
@@ -208,6 +213,26 @@ export const routes = [
   {
     slug: slugs.updateOrganization(':id'),
     component: <UpdateOrganizationForm />,
+  },
+  {
+    name: 'Klasifikatoriai',
+    slug: slugs.classifiers(':dynamic'),
+    sidebar: true,
+    component: <ClassifierList />,
+    role: AdminRoleType.ADMIN,
+    default: 'sporto_sakos',
+  },
+  {
+    slug: slugs.newClassifier(':dynamic'),
+    component: <Classifier />,
+    role: AdminRoleType.ADMIN,
+    default: 'sporto_sakos',
+  },
+  {
+    slug: slugs.classifier(':dynamic', ':id'),
+    component: <Classifier />,
+    role: AdminRoleType.ADMIN,
+    default: 'sporto_sakos',
   },
 ];
 

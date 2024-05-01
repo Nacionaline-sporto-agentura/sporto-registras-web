@@ -89,3 +89,13 @@ export enum RequestEntityTypes {
   SPORTS_BASES = 'SPORTS_BASES',
   TENANTS = 'TENANTS',
 }
+
+export enum ClassifierTypes {
+  SPACE_TYPE = 'sporto_erdves_tipas',
+  TECHNICAL_CONDITION = 'technine_bukle',
+  LEVEL = 'sporto_bazes_lygis',
+  SOURCE = 'investicijos_saltinis',
+  SPORTS_BASE_TYPE = 'sporto_bazes_tipas',
+  BUILDING_TYPE = 'pastato_tipas',
+  SPORT_TYPE = 'sporto_saka',
+}

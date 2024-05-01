@@ -36,23 +36,6 @@ export const validateOrganizationForm = Yup.object().shape({
     .required(validationTexts.requireText),
 });
 
-const organizationTabTitles = {
-  generalInfo: 'Bendra informacija',
-  governingBodies: 'Valdymo organai',
-  memberships: 'Narystės',
-  fundingSources: 'Finansavimo šaltiniai',
-};
-
-export const tabs = [
-  {
-    label: organizationTabTitles.generalInfo,
-    validation: validateOrganizationForm,
-  },
-  { label: organizationTabTitles.governingBodies },
-  { label: organizationTabTitles.memberships },
-  { label: organizationTabTitles.fundingSources },
-];
-
 const cookies = new Cookies();
 
 const profileId = cookies.get('profileId');
@@ -81,7 +64,7 @@ const MyOrganization = () => {
   const isTenantAdmin = useIsTenantAdmin();
   const { isFetching, data: organization } = useQuery(
     ['organization', profileId],
-    () => Api.getTenant({ id: profileId }),
+    () => Api.getRequestTenant({ id: profileId }),
     {
       onError: () => {
         handleErrorToastFromServer();
@@ -90,7 +73,8 @@ const MyOrganization = () => {
     },
   );
 
-  const disabled = !isTenantAdmin || !organization?.lastRequest?.canEdit;
+  const disabled =
+    !isTenantAdmin || (!organization?.lastRequest?.canEdit && !!organization?.lastRequest);
 
   const initialValues: any = {
     companyName: organization?.name || '',
@@ -104,6 +88,7 @@ const MyOrganization = () => {
   };
 
   if (organization?.tenantType === TenantTypes.MUNICIPALITY) {
+    const disabled = !isTenantAdmin;
     const handleSubmit = async (values: InstitutionProps, { setErrors }) => {
       const { companyEmail, companyCode, companyName, companyPhone, parent, data, address } =
         values;

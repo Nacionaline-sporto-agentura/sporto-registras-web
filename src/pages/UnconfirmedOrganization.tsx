@@ -33,7 +33,7 @@ const UnconfirmedOrganization = () => {
   const isTenantAdmin = useIsTenantAdmin();
   const { isFetching, data: organization } = useQuery(
     ['organization', id],
-    () => Api.getTenant({ id: id }),
+    () => Api.getRequestTenant({ id }),
     {
       onError: () => {
         handleErrorToastFromServer();

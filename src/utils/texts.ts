@@ -1,6 +1,7 @@
 import { ButtonColors } from '../components/buttons/Button';
 import {
   AdminRoleType,
+  ClassifierTypes,
   HistoryTypes,
   MembershipTypes,
   ServerErrorTypes,
@@ -81,16 +82,27 @@ export const formLabels = {
 export const deleteTitles = {
   group: 'Ištrinti grupę',
   user: 'Ištrinti naudotoją',
+  classifier: 'Ištrinti klasifikatorių',
 };
 
 export const deleteDescriptionFirstPart = {
   group: 'Ar esate tikri, kad norite ištrinti',
   user: 'Ar esate tikri, kad norite ištrinti',
+  classifier: 'Ar esate tikri, kad norite ištrinti',
 };
 
 export const deleteDescriptionSecondPart = {
   group: 'grupę?',
   user: ' paskyrą?',
+  classifier: {
+    [ClassifierTypes.LEVEL]: ' sporto bazės lygio klasifikatorių?',
+    [ClassifierTypes.TECHNICAL_CONDITION]: ' techninės būklės klasifikatorių?',
+    [ClassifierTypes.SPACE_TYPE]: ' sporto erdvės tipo klasifikatorių?',
+    [ClassifierTypes.SOURCE]: ' investicijos šaltinio klasifikatorių?',
+    [ClassifierTypes.SPORTS_BASE_TYPE]: ' sporto bazės tipo klasifikatorių?',
+    [ClassifierTypes.BUILDING_TYPE]: ' pastato tipo klasifikatorių?',
+    [ClassifierTypes.SPORT_TYPE]: ' sporto šakos klasifikatorių?',
+  },
 };
 
 export const inputLabels = {
@@ -337,4 +349,24 @@ export const membershipTypeLabels = {
 export const membershipTypeTableLabels = {
   [MembershipTypes.LITHUANIAN]: 'LT narystė',
   [MembershipTypes.INTERNATIONAL]: 'Tarptautinė narystė',
+};
+
+export const newClassifierLabels = {
+  [ClassifierTypes.LEVEL]: 'Naujas sporto bazės lygis',
+  [ClassifierTypes.TECHNICAL_CONDITION]: 'Nauja techninė būklė',
+  [ClassifierTypes.SPACE_TYPE]: 'Naujas sporto erdvės tipas',
+  [ClassifierTypes.SOURCE]: 'Naujas investicijos šaltinis',
+  [ClassifierTypes.SPORTS_BASE_TYPE]: 'Naujas sporto bazės tipas',
+  [ClassifierTypes.BUILDING_TYPE]: 'Naujas pastato tipas',
+  [ClassifierTypes.SPORT_TYPE]: 'Nauja sporto šaka',
+};
+
+export const classifierLabels = {
+  [ClassifierTypes.LEVEL]: 'Sporto bazės lygis',
+  [ClassifierTypes.TECHNICAL_CONDITION]: 'Techninė būklė',
+  [ClassifierTypes.SPACE_TYPE]: 'Sporto erdvės tipas',
+  [ClassifierTypes.SOURCE]: 'Investicijos šaltinis',
+  [ClassifierTypes.SPORTS_BASE_TYPE]: 'Sporto bazės tipas',
+  [ClassifierTypes.BUILDING_TYPE]: 'Pastato tipas',
+  [ClassifierTypes.SPORT_TYPE]: 'Sporto šaka',
 };
