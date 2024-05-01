@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { FeatureCollection } from '../../types';
 
-const mapsHost = import.meta.env.VITE_MAPS_HOST || 'https://a00eee13.biip-maps-web.pages.dev';
+const mapsHost = import.meta.env.VITE_MAPS_HOST || 'https://maps.biip.lt/edit?types[]=point';
 
 const MapField = ({
   address,
@@ -43,7 +43,7 @@ const MapField = ({
 
   return (
     <Iframe
-      src={`${mapsHost}/edit${mapQueryString}}`}
+      src={`${mapsHost}/edit${mapQueryString}`}
       ref={iframeRef}
       width={'100%'}
       allowFullScreen={true}
