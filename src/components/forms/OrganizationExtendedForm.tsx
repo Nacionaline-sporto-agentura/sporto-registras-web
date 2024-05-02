@@ -245,11 +245,12 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
           code: { name: inputLabels.companyCode },
           phone: { name: inputLabels.companyPhone },
           email: { name: inputLabels.companyEmail },
+          address: { name: inputLabels.locationAddress },
+
           data: {
             labelField: 'type',
             legalForm: { name: inputLabels.legalForm },
             type: { name: inputLabels.organizationType },
-            address: { name: inputLabels.locationAddress },
             foundedAt: { name: inputLabels.foundedAt },
             url: { name: inputLabels.url },
             hasBeneficiaryStatus: { name: inputLabels.hasBeneficiaryStatus },
