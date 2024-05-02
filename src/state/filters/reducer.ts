@@ -63,7 +63,6 @@ export const filtersReducer = createSlice({
       return { ...state, unconfirmedSportBaseFilters: action.payload };
     },
     seClassifierFilters: (state, action) => {
-      console.log('state update', action.payload);
       return {
         ...state,
         classifierFilters: {

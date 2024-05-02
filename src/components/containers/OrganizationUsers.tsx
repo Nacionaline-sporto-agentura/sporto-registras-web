@@ -15,8 +15,8 @@ export const columns = {
   email: { label: 'El. paštas', show: true },
 };
 
-const OrganizationUsers = ({ onClickRow }) => {
-  const { navigate, page, id = '' } = useGenericTablePageHooks();
+const OrganizationUsers = ({ onClickRow, id }) => {
+  const { navigate, page } = useGenericTablePageHooks();
   const newUrl = slugs.newOrganizationUser(id);
 
   const { tableData, loading } = useTableData({

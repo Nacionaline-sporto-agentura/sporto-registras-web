@@ -55,7 +55,10 @@ const InstitutionPage = () => {
 
   const containers = {
     [slugs.institutionUsers(id)]: (
-      <OrganizationUsers onClickRow={(userId) => navigate(slugs.institutionUser(id, userId))} />
+      <OrganizationUsers
+        onClickRow={(userId) => navigate(slugs.institutionUser(id, userId))}
+        id={id}
+      />
     ),
   };
 

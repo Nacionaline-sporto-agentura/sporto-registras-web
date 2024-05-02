@@ -22,9 +22,10 @@ const RequestFormHeader = ({
   onSetCurrentTabIndex,
   onSetStatus,
   tabs,
+  back,
 }) => (
   <TitleColumn>
-    <BackButton />
+    {!!back ? <BackButton /> : <Line />}
     <Row>
       <InnerRow>
         <Title>{title}</Title>
@@ -65,6 +66,10 @@ const Row = styled.div`
   align-items: center;
   flex-wrap: wrap;
   gap: 16px;
+`;
+
+const Line = styled.div`
+  height: 1px;
 `;
 
 const InnerRow = styled.div`

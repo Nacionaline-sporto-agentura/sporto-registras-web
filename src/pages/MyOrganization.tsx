@@ -74,7 +74,10 @@ const MyOrganization = () => {
   );
 
   const disabled =
-    !isTenantAdmin || (!organization?.lastRequest?.canEdit && !!organization?.lastRequest);
+    !isTenantAdmin ||
+    (!organization?.lastRequest?.canEdit &&
+      !!organization?.lastRequest &&
+      !organization?.canCreateRequest);
 
   const initialValues: any = {
     companyName: organization?.name || '',

@@ -2,22 +2,12 @@ import { useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 
-import BackButton from '../components/buttons/BackButton';
-import OrganizationUsers from '../components/containers/OrganizationUsers';
+import OrganizationExtendedForm from '../components/forms/OrganizationExtendedForm';
 
-import EditIcon from '../components/other/EditIcon';
-import FullscreenLoader from '../components/other/FullscreenLoader';
-import SimpleContainer from '../components/other/SimpleContainer';
-import {
-  StyledTabBar,
-  ViewContainer,
-  ViewInnerRow,
-  ViewRow,
-  ViewTitle,
-} from '../styles/CommonStyles';
 import Api from '../utils/api';
-import { useGetCurrentRoute } from '../utils/hooks';
+import { handleErrorToastFromServer } from '../utils/functions';
 import { slugs } from '../utils/routes';
+import { pageTitles } from '../utils/texts';
 
 export const getTabs = (id: string) => [
   {
@@ -31,49 +21,34 @@ const cookies = new Cookies();
 const profileId = cookies.get('profileId');
 
 const OrganizationPage = () => {
-  const navigate = useNavigate();
+  const title = pageTitles.updateOrganization;
   const { id = '' } = useParams();
-
-  const { isLoading, data: group } = useQuery(['organization', id], () => Api.getTenant({ id }), {
-    onError: () => {
-      navigate(slugs.groups);
+  const navigate = useNavigate();
+  const { isFetching, data: organization } = useQuery(
+    ['organization', id],
+    () => Api.getRequestTenant({ id }),
+    {
+      onError: () => {
+        handleErrorToastFromServer();
+      },
+      onSuccess: (data) => {
+        if (profileId && data.id === profileId) {
+          navigate(slugs.myOrganization);
+        }
+      },
+      refetchOnWindowFocus: false,
     },
-    onSuccess: (data) => {
-      if (profileId && data.id === profileId) {
-        navigate(slugs.myOrganization);
-      }
-    },
-  });
-
-  const tabs = getTabs(id);
-
-  const currentTab = useGetCurrentRoute(tabs);
-
-  if (isLoading) {
-    return <FullscreenLoader />;
-  }
-
-  const containers = {
-    [slugs.organizationUsers(id)]: (
-      <OrganizationUsers onClickRow={(userId) => navigate(slugs.organizationUser(id, userId))} />
-    ),
-  };
+  );
 
   return (
-    <ViewContainer>
-      <BackButton />
-
-      <ViewRow>
-        <ViewInnerRow>
-          <ViewTitle>{group?.name || '-'}</ViewTitle>
-          <EditIcon onClick={() => navigate(slugs.updateOrganization(id))} />
-        </ViewInnerRow>
-      </ViewRow>
-      <SimpleContainer>
-        <StyledTabBar tabs={tabs} />
-        {currentTab && containers[currentTab?.slug as any]}
-      </SimpleContainer>
-    </ViewContainer>
+    <OrganizationExtendedForm
+      back={true}
+      title={title}
+      disabled={true}
+      organization={organization}
+      isLoading={isFetching}
+      id={id}
+    />
   );
 };
 
