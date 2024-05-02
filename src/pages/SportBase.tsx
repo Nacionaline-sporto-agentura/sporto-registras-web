@@ -345,6 +345,7 @@ const SportBasePage = () => {
           },
           address: {
             name: inputLabels.address,
+            labelField: 'city',
             children: {
               city: { name: inputLabels.town },
               house: { name: inputLabels.houseNo },
@@ -508,6 +509,7 @@ const SportBasePage = () => {
                 }}
                 onSetStatus={(status) => setStatus(status)}
                 tabs={tabs}
+                back={true}
               />
 
               <Column>

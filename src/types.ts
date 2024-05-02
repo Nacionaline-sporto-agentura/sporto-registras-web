@@ -277,6 +277,7 @@ export interface Tenant {
   email?: string;
   phone?: string;
   tenantType: TenantTypes;
+  canCreateRequest: boolean;
   children?: Tenant[];
   fundingSources: TenantFundingSource[];
   memberships: TenantMembership[];

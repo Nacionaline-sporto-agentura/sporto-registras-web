@@ -16,6 +16,7 @@ import { slugs } from '../../utils/routes';
 import { buttonsTitles, inputLabels, validationTexts } from '../../utils/texts';
 import Button from '../buttons/Button';
 import GoverningBodiesContainer from '../containers/GoverningBodies';
+import OrganizationUsers from '../containers/OrganizationUsers';
 import TenantFundingSourcesContainer from '../containers/TenantFundingSources';
 import TenantMembershipsContainer from '../containers/TenantMemberships';
 import { extractIdKeys, flattenArrays, processDiffs } from '../fields/utils/function';
@@ -46,6 +47,7 @@ const organizationTabTitles = {
   governingBodies: 'Valdymo organai',
   memberships: 'Narystės',
   fundingSources: 'Finansavimo šaltiniai',
+  members: 'Nariai',
 };
 
 export const tabs = [
@@ -56,6 +58,7 @@ export const tabs = [
   { label: organizationTabTitles.governingBodies },
   { label: organizationTabTitles.memberships },
   { label: organizationTabTitles.fundingSources },
+  { label: organizationTabTitles.members },
 ];
 
 export interface InstitutionProps {
@@ -77,7 +80,7 @@ export interface InstitutionProps {
   };
 }
 
-const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id }: any) => {
+const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id, back }: any) => {
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
   const [validateOnChange, setValidateOnChange] = useState<any>(false);
   const [status, setStatus] = useState('');
@@ -86,9 +89,11 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
   const backUrl = slugs.organizations;
   const user = useAppSelector((state) => state.user.userData);
 
-  const lastRequestApprovalOrRejection =
+  const lastRequestApprovalRejectionOrDraft =
     organization &&
-    [StatusTypes.APPROVED, StatusTypes.REJECTED].includes(organization?.lastRequest?.status);
+    [StatusTypes.APPROVED, StatusTypes.REJECTED, StatusTypes.DRAFT].includes(
+      organization?.lastRequest?.status,
+    );
 
   const request = organization?.lastRequest;
 
@@ -139,7 +144,7 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
 
   const getFormValues = () => {
     // Do not apply diff if the last request status type is APPROVED OR REJECTED
-    if (!request?.id || lastRequestApprovalOrRejection) {
+    if (!request?.id || lastRequestApprovalRejectionOrDraft) {
       return cloneDeep(organizationWithoutLastRequest);
     }
     if (request) {
@@ -157,9 +162,7 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
     ? formValues
     : organizationWithoutLastRequest;
 
-  const showDraftButton =
-    user.type === AdminRoleType.USER &&
-    ([request?.status].includes(StatusTypes.DRAFT) || lastRequestApprovalOrRejection);
+  const showDraftButton = user.type === AdminRoleType.USER && lastRequestApprovalRejectionOrDraft;
 
   if (isLoading) {
     return <FullscreenLoader />;
@@ -183,7 +186,7 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
           extractIdKeys(OrganizationDif, idKeys);
           processDiffs(OrganizationDif, idKeys, 0, obj);
 
-          if (organization && !lastRequestApprovalOrRejection) {
+          if (organization && !lastRequestApprovalRejectionOrDraft) {
             const requestDif = compare(formValues, values, true);
             extractIdKeys(requestDif, idKeys);
             processDiffs(requestDif, idKeys, 1, obj);
@@ -224,6 +227,12 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
               disabled={disabled}
               handleChange={setFieldValue}
               memberships={values.memberships}
+            />
+          ),
+          [organizationTabTitles.members]: (
+            <OrganizationUsers
+              id={id}
+              onClickRow={(userId) => navigate(slugs.organizationUser(id, userId))}
             />
           ),
         };
@@ -342,6 +351,7 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
                 }}
                 onSetStatus={(status) => setStatus(status)}
                 tabs={tabs}
+                back={back}
               />
 
               <Column>
@@ -376,7 +386,7 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
                 requestId={request?.id}
                 disabled={disabled}
                 handleChange={setFieldValue}
-                open={!lastRequestApprovalOrRejection}
+                open={!lastRequestApprovalRejectionOrDraft}
                 titles={titles}
                 diff={changes as any}
                 data={values}
