@@ -107,7 +107,7 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
     {
       onSuccess: () => {
         navigate(backUrl);
-        queryClient.invalidateQueries({ queryKey: ['tenant', id] });
+        queryClient.invalidateQueries();
       },
       retry: false,
     },

@@ -41,8 +41,6 @@ const getLabel = (diff: Diff, titles, oldData) => {
   let labelField = '';
   let key = '';
 
-  let dynamicFields = false;
-
   for (let i = 0; i < arr.length; i++) {
     const item = arr[i];
     key += arr[i] + '.';
@@ -60,7 +58,16 @@ const getLabel = (diff: Diff, titles, oldData) => {
   }
 
   const extractValue = (obj, labelField = '') => {
-    if (labelField) return get(obj, labelField);
+    if (labelField) {
+      const labelFields = labelField.split(' ');
+      const value = get(obj, labelFields[0]);
+
+      if (typeof value === 'object') {
+        return Object.values(value).map((val) => get(val, labelFields[1]));
+      }
+
+      return value;
+    }
 
     if (dateTimeRegex.test(obj) && new Date(obj).toString() !== 'Invalid Date') {
       return format(new Date(obj), 'yyyy-MM-dd');
@@ -106,7 +113,7 @@ const getLabel = (diff: Diff, titles, oldData) => {
   }
 
   if (diff.op == ActionTypes.ADD) {
-    label = [...label, ` pridėjo `, value];
+    label = [...label, ` pridėjo `, <BreakWord>{value}</BreakWord>];
   }
 
   return label;
@@ -371,6 +378,10 @@ const ContentRow = styled.div`
   display: grid;
   cursor: pointer;
   grid-template-columns: 20px 1fr;
+`;
+
+const BreakWord = styled.div`
+  word-break: break-word;
 `;
 
 export default HistoryContainer;
