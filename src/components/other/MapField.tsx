@@ -57,7 +57,7 @@ const MapField = ({
 export default MapField;
 
 const Iframe = styled.iframe`
-  height: 500px;
+  height: 450px;
   width: 100%;
   display: block;
   border: 1px solid #d4d5de;

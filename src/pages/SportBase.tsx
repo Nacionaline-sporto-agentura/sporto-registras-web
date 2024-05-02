@@ -82,7 +82,7 @@ const sportBaseSchema = Yup.object()
 const sportBaseTabTitles = {
   generalInfo: 'Bendra informacija',
   specification: 'Specifikacija',
-  photos: 'Nuoraukos',
+  photos: 'Nuotraukos',
   spaces: 'Erdvės',
   owners: 'Savininkai',
   organizations: 'Organizacijos',
@@ -163,8 +163,7 @@ const SportBasePage = () => {
     {
       onSuccess: () => {
         navigate(backUrl);
-        queryClient.invalidateQueries({ queryKey: ['sportBase', id] });
-        queryClient.invalidateQueries({ queryKey: ['request', queryStringRequestId] });
+        queryClient.invalidateQueries();
       },
       retry: false,
     },
@@ -388,12 +387,12 @@ const SportBasePage = () => {
             },
           },
           investments: {
-            labelField: 'source.name',
+            labelField: 'items source.name',
             name: sportBaseTabTitles.investments,
             children: {
               items: {
+                name: 'Šaltiniai',
                 children: {
-                  name: 'Šaltiniai',
                   source: { name: inputLabels.source, labelField: 'name' },
                   fundsAmount: { name: inputLabels.fundsAmount },
                 },

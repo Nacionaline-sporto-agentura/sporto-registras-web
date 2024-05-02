@@ -204,7 +204,7 @@ const InvestmentsContainer = ({ investments, handleChange, disabled }) => {
                     disabled={disabled}
                     label={inputLabels.improvements}
                     error={errors?.improvements}
-                    value={values.description}
+                    value={values?.improvements}
                     name="improvements"
                     onChange={(input) => setFieldValue(`improvements`, input)}
                   />
