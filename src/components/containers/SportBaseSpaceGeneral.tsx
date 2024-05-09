@@ -12,14 +12,11 @@ import TextField from '../fields/TextField';
 import { generateUniqueString } from '../fields/utils/function';
 
 const SportBaseSpaceGeneralContainer = ({
-  sportBaseTypeId,
   sportBaseSpace,
   errors,
   handleChange,
-
   disabled,
 }: {
-  sportBaseTypeId: number;
   sportBaseSpace: SportBaseSpace;
   errors: any;
   handleChange: any;
@@ -48,9 +45,8 @@ const SportBaseSpaceGeneralContainer = ({
         onChange={(type: SportsBasesType) => {
           handleChange(`type`, type);
         }}
-        dependsOnTheValue={sportBaseTypeId}
         getOptionLabel={(option) => option?.name}
-        loadOptions={(input, page, id) => getSportBaseSpaceTypesList(input, page, id)}
+        loadOptions={(input, page) => getSportBaseSpaceTypesList(input, page)}
       />
       <AsyncMultiSelect
         disabled={disabled}
@@ -82,7 +78,7 @@ const SportBaseSpaceGeneralContainer = ({
       />
       <AsyncSelectField
         disabled={disabled}
-        label={inputLabels.technicalCondition}
+        label={inputLabels.technicalSpaceCondition}
         value={sportBaseSpace?.technicalCondition}
         error={errors?.technicalCondition}
         name="technicalCondition"

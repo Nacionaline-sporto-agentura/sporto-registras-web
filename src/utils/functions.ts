@@ -151,9 +151,8 @@ export const getOrganizationBasisList = async (input: string, page: string) => {
   });
 };
 
-export const getSportBaseSpaceTypesList = async (input: string, page: string, id: number) => {
+export const getSportBaseSpaceTypesList = async (input: string, page: string) => {
   return await api.getSportBaseSpaceTypes({
-    query: { type: id },
     filter: { name: input },
     page,
   });
