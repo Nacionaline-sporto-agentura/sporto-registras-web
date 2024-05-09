@@ -289,7 +289,6 @@ const SportBasePage = () => {
           [sportBaseTabTitles.spaces]: (
             <SportBaseSpaceContainer
               spaces={values.spaces || {}}
-              sportBaseTypeId={values?.type?.id}
               handleChange={setFieldValue}
               errors={errors?.spaces}
               disabled={disabled}

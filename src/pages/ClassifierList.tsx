@@ -86,7 +86,7 @@ const ClassifierList = () => {
       label: classifierLabels[ClassifierTypes.SPACE_TYPE],
       key: ClassifierTypes.SPACE_TYPE,
       route: slugs.classifiers(ClassifierTypes.SPACE_TYPE),
-      endpoint: () => api.getSportBaseSpaceTypes({ filter, page, query: {} }),
+      endpoint: () => api.getSportBaseSpaceTypes({ filter, page }),
     },
   ];
 
