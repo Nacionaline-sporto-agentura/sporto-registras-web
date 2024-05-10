@@ -256,7 +256,7 @@ export interface DeleteInfoProps {
   deleteDescriptionSecondPart?: string;
   deleteTitle?: string;
   deleteName?: string;
-  handleDelete?: (props?: any) => void;
+  handleDelete: (props?: any) => void;
 }
 
 export interface Group {

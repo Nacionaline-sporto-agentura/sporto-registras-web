@@ -60,7 +60,7 @@ const SportBaseGeneralContainer = ({
           />
           <AsyncSelectField
             disabled={disabled}
-            label={inputLabels.technicalCondition}
+            label={inputLabels.technicalBaseCondition}
             value={sportBase?.technicalCondition}
             error={errors?.technicalCondition}
             name="technicalCondition"

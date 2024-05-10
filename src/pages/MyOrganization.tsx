@@ -90,6 +90,16 @@ const MyOrganization = () => {
     data: { ...organization?.data },
   };
 
+  const updateTenant = useMutation((params: any) => Api.updateTenant({ params, id: profileId }), {
+    onError: ({ response }) => {
+      handleErrorToastFromServer(response);
+    },
+    onSuccess: () => {
+      handleSuccessToast();
+    },
+    retry: false,
+  });
+
   if (organization?.tenantType === TenantTypes.MUNICIPALITY) {
     const disabled = !isTenantAdmin;
     const handleSubmit = async (values: InstitutionProps, { setErrors }) => {
@@ -114,16 +124,6 @@ const MyOrganization = () => {
         setErrors({ email: errorMessage });
       }
     };
-
-    const updateTenant = useMutation((params: any) => Api.updateTenant({ params, id: profileId }), {
-      onError: ({ response }) => {
-        handleErrorToastFromServer(response);
-      },
-      onSuccess: () => {
-        handleSuccessToast();
-      },
-      retry: false,
-    });
 
     const renderForm = (values: InstitutionProps, errors: any, handleChange) => {
       return (

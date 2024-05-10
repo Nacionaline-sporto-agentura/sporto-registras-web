@@ -143,7 +143,7 @@ const UpdateOrganizationForm = () => {
     deleteDescriptionSecondPart: deleteDescriptionSecondPart.group,
     deleteTitle: deleteTitles.group,
     deleteName: institution?.name,
-    handleDelete: !isNew(id) ? handleDelete.mutateAsync : undefined,
+    handleDelete: handleDelete.mutateAsync
   };
 
   const initialValues: any = {
@@ -181,7 +181,7 @@ const UpdateOrganizationForm = () => {
       onSubmit={handleSubmit}
       renderForm={renderForm}
       validationSchema={validateCreateUserForm}
-      deleteInfo={deleteInfo}
+      deleteInfo={!isNew(id) ? deleteInfo : undefined}
     />
   );
 };

@@ -39,7 +39,6 @@ const buildingParametersSchema = Yup.object().shape({
   buildingArea: Yup.string().required(validationTexts.requireText),
   energyClass: Yup.string().required(validationTexts.requireText),
   constructionDate: Yup.date().required(validationTexts.requireText),
-  latestRenovationDate: Yup.date().required(validationTexts.requireText),
   energyClassCertificate: Yup.object().required(validationTexts.requireText),
 });
 
@@ -95,14 +94,12 @@ export const getTabs = (additionalFields: TypesAndFields[]) => {
 
 const SportBaseSpaceContainer = ({
   spaces,
-  sportBaseTypeId,
   handleChange,
   errors,
   disabled,
 }: {
   disabled: boolean;
   spaces: SportBaseSpace[];
-  sportBaseTypeId: number;
   errors: any;
   handleChange: any;
 }) => {
@@ -158,7 +155,6 @@ const SportBaseSpaceContainer = ({
   };
 
   const initialValues: any = current || {};
-  const buttonDisabled = disabled || !sportBaseTypeId;
 
   const validationSchema =
     currentTabs.length - 1 == currentTabIndex
@@ -196,7 +192,7 @@ const SportBaseSpaceContainer = ({
         }}
         variant={ButtonColors.TRANSPARENT}
         borderType={'dashed'}
-        disabled={buttonDisabled}
+        disabled={disabled}
       >
         {buttonsTitles.addSportBaseSpace}
       </StyledButton>
@@ -220,7 +216,6 @@ const SportBaseSpaceContainer = ({
               const containers = {
                 [sportBaseSpaceTabTitles.generalInfo]: (
                   <SportBaseSpaceGeneral
-                    sportBaseTypeId={sportBaseTypeId}
                     sportBaseSpace={values}
                     errors={errors}
                     handleChange={setFieldValue}

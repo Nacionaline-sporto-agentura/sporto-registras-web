@@ -289,7 +289,6 @@ const SportBasePage = () => {
           [sportBaseTabTitles.spaces]: (
             <SportBaseSpaceContainer
               spaces={values.spaces || {}}
-              sportBaseTypeId={values?.type?.id}
               handleChange={setFieldValue}
               errors={errors?.spaces}
               disabled={disabled}
@@ -354,7 +353,7 @@ const SportBasePage = () => {
             },
           },
           type: { name: inputLabels.type, labelField: 'name' },
-          technicalCondition: { name: inputLabels.technicalCondition, labelField: 'name' },
+          technicalCondition: { name: inputLabels.technicalBaseCondition, labelField: 'name' },
           level: { name: inputLabels.level, labelField: 'name' },
           coordinates: {
             name: inputLabels.coordinates,
@@ -426,7 +425,7 @@ const SportBasePage = () => {
                   description: { name: inputLabels.description },
                 },
               },
-              technicalCondition: { name: inputLabels.technicalCondition, labelField: 'name' },
+              technicalCondition: { name: inputLabels.technicalSpaceCondition, labelField: 'name' },
               buildingNumber: { name: inputLabels.buildingNumber },
               buildingArea: { name: inputLabels.buildingArea },
               energyClass: { name: inputLabels.energyClass },

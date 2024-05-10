@@ -1,6 +1,16 @@
-import React from 'react';
-import FormikFormLayout from '../components/layouts/FormikFormLayout';
+import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
+import * as Yup from 'yup';
+import TextField from '../components/fields/TextField';
+import FormikFormLayout from '../components/layouts/FormikFormLayout';
+import FullscreenLoader from '../components/other/FullscreenLoader';
+import SimpleContainer from '../components/other/SimpleContainer';
+import { DeleteInfoProps } from '../types';
+import api, { Resources } from '../utils/api';
+import { classifierColumns } from '../utils/columns';
+import { ClassifierTypes } from '../utils/constants';
+import { handleErrorToastFromServer, isNew } from '../utils/functions';
+import { slugs } from '../utils/routes';
 import {
   buttonsTitles,
   classifierLabels,
@@ -10,17 +20,7 @@ import {
   newClassifierLabels,
   validationTexts,
 } from '../utils/texts';
-import SimpleContainer from '../components/other/SimpleContainer';
-import TextField from '../components/fields/TextField';
 import { GroupProps } from './GroupForm';
-import { classifierColumns } from '../utils/columns';
-import { useMutation, useQuery } from 'react-query';
-import { handleErrorToastFromServer, isCurrentUser, isNew } from '../utils/functions';
-import api, { Resources } from '../utils/api';
-import { slugs } from '../utils/routes';
-import { ClassifierTypes } from '../utils/constants';
-import * as Yup from 'yup';
-import { DeleteInfoProps } from '../types';
 
 export const validationSchema = Yup.object().shape({
   name: Yup.string().required(validationTexts.requireText),
@@ -49,6 +49,12 @@ const Classifier = () => {
 
   const nameLabel = classifierType ? classifierColumns[classifierType].name.label : '';
 
+  const handleNavigate = () => {
+    if (!classifierType) return;
+
+    navigate(slugs.classifiers(classifierType));
+  };
+
   const { isFetching, data: classifier } = useQuery(
     [classifierType, id],
     () =>
@@ -56,44 +62,26 @@ const Classifier = () => {
         ? api.getOne({ resource: createClassifierEndpoints[classifierType], id })
         : Promise.resolve(),
     {
-      onError: () => {
-        navigate(slugs.adminUsers);
-      },
+      onError: handleNavigate,
       enabled: !!classifierType && !isNew(id),
     },
   );
 
-  const createClassifier = useMutation(
+  const createOrUpdateClassifier = useMutation(
     (params: { name: string }) =>
       classifierType
-        ? api.post({
-            resource: createClassifierEndpoints[classifierType],
-            params,
-          })
+        ? !isNew(id)
+          ? api.patch({ resource: createClassifierEndpoints[classifierType], params, id })
+          : api.post({
+              resource: createClassifierEndpoints[classifierType],
+              params,
+            })
         : Promise.resolve(),
     {
       onError: ({ response }) => {
         handleErrorToastFromServer(response);
       },
-      onSuccess: () => {
-        classifierType && navigate(slugs.classifiers(classifierType));
-      },
-      retry: false,
-    },
-  );
-
-  const updateClassifier = useMutation(
-    (params: { name: string }) =>
-      classifierType && id
-        ? api.patch({ resource: createClassifierEndpoints[classifierType], id, params })
-        : Promise.resolve(),
-    {
-      onError: ({ response }) => {
-        handleErrorToastFromServer(response);
-      },
-      onSuccess: () => {
-        classifierType && navigate(slugs.classifiers(classifierType));
-      },
+      onSuccess: handleNavigate,
       retry: false,
     },
   );
@@ -107,9 +95,7 @@ const Classifier = () => {
       onError: ({ response }) => {
         handleErrorToastFromServer(response);
       },
-      onSuccess: () => {
-        classifierType && navigate(slugs.classifiers(classifierType));
-      },
+      onSuccess: handleNavigate,
       retry: false,
     },
   );
@@ -122,18 +108,17 @@ const Classifier = () => {
       : '',
     deleteTitle: deleteTitles.classifier,
     deleteName: classifier?.name || '',
-    handleDelete: !isNew(id) ? deleteClassifier.mutateAsync : undefined,
+    handleDelete: deleteClassifier.mutateAsync,
   };
 
   const handleSubmit = async ({ name }: any) => {
     const params = {
       name: name || '',
     };
-    if (isNew(id)) {
-      return await createClassifier.mutateAsync(params);
-    }
-    return await updateClassifier.mutateAsync(params);
+    return await createOrUpdateClassifier.mutateAsync(params);
   };
+
+  if (isFetching) return <FullscreenLoader />;
 
   const renderForm = (values: GroupProps, errors: any, handleChange) => {
     return (
@@ -156,7 +141,7 @@ const Classifier = () => {
       onSubmit={handleSubmit}
       renderForm={renderForm}
       validationSchema={validationSchema}
-      deleteInfo={deleteInfo}
+      deleteInfo={!isNew(id) ? deleteInfo : undefined}
     />
   );
 };

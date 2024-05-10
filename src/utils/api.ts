@@ -693,11 +693,10 @@ class Api {
       sort: [SortAscFields.NAME],
     });
 
-  getSportBaseSpaceTypes = async ({ page, filter, query }) =>
+  getSportBaseSpaceTypes = async ({ page, filter }) =>
     await this.getList({
       page,
       fields: ['id', 'name', 'type'],
-      query,
       filter,
       resource: Resources.SPACE_TYPES,
       sort: [SortAscFields.NAME],

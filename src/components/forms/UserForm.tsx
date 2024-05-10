@@ -192,7 +192,7 @@ const UserForm = ({
     deleteDescriptionSecondPart: deleteDescriptionSecondPart.user,
     deleteTitle: deleteTitles.user,
     deleteName: user?.fullName,
-    handleDelete: canDelete ? handleDelete.mutateAsync : undefined,
+    handleDelete: handleDelete.mutateAsync,
   };
 
   const initialValues: UserProps = {
@@ -295,7 +295,7 @@ const UserForm = ({
       onSubmit={handleSubmit}
       renderForm={renderForm}
       validationSchema={validateCreateUserForm}
-      deleteInfo={deleteInfo}
+      deleteInfo={canDelete ? deleteInfo : undefined}
     />
   );
 };
