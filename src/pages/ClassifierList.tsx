@@ -1,21 +1,20 @@
-import React from 'react';
 import { useParams } from 'react-router-dom';
-import MainTable from '../components/tables/MainTable';
-import { NotFoundInfoProps } from '../types';
+import Button from '../components/buttons/Button';
 import TablePageLayout from '../components/layouts/TablePageLayout';
-import TabBar from '../components/Tabs/TabBar';
-import { slugs } from '../utils/routes';
-import api from '../utils/api';
-import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
 import DynamicFilter from '../components/other/DynamicFilter';
 import { FilterInputTypes } from '../components/other/DynamicFilter/Filter';
-import Button from '../components/buttons/Button';
-import { ClassifierTypes } from '../utils/constants';
-import { classifierLabels, newClassifierLabels } from '../utils/texts';
-import { classifierColumns } from '../utils/columns';
-import { useAppSelector } from '../state/hooks';
+import MainTable from '../components/tables/MainTable';
+import TabBar from '../components/Tabs/TabBar';
 import { actions as filterActions } from '../state/filters/reducer';
+import { useAppSelector } from '../state/hooks';
+import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
+import { NotFoundInfoProps } from '../types';
+import api from '../utils/api';
+import { classifierColumns } from '../utils/columns';
+import { ClassifierTypes } from '../utils/constants';
 import { useGenericTablePageHooks, useTableData } from '../utils/hooks';
+import { slugs } from '../utils/routes';
+import { classifierLabels, newClassifierLabels } from '../utils/texts';
 
 const notFound: NotFoundInfoProps = {
   text: 'Nėra sukurtų klasifikatorių',

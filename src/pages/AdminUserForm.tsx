@@ -173,7 +173,7 @@ const AdminUserForm = () => {
     deleteDescriptionSecondPart: deleteDescriptionSecondPart.user,
     deleteTitle: deleteTitles.user,
     deleteName: user?.fullName,
-    handleDelete: !isNew(id) ? handleDelete.mutateAsync : undefined,
+    handleDelete: handleDelete.mutateAsync,
   };
 
   const getUserGroups = () =>
@@ -269,7 +269,7 @@ const AdminUserForm = () => {
       onSubmit={handleSubmit}
       renderForm={renderForm}
       validationSchema={validateCreateUserForm}
-      deleteInfo={deleteInfo}
+      deleteInfo={!isNew(id) ? deleteInfo : undefined}
     />
   );
 };
