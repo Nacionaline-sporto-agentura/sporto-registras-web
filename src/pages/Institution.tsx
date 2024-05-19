@@ -65,7 +65,6 @@ const InstitutionPage = () => {
   return (
     <ViewContainer>
       <BackButton />
-
       <ViewRow>
         <ViewInnerRow>
           <ViewTitle>{group?.name || '-'}</ViewTitle>
