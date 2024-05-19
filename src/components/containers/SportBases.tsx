@@ -28,7 +28,7 @@ const filterConfig = () => ({
     inputType: FilterInputTypes.text,
   },
   type: {
-    label: inputLabels.type,
+    label: inputLabels.sportBaseType,
     key: 'type',
     inputType: FilterInputTypes.asyncSingleSelect,
     optionsApi: getSportBaseTypeList,

@@ -5,7 +5,7 @@ import { pageTitles } from '../utils/texts';
 const OrganizationList = () => {
   return (
     <TablePageLayout title={pageTitles.organizations}>
-      <Organizations />,
+      <Organizations />
     </TablePageLayout>
   );
 };

@@ -352,7 +352,7 @@ const SportBasePage = () => {
               municipality: { name: inputLabels.municipality },
             },
           },
-          type: { name: inputLabels.type, labelField: 'name' },
+          type: { name: inputLabels.sportBaseType, labelField: 'name' },
           technicalCondition: { name: inputLabels.technicalBaseCondition, labelField: 'name' },
           level: { name: inputLabels.level, labelField: 'name' },
           coordinates: {
@@ -414,7 +414,7 @@ const SportBasePage = () => {
             name: sportBaseTabTitles.spaces,
             children: {
               name: { name: inputLabels.name },
-              type: { name: inputLabels.type },
+              type: { name: inputLabels.sportBaseSpaceType },
               sportTypes: { name: inputLabels.sportTypes, labelField: 'name' },
               photos: {
                 name: inputLabels.photos,

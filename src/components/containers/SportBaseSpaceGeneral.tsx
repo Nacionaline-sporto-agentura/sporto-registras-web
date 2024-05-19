@@ -38,7 +38,7 @@ const SportBaseSpaceGeneralContainer = ({
       />
       <AsyncSelectField
         disabled={disabled}
-        label={inputLabels.type}
+        label={inputLabels.sportBaseSpaceType}
         value={sportBaseSpace?.type}
         error={errors?.type}
         name="spaceType"
