@@ -125,7 +125,7 @@ const InvestmentsContainer = ({ investments, handleChange, disabled }) => {
       />
 
       <Popup
-        title={formLabels.sportOrganizations}
+        title={formLabels.addInvestment}
         visible={!!current}
         onClose={() => setCurrent(undefined)}
       >

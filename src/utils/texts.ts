@@ -71,7 +71,9 @@ export const formLabels = {
   infoAboutOrganization: 'Informacija apie organizaciją',
   addOwner: 'Pridėti savininką',
   investments: 'Investicijos',
-  sportOrganizations: 'Sporto organizacjos',
+  addInvestment: 'Pridėti investicijas',
+  addSportOrganization: 'Pridėti sporto organizaciją',
+  sportOrganizations: 'Sporto organizacijos',
   addGoverningBody: 'Pridėti valdymo organo asmenį',
   addMembership: 'Pridėti narystę',
   addFundingSource: 'Pridėti finansavimo šaltinį',
@@ -99,7 +101,7 @@ export const deleteDescriptionSecondPart = {
     [ClassifierTypes.TECHNICAL_CONDITION]: ' techninės būklės klasifikatorių?',
     [ClassifierTypes.SPACE_TYPE]: ' sporto erdvės tipo klasifikatorių?',
     [ClassifierTypes.SOURCE]: ' investicijos šaltinio klasifikatorių?',
-    [ClassifierTypes.SPORTS_BASE_TYPE]: ' sporto bazės tipo klasifikatorių?',
+    [ClassifierTypes.SPORTS_BASE_TYPE]: ' sporto bazės rūšies klasifikatorių?',
     [ClassifierTypes.BUILDING_TYPE]: ' pastato tipo klasifikatorių?',
     [ClassifierTypes.SPORT_TYPE]: ' sporto šakos klasifikatorių?',
   },
@@ -358,9 +360,11 @@ export const newClassifierLabels = {
   [ClassifierTypes.TECHNICAL_CONDITION]: 'Nauja techninė būklė',
   [ClassifierTypes.SPACE_TYPE]: 'Naujas sporto erdvės tipas',
   [ClassifierTypes.SOURCE]: 'Naujas investicijos šaltinis',
-  [ClassifierTypes.SPORTS_BASE_TYPE]: 'Naujas sporto bazės tipas',
+  [ClassifierTypes.SPORTS_BASE_TYPE]: 'Naujas sporto bazės rūšis',
   [ClassifierTypes.BUILDING_TYPE]: 'Naujas pastato tipas',
   [ClassifierTypes.SPORT_TYPE]: 'Nauja sporto šaka',
+  [ClassifierTypes.SPORT_ORGANIZATION_TYPE]: 'Naujas sporto organizacijos tipas',
+  [ClassifierTypes.LEGAL_FORMS]: 'Nauja teisinė forma',
 };
 
 export const classifierLabels = {
@@ -368,7 +372,9 @@ export const classifierLabels = {
   [ClassifierTypes.TECHNICAL_CONDITION]: 'Techninė būklė',
   [ClassifierTypes.SPACE_TYPE]: 'Sporto erdvės tipas',
   [ClassifierTypes.SOURCE]: 'Investicijos šaltinis',
-  [ClassifierTypes.SPORTS_BASE_TYPE]: 'Sporto bazės tipas',
+  [ClassifierTypes.SPORTS_BASE_TYPE]: 'Sporto bazės rūšis',
   [ClassifierTypes.BUILDING_TYPE]: 'Pastato tipas',
   [ClassifierTypes.SPORT_TYPE]: 'Sporto šaka',
+  [ClassifierTypes.SPORT_ORGANIZATION_TYPE]: 'Sporto organizacijos tipas',
+  [ClassifierTypes.LEGAL_FORMS]: 'Teisinė forma',
 };

@@ -1,8 +1,9 @@
 import { FormRow } from '../../styles/CommonStyles';
+import { getTenantLegalFormList, getTenantSportOrganizationTypeList } from '../../utils/functions';
 import { formLabels, inputLabels } from '../../utils/texts';
+import AsyncSelectField from '../fields/AsyncSelectField';
 import CheckBox from '../fields/CheckBox';
 import DateField from '../fields/DateField';
-import SelectField from '../fields/SelectField';
 import TextField from '../fields/TextField';
 import SimpleContainer from '../other/SimpleContainer';
 
@@ -60,25 +61,25 @@ const RequestOrganizationForm = ({
 
       <SimpleContainer title={formLabels.infoAboutOrganization}>
         <FormRow columns={2}>
-          <SelectField
+          <AsyncSelectField
             label={inputLabels.legalForm}
-            value={values?.data?.legalForm}
-            error={errors?.data?.legalForm}
             disabled={disabled}
+            value={values?.legalForm}
+            error={errors?.legalForm}
             name="legalForm"
-            options={[]}
-            onChange={(legalForm) => handleChange('data.legalForm', legalForm)}
-            getOptionLabel={(label) => label}
+            onChange={(legalForm) => handleChange('legalForm', legalForm)}
+            getOptionLabel={(option) => option.name}
+            loadOptions={getTenantLegalFormList}
           />
-          <SelectField
+          <AsyncSelectField
             label={inputLabels.organizationType}
-            value={values?.data?.type}
-            error={errors?.data?.type}
             disabled={disabled}
-            name="type"
-            options={[]}
-            onChange={(type) => handleChange('data.type', type)}
-            getOptionLabel={(label) => label}
+            value={values?.type}
+            error={errors?.type}
+            name="organizationType"
+            onChange={(type) => handleChange('type', type)}
+            getOptionLabel={(option) => option.name}
+            loadOptions={getTenantSportOrganizationTypeList}
           />
           <TextField
             label={inputLabels.locationAddress}

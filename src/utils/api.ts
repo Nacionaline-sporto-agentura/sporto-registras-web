@@ -35,6 +35,8 @@ export enum Resources {
   INSTITUTIONS = 'api/tenants/institutions',
   PROFILES = 'api/profiles',
   ORGANIZATION_BASIS = '/api/sportsBases/tenants/basis',
+  LEGAL_FORMS = '/api/tenants/legalForms',
+  SPORT_ORGANIZATION_TYPES = '/api/tenants/sportOrganizationTypes',
 }
 
 export enum Populations {
@@ -48,6 +50,7 @@ export enum Populations {
   CAN_EDIT = 'canEdit',
   CAN_CREATE_REQUEST = 'canCreateRequest',
   CAN_VALIDATE = 'canValidate',
+  LEGAL_FORM = 'legalForm',
 }
 
 export enum SortAscFields {
@@ -594,6 +597,8 @@ class Api {
         Populations.CAN_EDIT,
         Populations.CAN_CREATE_REQUEST,
         Populations.CAN_VALIDATE,
+        Populations.TYPE,
+        Populations.LEGAL_FORM,
       ],
     });
   };
@@ -691,6 +696,22 @@ class Api {
       fields: ['id', 'name'],
       resource: Resources.SPORT_TYPES,
       sort: [SortAscFields.NAME],
+    });
+
+  getTenantSportOrganizationTypes = async ({ filter, page }) =>
+    await this.getList({
+      filter,
+      page,
+      fields: ['id', 'name'],
+      resource: Resources.SPORT_ORGANIZATION_TYPES,
+    });
+
+  getTenantLegalForms = async ({ filter, page }) =>
+    await this.getList({
+      filter,
+      page,
+      fields: ['id', 'name'],
+      resource: Resources.LEGAL_FORMS,
     });
 
   getSportBaseSpaceTypes = async ({ page, filter }) =>

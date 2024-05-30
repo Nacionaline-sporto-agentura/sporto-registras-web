@@ -98,4 +98,6 @@ export enum ClassifierTypes {
   SPORTS_BASE_TYPE = 'sporto_bazes_tipas',
   BUILDING_TYPE = 'pastato_tipas',
   SPORT_TYPE = 'sporto_saka',
+  SPORT_ORGANIZATION_TYPE = 'sporto_organizacijos_tipas',
+  LEGAL_FORMS = 'teisine_forma',
 }

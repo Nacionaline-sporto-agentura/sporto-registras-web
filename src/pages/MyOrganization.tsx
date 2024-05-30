@@ -48,14 +48,14 @@ export interface InstitutionProps {
   companyEmail: string;
   tenantType?: TenantTypes;
   parent?: any;
+  legalForm?: { id: number; name: string };
+  type?: { id: number; name: string };
   data?: {
     url: string;
     foundedAt: Date;
     hasBeneficiaryStatus: true;
     nonGovernmentalOrganization: false;
     nonFormalEducation: false;
-    legalForm: string;
-    type: string;
   };
 }
 
@@ -103,12 +103,23 @@ const MyOrganization = () => {
   if (organization?.tenantType === TenantTypes.MUNICIPALITY) {
     const disabled = !isTenantAdmin;
     const handleSubmit = async (values: InstitutionProps, { setErrors }) => {
-      const { companyEmail, companyCode, companyName, companyPhone, parent, data, address } =
-        values;
+      const {
+        companyEmail,
+        companyCode,
+        companyName,
+        companyPhone,
+        parent,
+        data,
+        address,
+        type,
+        legalForm,
+      } = values;
 
       const params = {
         name: companyName,
         address,
+        legalForm: legalForm?.id,
+        type: type?.id,
         code: companyCode,
         phone: companyPhone,
         email: companyEmail?.toLowerCase(),

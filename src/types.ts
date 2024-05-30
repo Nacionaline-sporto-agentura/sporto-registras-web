@@ -227,6 +227,8 @@ export interface ClassifierFilters {
   [ClassifierTypes.SPORTS_BASE_TYPE]: SimpleFilters;
   [ClassifierTypes.BUILDING_TYPE]: SimpleFilters;
   [ClassifierTypes.SPORT_TYPE]: SimpleFilters;
+  [ClassifierTypes.SPORT_ORGANIZATION_TYPE]: SimpleFilters;
+  [ClassifierTypes.LEGAL_FORMS]: SimpleFilters;
 }
 
 export interface UnconfirmedRequestFiltersProps {
