@@ -77,14 +77,14 @@ export interface InstitutionProps {
   phone: string;
   tenantType?: TenantTypes;
   parent?: any;
+  legalForm?: { id: number; name: string };
+  type?: { id: number; name: string };
   data?: {
     url: string;
     foundedAt: Date;
     hasBeneficiaryStatus: true;
     nonGovernmentalOrganization: false;
     nonFormalEducation: false;
-    legalForm: string;
-    type: string;
   };
 }
 
@@ -112,6 +112,8 @@ const InstitutionForm = () => {
       tenantType,
       ownerWithPassword,
       data,
+      legalForm,
+      type,
     } = values;
 
     const params = {
@@ -122,6 +124,9 @@ const InstitutionForm = () => {
         phone,
         ...(!ownerWithPassword && { personalCode }),
       },
+      legalForm: legalForm?.id,
+      type: type?.id,
+
       address,
       name: companyName,
       code: companyCode,

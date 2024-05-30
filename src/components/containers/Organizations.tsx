@@ -93,7 +93,7 @@ const OrganizationsContainer = ({ organizations, handleChange, disabled }) => {
       />
 
       <Popup
-        title={formLabels.sportOrganizations}
+        title={formLabels.addSportOrganization}
         visible={!!current}
         onClose={() => setCurrent(undefined)}
       >

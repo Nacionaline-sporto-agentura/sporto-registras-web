@@ -158,6 +158,20 @@ export const getSportBaseSpaceTypesList = async (input: string, page: string) =>
   });
 };
 
+export const getTenantSportOrganizationTypeList = async (input: string, page: string) => {
+  return await api.getTenantSportOrganizationTypes({
+    filter: { name: input },
+    page,
+  });
+};
+
+export const getTenantLegalFormList = async (input: string, page: string) => {
+  return await api.getTenantLegalForms({
+    filter: { name: input },
+    page,
+  });
+};
+
 export const getSportBaseSpaceSportTypesList = async (input: string, page: string) => {
   return await api.getSportBaseSpaceSportTypes({
     filter: { name: input },

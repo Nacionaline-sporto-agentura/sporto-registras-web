@@ -34,6 +34,8 @@ const initialState: UsersFiltersState = {
     [ClassifierTypes.SPORTS_BASE_TYPE]: {},
     [ClassifierTypes.BUILDING_TYPE]: {},
     [ClassifierTypes.SPORT_TYPE]: {},
+    [ClassifierTypes.SPORT_ORGANIZATION_TYPE]: {},
+    [ClassifierTypes.LEGAL_FORMS]: {},
   },
 };
 

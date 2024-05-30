@@ -38,8 +38,12 @@ export const classifierColumns = {
   },
   [ClassifierTypes.SOURCE]: { name: { label: 'Investicijos šaltinio pavadinimas', show: true } },
   [ClassifierTypes.SPORTS_BASE_TYPE]: {
-    name: { label: 'Sporto bazės tipo pavadinimas', show: true },
+    name: { label: 'Sporto bazės rūšies pavadinimas', show: true },
   },
   [ClassifierTypes.BUILDING_TYPE]: { name: { label: 'Pastato tipo pavadinimas', show: true } },
   [ClassifierTypes.SPORT_TYPE]: { name: { label: 'Sporto šakos pavadinimas', show: true } },
+  [ClassifierTypes.SPORT_ORGANIZATION_TYPE]: {
+    name: { label: 'Sporto organizacijos tipo pavadinimas', show: true },
+  },
+  [ClassifierTypes.LEGAL_FORMS]: { name: { label: 'Teisinės formos pavadinimas', show: true } },
 };

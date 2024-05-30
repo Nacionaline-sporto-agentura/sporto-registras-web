@@ -87,6 +87,18 @@ const ClassifierList = () => {
       route: slugs.classifiers(ClassifierTypes.SPACE_TYPE),
       endpoint: () => api.getSportBaseSpaceTypes({ filter, page }),
     },
+    {
+      label: classifierLabels[ClassifierTypes.SPORT_ORGANIZATION_TYPE],
+      key: ClassifierTypes.SPORT_ORGANIZATION_TYPE,
+      route: slugs.classifiers(ClassifierTypes.SPORT_ORGANIZATION_TYPE),
+      endpoint: () => api.getTenantSportOrganizationTypes({ filter, page }),
+    },
+    {
+      label: classifierLabels[ClassifierTypes.LEGAL_FORMS],
+      key: ClassifierTypes.LEGAL_FORMS,
+      route: slugs.classifiers(ClassifierTypes.LEGAL_FORMS),
+      endpoint: () => api.getTenantLegalForms({ filter, page }),
+    },
   ];
 
   const tab = tabs.find((_) => _.key === classifierType) || tabs[0];

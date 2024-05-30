@@ -78,14 +78,14 @@ export interface InstitutionProps {
   parent?: any;
   ownerWithPassword?: boolean;
   tenantType?: TenantTypes;
+  legalForm?: { id: number; name: string };
+  type?: { id: number; name: string };
   data?: {
     url: string;
     foundedAt: Date;
     hasBeneficiaryStatus: true;
     nonGovernmentalOrganization: false;
     nonFormalEducation: false;
-    legalForm: string;
-    type: string;
   };
 }
 
@@ -116,6 +116,8 @@ const OrganizationFormPage = () => {
       companyPhone,
       ownerWithPassword,
       parent,
+      legalForm,
+      type,
       data,
     } = values;
 
@@ -128,6 +130,8 @@ const OrganizationFormPage = () => {
         ...(!ownerWithPassword && { personalCode }),
       },
       address,
+      legalForm: legalForm?.id,
+      type: type?.id,
       name: companyName,
       code: companyCode,
       phone: companyPhone,
@@ -191,6 +195,8 @@ const OrganizationFormPage = () => {
 
   const initialValues: InstitutionProps = {
     companyName: '',
+    legalForm: undefined,
+    type: undefined,
     companyCode: '',
     companyPhone: '',
     companyEmail: '',

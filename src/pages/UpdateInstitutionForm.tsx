@@ -50,6 +50,8 @@ export interface InstitutionProps {
   address?: string;
   tenantType: TenantTypes;
   companyEmail: string;
+  legalForm?: { id: number; name: string };
+  type?: { id: number; name: string };
   parent?: any;
   data?: {
     url: string;
@@ -57,8 +59,6 @@ export interface InstitutionProps {
     hasBeneficiaryStatus: true;
     nonGovernmentalOrganization: false;
     nonFormalEducation: false;
-    legalForm: string;
-    type: string;
   };
 }
 
@@ -81,11 +81,23 @@ const UpdateOrganizationForm = () => {
   );
 
   const handleSubmit = async (values: InstitutionProps, { setErrors }) => {
-    const { companyEmail, companyCode, companyName, companyPhone, parent, data, address } = values;
+    const {
+      companyEmail,
+      companyCode,
+      companyName,
+      companyPhone,
+      parent,
+      data,
+      address,
+      type,
+      legalForm,
+    } = values;
 
     const params = {
       name: companyName,
       address,
+      legalForm: legalForm?.id,
+      type: type?.id,
       code: companyCode,
       phone: companyPhone,
       email: companyEmail?.toLowerCase(),

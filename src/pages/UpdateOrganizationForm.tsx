@@ -51,14 +51,14 @@ export interface InstitutionProps {
   tenantType: TenantTypes;
   companyEmail: string;
   parent?: any;
+  legalForm?: { id: number; name: string };
+  type?: { id: number; name: string };
   data?: {
     url: string;
     foundedAt: Date;
     hasBeneficiaryStatus: true;
     nonGovernmentalOrganization: false;
     nonFormalEducation: false;
-    legalForm: string;
-    type: string;
   };
 }
 
@@ -81,10 +81,22 @@ const UpdateOrganizationForm = () => {
   );
 
   const handleSubmit = async (values: InstitutionProps, { setErrors }) => {
-    const { companyEmail, companyCode, companyName, companyPhone, parent, data, address } = values;
+    const {
+      companyEmail,
+      companyCode,
+      companyName,
+      companyPhone,
+      parent,
+      data,
+      address,
+      type,
+      legalForm,
+    } = values;
 
     const params = {
       name: companyName,
+      legalForm: legalForm?.id,
+      type: type?.id,
       address,
       code: companyCode,
       phone: companyPhone,
@@ -143,7 +155,7 @@ const UpdateOrganizationForm = () => {
     deleteDescriptionSecondPart: deleteDescriptionSecondPart.group,
     deleteTitle: deleteTitles.group,
     deleteName: institution?.name,
-    handleDelete: handleDelete.mutateAsync
+    handleDelete: handleDelete.mutateAsync,
   };
 
   const initialValues: any = {

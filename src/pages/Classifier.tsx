@@ -34,6 +34,8 @@ const createClassifierEndpoints = {
   [ClassifierTypes.SPORTS_BASE_TYPE]: Resources.TYPES,
   [ClassifierTypes.BUILDING_TYPE]: Resources.BUILDING_TYPES,
   [ClassifierTypes.SPORT_TYPE]: Resources.SPORT_TYPES,
+  [ClassifierTypes.SPORT_ORGANIZATION_TYPE]: Resources.SPORT_ORGANIZATION_TYPES,
+  [ClassifierTypes.LEGAL_FORMS]: Resources.LEGAL_FORMS,
 };
 
 const Classifier = () => {
