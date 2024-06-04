@@ -184,6 +184,12 @@ export const useIsTenantAdmin = () => {
   return currentProfile?.role === AdminRoleType.ADMIN;
 };
 
+export const useIsTenantUser = () => {
+  const currentProfile = useGetCurrentProfile();
+
+  return currentProfile?.role === AdminRoleType.USER;
+};
+
 export const useInfinityLoad = (
   queryKey: string,
   fn: (params: { page: number }) => any,

@@ -1,12 +1,15 @@
+import { useQuery } from 'react-query';
 import { FormRow } from '../../styles/CommonStyles';
-import { SportBaseSpace, SportsBasesType } from '../../types';
-import { getSportBaseSpaceBuildingTypesList } from '../../utils/functions';
+import { SportBaseSpace } from '../../types';
+import api from '../../utils/api';
+import { getSportBaseSpaceEnergyClassList } from '../../utils/functions';
 import { descriptions, inputLabels } from '../../utils/texts';
 import AsyncSelectField from '../fields/AsyncSelectField';
 import DateField from '../fields/DateField';
 import DragAndDropUploadField from '../fields/DragAndDropUploadField';
 import NumericTextField from '../fields/NumericTextField';
 import TextField from '../fields/TextField';
+import TreeSelectField from '../fields/TreeSelect';
 
 const BuildingParametersContainer = ({
   sportBaseSpace,
@@ -19,6 +22,10 @@ const BuildingParametersContainer = ({
   handleChange: any;
   disabled: boolean;
 }) => {
+  const { data: buildingPurposesOptions = [] } = useQuery(['buildingPurposesOptions'], async () =>
+    api.getSportBaseSpaceBuildingPurposesTree(),
+  );
+
   return (
     <>
       <FormRow columns={2}>
@@ -45,7 +52,7 @@ const BuildingParametersContainer = ({
         />
       </FormRow>
       <FormRow columns={1}>
-        <TextField
+        <AsyncSelectField
           disabled={disabled}
           label={inputLabels.energyClass}
           value={sportBaseSpace?.energyClass}
@@ -54,7 +61,10 @@ const BuildingParametersContainer = ({
           onChange={(energyClass) => {
             handleChange(`energyClass`, energyClass);
           }}
+          getOptionLabel={(option) => option?.name}
+          loadOptions={(input, page) => getSportBaseSpaceEnergyClassList(input, page)}
         />
+
         <DragAndDropUploadField
           disabled={disabled}
           onChange={(files: any) => handleChange('energyClassCertificate', files[0])}
@@ -64,29 +74,21 @@ const BuildingParametersContainer = ({
           error={errors?.energyClassCertificate}
         />
       </FormRow>
-      <FormRow columns={2}>
-        <AsyncSelectField
+      <FormRow columns={1}>
+        <TreeSelectField
           disabled={disabled}
-          label={inputLabels.buildingType}
-          value={sportBaseSpace?.buildingType}
-          error={errors?.buildingType}
-          name="type"
-          onChange={(type: SportsBasesType) => {
-            handleChange(`buildingType`, type);
-          }}
-          getOptionLabel={(option) => option?.name}
-          loadOptions={(input, page) => getSportBaseSpaceBuildingTypesList(input, page)}
-        />
-        <TextField
           label={inputLabels.buildingPurpose}
-          value={sportBaseSpace?.buildingPurpose}
+          name={`buildingPurpose`}
           error={errors?.buildingPurpose}
-          name="buildingPurpose"
-          onChange={(buildingPurpose) => {
-            handleChange(`buildingPurpose`, buildingPurpose);
+          showError={false}
+          options={buildingPurposesOptions}
+          value={sportBaseSpace?.buildingPurpose?.id}
+          onChange={(value) => {
+            handleChange('buildingPurpose', value);
           }}
         />
-
+      </FormRow>
+      <FormRow columns={2}>
         <DateField
           disabled={disabled}
           name={'constructionDate'}

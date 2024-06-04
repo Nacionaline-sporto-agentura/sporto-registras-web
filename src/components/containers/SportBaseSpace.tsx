@@ -33,11 +33,10 @@ const generalSchema = Yup.object().shape({
 });
 
 const buildingParametersSchema = Yup.object().shape({
-  buildingType: Yup.object().required(validationTexts.requireText),
   buildingNumber: Yup.string().required(validationTexts.requireText),
-  buildingPurpose: Yup.string().required(validationTexts.requireText),
+  buildingPurpose: Yup.object().required(validationTexts.requireText),
   buildingArea: Yup.string().required(validationTexts.requireText),
-  energyClass: Yup.string().required(validationTexts.requireText),
+  energyClass: Yup.object().required(validationTexts.requireText),
   constructionDate: Yup.date().required(validationTexts.requireText),
   energyClassCertificate: Yup.object().required(validationTexts.requireText),
 });

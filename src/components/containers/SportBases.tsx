@@ -4,11 +4,11 @@ import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles
 import { NotFoundInfoProps, SportBase, TableRow } from '../../types';
 import api from '../../utils/api';
 import { AdminRoleType, colorsByStatus } from '../../utils/constants';
+import { getIlike, getSportBaseTypeList } from '../../utils/functions';
 import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, emptyState, inputLabels, requestStatusLabels } from '../../utils/texts';
 import Button from '../buttons/Button';
-import { getSportBaseTypeList } from '../fields/utils/function';
 import DynamicFilter from '../other/DynamicFilter';
 import { FilterInputTypes } from '../other/DynamicFilter/Filter';
 import StatusTag from '../other/StatusTag';
@@ -38,20 +38,12 @@ const filterConfig = () => ({
 
 const rowConfig = [['name'], ['type']];
 
-export const mapSportBaseFilters = (filters: any): any => {
-  let params: any = {};
-
-  if (filters) {
-    filters.name && (params.name = filters.name);
-  }
-  return params;
-};
-
 export const mapSportBaseQuery = (filters: any) => {
   let params: any = {};
 
   if (filters) {
     filters.type && (params.type = filters.type.id);
+    filters.name && (params.name = getIlike(filters.name));
   }
   return params;
 };
@@ -92,7 +84,6 @@ const SportBases = () => {
     endpoint: () =>
       api.getSportBases({
         page,
-        filter: mapSportBaseFilters(filter),
         query: mapSportBaseQuery(filter),
       }),
     mapData: (list) => mapRequestList(list),

@@ -12,6 +12,7 @@ import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
 import { NotFoundInfoProps } from '../types';
 import Api from '../utils/api';
 import { institutionColumns } from '../utils/columns';
+import { getSimpleFilter } from '../utils/functions';
 import { useGenericTablePageHooks, useTableData } from '../utils/hooks';
 import { mapInstitutionList } from '../utils/mapFunctions';
 import { slugs } from '../utils/routes';
@@ -37,12 +38,7 @@ const InstitutionList = () => {
 
   const { tableData, loading } = useTableData({
     name: 'institutions',
-    endpoint: () =>
-      Api.getInstitutions({
-        page,
-        filter: filters,
-        id,
-      }),
+    endpoint: () => Api.getInstitutions(getSimpleFilter(filters.name, page)),
     mapData: (list) => mapInstitutionList(list),
     dependencyArray: [id, filters, page],
   });

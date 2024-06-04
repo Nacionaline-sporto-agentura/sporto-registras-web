@@ -27,7 +27,7 @@ import { device } from '../styles';
 import { SportBase } from '../types';
 import api from '../utils/api';
 import { AdminRoleType, RequestEntityTypes, StatusTypes } from '../utils/constants';
-import { isNew } from '../utils/functions';
+import { formatDate, isNew } from '../utils/functions';
 import { slugs } from '../utils/routes';
 import { buttonsTitles, descriptions, inputLabels, validationTexts } from '../utils/texts';
 
@@ -110,7 +110,7 @@ const SportBasePage = () => {
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
   const { id = '' } = useParams();
   const [searchParams] = useSearchParams();
-  const title = isNew(id) ? 'Prašymas įregistruoti sporto bazę' : 'Prašymas atnaujinti sporto bazę';
+  const title = isNew(id) ? 'Prašymas įregistruoti sporto bazę' : 'Sporto bazė';
   const { prasymas: queryStringRequestId } = Object.fromEntries([...Array.from(searchParams)]);
   const backUrl = isNew(id) ? slugs.unConfirmedSportBases : slugs.sportBases;
   const [status, setStatus] = useState('');
@@ -430,7 +430,6 @@ const SportBasePage = () => {
               buildingArea: { name: inputLabels.buildingArea },
               energyClass: { name: inputLabels.energyClass },
               energyClassCertificate: { name: descriptions.energyClassCertificate },
-              buildingType: { name: inputLabels.buildingType },
               buildingPurpose: { name: inputLabels.buildingPurpose },
               constructionDate: { name: inputLabels.constructionDate },
               latestRenovationDate: { name: inputLabels.latestRenovationDate },
@@ -490,6 +489,21 @@ const SportBasePage = () => {
           }
         };
 
+        const info = [
+          ...(sportBase?.id
+            ? [
+                <>
+                  Identifikavimo kodas: <strong>{`#${sportBase.id}`}</strong>
+                </>,
+              ]
+            : []),
+          ...(sportBase?.createdAt ? [`Įregistruota: ${formatDate(sportBase.createdAt)}`] : []),
+          ...(sportBase?.updatedAt ? [`Atnaujinta: ${formatDate(sportBase.updatedAt)}`] : []),
+          ...(sportBase?.deletedAt
+            ? [`Objekto išregistravimo data: ${formatDate(sportBase.deletedAt)}`]
+            : []),
+        ];
+
         return (
           <Container>
             <InnerContainer>
@@ -508,6 +522,7 @@ const SportBasePage = () => {
                 onSetStatus={(status) => setStatus(status)}
                 tabs={tabs}
                 back={true}
+                info={info}
               />
 
               <Column>
@@ -517,7 +532,7 @@ const SportBasePage = () => {
                   {hasPrevious && <Button onClick={handlePrevious}>{buttonsTitles.back}</Button>}
                   {hasNext && <Button onClick={handleNext}>{buttonsTitles.next}</Button>}
                   {!disabled && !hasNext && (
-                    <Button onClick={onSubmit}>{buttonsTitles.save}</Button>
+                    <Button onClick={onSubmit}>{buttonsTitles.submit}</Button>
                   )}
                 </ButtonRow>
               </Column>

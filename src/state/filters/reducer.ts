@@ -11,7 +11,7 @@ interface UsersFiltersState {
   userFilters: UserFilters;
   groupFilters: SimpleFilters;
   institutionFilters: SimpleFilters;
-  organizationFilters: SimpleFilters;
+  organizationFilters: any;
   sportBaseFilters: SimpleFilters;
   unconfirmedOrganizationFilters: UnconfirmedRequestFilters;
   unconfirmedSportBaseFilters: UnconfirmedRequestFilters;
@@ -32,7 +32,6 @@ const initialState: UsersFiltersState = {
     [ClassifierTypes.SPACE_TYPE]: {},
     [ClassifierTypes.SOURCE]: {},
     [ClassifierTypes.SPORTS_BASE_TYPE]: {},
-    [ClassifierTypes.BUILDING_TYPE]: {},
     [ClassifierTypes.SPORT_TYPE]: {},
     [ClassifierTypes.SPORT_ORGANIZATION_TYPE]: {},
     [ClassifierTypes.LEGAL_FORMS]: {},

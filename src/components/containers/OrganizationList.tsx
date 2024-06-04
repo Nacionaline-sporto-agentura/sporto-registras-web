@@ -6,7 +6,8 @@ import { NotFoundInfoProps, TableRow, Tenant } from '../../types';
 import api from '../../utils/api';
 import { organizationColumns } from '../../utils/columns';
 import { colorsByStatus, TenantTypes } from '../../utils/constants';
-import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
+import { getIlike } from '../../utils/functions';
+import { useGenericTablePageHooks, useIsTenantUser, useTableData } from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
 import {
   buttonsTitles,
@@ -83,6 +84,7 @@ export const mapOrganizationList = (tenants: Tenant[]): TableRow[] => {
 
 const Organizations = () => {
   const { navigate, page, dispatch } = useGenericTablePageHooks();
+  const isTenantUser = useIsTenantUser();
 
   const filters = useAppSelector((state) => state.filters.organizationFilters);
 
@@ -95,7 +97,12 @@ const Organizations = () => {
     endpoint: () =>
       api.getOrganizations({
         page,
-        filter: filters,
+        query: {
+          name: getIlike(filters?.name),
+          code: getIlike(filters?.code),
+          email: getIlike(filters?.email),
+          phone: getIlike(filters?.phone),
+        },
       }),
     mapData: (list) => mapOrganizationList(list),
     dependencyArray: [filters, page],
@@ -119,9 +126,11 @@ const Organizations = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        <Button onClick={() => navigate(slugs.newOrganization)} disabled={loading}>
-          {buttonsTitles.newOrganization}
-        </Button>
+        {!isTenantUser && (
+          <Button onClick={() => navigate(slugs.newOrganization)} disabled={loading}>
+            {buttonsTitles.newOrganization}
+          </Button>
+        )}
       </TableButtonsRow>
 
       <MainTable

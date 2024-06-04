@@ -25,7 +25,7 @@ export enum Resources {
   TYPES = 'api/sportsBases/types',
   SPORT_TYPES = 'api/sportsBases/spaces/sportTypes',
   SPACE_TYPES = 'api/sportsBases/spaces/types',
-  BUILDING_TYPES = 'api/sportsBases//spaces/buildingTypes',
+  ENERGY_CLASSES = 'api/sportsBases/spaces/energyClasses',
   FIELDS = 'api/sportsBases/spaces/typesAndFields',
   ADMINS = 'api/admins',
   USERS = 'api/users',
@@ -37,6 +37,7 @@ export enum Resources {
   ORGANIZATION_BASIS = '/api/sportsBases/tenants/basis',
   LEGAL_FORMS = '/api/tenants/legalForms',
   SPORT_ORGANIZATION_TYPES = '/api/tenants/sportOrganizationTypes',
+  BUILDING_PURPOSES = '/api/sportsBases/spaces/buildingPurposes',
 }
 
 export enum Populations {
@@ -66,7 +67,6 @@ export enum SortDescFields {
 }
 
 interface TableList<T = any> {
-  filter?: T;
   query?: any;
   page?: string | number;
   id?: string;
@@ -82,7 +82,6 @@ interface GetAllProps {
   resource?: string;
   page?: string | number;
   populate?: string[];
-  filter?: string;
   query?: any;
   pageSize?: string;
   search?: string;
@@ -161,12 +160,11 @@ class Api {
     return res.data;
   };
 
-  getList = async ({ resource, page, filter, pageSize, ...rest }: GetAllProps): Promise<any> => {
+  getList = async ({ resource, page, pageSize, ...rest }: GetAllProps): Promise<any> => {
     const config = {
       params: {
         pageSize: pageSize || 10,
         page: page || 1,
-        filter: JSON.stringify(filter),
         ...rest,
       },
     };
@@ -329,13 +327,13 @@ class Api {
     });
   };
 
-  getAdminUsers = async ({ filter, page }: TableList) => {
+  getAdminUsers = async ({ query, page }: TableList) => {
     return this.getList({
       resource: Resources.ADMINS,
       populate: [Populations.GROUPS],
       sort: [SortAscFields.FIRST_NAME, SortAscFields.LAST_NAME],
       page,
-      filter,
+      query,
     });
   };
 
@@ -405,42 +403,40 @@ class Api {
     });
   };
 
-  getUsers = async ({ filter, page, query }: TableList) => {
+  getUsers = async ({ page, query }: TableList) => {
     return this.getList({
       resource: Resources.USERS,
       sort: [SortAscFields.FIRST_NAME, SortAscFields.LAST_NAME],
       query,
       page,
-      filter,
     });
   };
 
-  getTenantUsers = async ({ page, id }: TableList) => {
+  getTenantUsers = async ({ page, id, query }: TableList) => {
     return this.getList({
       resource: `${Resources.TENANTS}/${id}/users`,
       sort: [SortAscFields.FIRST_NAME, SortAscFields.LAST_NAME],
+      query,
       page,
     });
   };
 
-  getSportBases = async ({ page, filter, query }: TableList) =>
+  getSportBases = async ({ page, query }: TableList) =>
     await this.getList({
       resource: Resources.SPORT_BASES,
       populate: [Populations.TYPE, Populations.LAST_REQUEST],
       sort: [SortDescFields.ID],
       page,
-      filter,
       query,
     });
 
-  getNewRequests = async ({ page, filter, query }: TableList) =>
+  getNewRequests = async ({ page, query }: TableList) =>
     await this.getList({
       resource: Resources.REQUESTS + '/new',
       populate: [Populations.ENTITY],
       sort: [SortDescFields.ID],
       page,
       query,
-      filter,
     });
 
   getSportBase = async (id: string): Promise<SportBase> =>
@@ -494,12 +490,11 @@ class Api {
       sort: [SortAscFields.NAME],
     });
 
-  getGroups = async ({ page, filter, id }: TableList) =>
+  getGroups = async ({ page, query }: TableList) =>
     await this.getList({
       resource: Resources.GROUPS,
       page,
-      filter,
-      query: JSON.stringify({ parent: id }),
+      query,
       populate: [Populations.CHILDREN],
       sort: [SortAscFields.NAME],
     });
@@ -544,31 +539,30 @@ class Api {
       resource: `${Resources.GROUPS}/${id}/users`,
     });
 
-  getTenants = async ({ page, filter, query }: TableList) =>
+  getTenants = async ({ page, query }: TableList) =>
     await this.getList({
       resource: Resources.TENANTS,
       populate: [Populations.CHILDREN],
       query,
       page,
-      filter,
       sort: [SortAscFields.NAME],
     });
 
-  getOrganizations = async ({ page, filter }: TableList) =>
+  getOrganizations = async ({ page, query }: TableList) =>
     await this.getList({
       resource: Resources.ORGANIZATIONS,
       populate: [Populations.PARENT, Populations.LAST_REQUEST],
       page,
-      filter,
+      query,
       sort: [SortAscFields.NAME],
     });
 
-  getInstitutions = async ({ page, filter }: TableList) =>
+  getInstitutions = async ({ page, query }: TableList) =>
     await this.getList({
       resource: Resources.INSTITUTIONS,
       populate: [Populations.PARENT],
       page,
-      filter,
+      query,
       sort: [SortAscFields.NAME],
     });
 
@@ -627,9 +621,8 @@ class Api {
       resource: Resources.PROFILES,
     });
 
-  getSportBaseSources = async ({ filter, page, query }) =>
+  getSportBaseSources = async ({ page, query }) =>
     await this.getList({
-      filter,
       page,
       query,
       fields: ['id', 'name'],
@@ -637,90 +630,97 @@ class Api {
       sort: [SortAscFields.NAME],
     });
 
-  getTenantSources = async ({ filter, page }) =>
+  getTenantSources = async ({ query, page }) =>
     await this.getList({
-      filter,
+      query,
       page,
       fields: ['id', 'name'],
       resource: Resources.TENANT_INVESTMENTS_SOURCES,
       sort: [SortAscFields.NAME],
     });
 
-  getSportBaseLevels = async ({ filter, page }) =>
+  getSportBaseLevels = async ({ query, page }) =>
     await this.getList({
-      filter,
+      query,
       page,
       fields: ['id', 'name'],
       resource: Resources.LEVELS,
       sort: [SortAscFields.NAME],
     });
-  getSportBaseTechnicalConditions = async ({ filter, page }) =>
+  getSportBaseTechnicalConditions = async ({ query, page }) =>
     await this.getList({
-      filter,
+      query,
       page,
       fields: ['id', 'name'],
       resource: Resources.TECHNICAL_CONDITIONS,
       sort: [SortAscFields.NAME],
     });
 
-  getSportBaseTypes = async ({ filter, page }) =>
+  getSportBaseTypes = async ({ query, page }) =>
     await this.getList({
-      filter,
+      query,
       page,
       fields: ['id', 'name'],
       resource: Resources.TYPES,
       sort: [SortAscFields.NAME],
     });
 
-  getOrganizationBasis = async ({ filter, page }) =>
+  getOrganizationBasis = async ({ query, page }) =>
     await this.getList({
-      filter,
+      query,
       page,
       fields: ['id', 'name'],
       resource: Resources.ORGANIZATION_BASIS,
     });
 
-  getSportBaseSpaceBuildingTypes = async ({ filter, page }) =>
+  getSportBaseSpaceSportTypes = async ({ query, page }) =>
     await this.getList({
-      filter,
-      page,
-      fields: ['id', 'name'],
-      resource: Resources.BUILDING_TYPES,
-      sort: [SortAscFields.NAME],
-    });
-
-  getSportBaseSpaceSportTypes = async ({ filter, page }) =>
-    await this.getList({
-      filter,
+      query,
       page,
       fields: ['id', 'name'],
       resource: Resources.SPORT_TYPES,
       sort: [SortAscFields.NAME],
     });
 
-  getTenantSportOrganizationTypes = async ({ filter, page }) =>
+  getTenantSportOrganizationTypes = async ({ query, page }) =>
     await this.getList({
-      filter,
+      query,
       page,
       fields: ['id', 'name'],
       resource: Resources.SPORT_ORGANIZATION_TYPES,
     });
 
-  getTenantLegalForms = async ({ filter, page }) =>
+  getTenantLegalForms = async ({ query, page }) =>
     await this.getList({
-      filter,
+      query,
       page,
       fields: ['id', 'name'],
       resource: Resources.LEGAL_FORMS,
     });
 
-  getSportBaseSpaceTypes = async ({ page, filter }) =>
+  getSportBaseSpaceTypes = async ({ page, query }) =>
     await this.getList({
       page,
       fields: ['id', 'name', 'type'],
-      filter,
+      query,
       resource: Resources.SPACE_TYPES,
       sort: [SortAscFields.NAME],
+    });
+
+  getSportBaseSpaceEnergyClasses = async ({ page, query }) =>
+    await this.getList({
+      page,
+      fields: ['id', 'name'],
+      query,
+      resource: Resources.ENERGY_CLASSES,
+      sort: [SortAscFields.NAME],
+    });
+
+  getSportBaseSpaceBuildingPurposesTree = async () =>
+    await this.getAll({
+      fields: ['id', 'name', 'children'],
+      populate: [Populations.CHILDREN],
+      resource: Resources.BUILDING_PURPOSES,
     });
 
   getFields = async ({ query }): Promise<TypesAndFields[]> =>

@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import { device } from '../../styles';
 import { colorsByStatus } from '../../utils/constants';
-import { formatDate } from '../../utils/functions';
 import { buttonsTitles, requestStatusLabels } from '../../utils/texts';
 import AdditionalButtons from '../buttons/AdditionalButtons';
 import BackButton from '../buttons/BackButton';
@@ -23,6 +22,7 @@ const RequestFormHeader = ({
   onSetStatus,
   tabs,
   back,
+  info,
 }) => (
   <TitleColumn>
     {!!back ? <BackButton /> : <Line />}
@@ -38,11 +38,11 @@ const RequestFormHeader = ({
       </InnerRow>
       <InnerRow>
         {showDraftButton && <Button onClick={handleDraft}>{buttonsTitles.saveAsDraft}</Button>}
-        {!disabled && <Button onClick={onSubmit}>{buttonsTitles.save}</Button>}
+        {!disabled && <Button onClick={onSubmit}>{buttonsTitles.submit}</Button>}
         {canValidate && <AdditionalButtons handleChange={onSetStatus} />}
       </InnerRow>
     </Row>
-    {request && <InfoRow info={[formatDate(request.createdAt)]} />}
+    {request && <InfoRow info={info} />}
     <TabBar
       tabs={tabs}
       onClick={onSetCurrentTabIndex}

@@ -11,6 +11,15 @@ import {
   TenantTypes,
 } from './utils/constants';
 
+export interface CommonFields {
+  updatedAt: Date;
+  createdAt: Date;
+  deletedAt: Date;
+  createdBy: User;
+  updatedBy: User;
+  deletedBy: User;
+}
+
 export interface User {
   id?: string;
   firstName?: string;
@@ -77,10 +86,9 @@ export interface SportBaseSpace {
   type?: SportsBasesType;
   sportTypes?: SportBaseSpaceSportType[];
   sportBase?: SportBase;
-  buildingType?: SportsBasesBuildingType;
   technicalCondition?: SportsBasesCondition;
   buildingNumber?: string;
-  buildingPurpose?: string;
+  buildingPurpose?: { id: number; name: string };
   buildingArea?: number;
   energyClass?: number;
   constructionDate?: string;
@@ -94,7 +102,7 @@ export interface SportBaseSpace {
   };
 }
 
-export interface SportBase {
+export interface SportBase extends CommonFields {
   id?: number;
   name: string;
   canCreateRequest: boolean;
@@ -154,6 +162,10 @@ export interface Profile {
   email?: string;
   code?: string;
   role: AdminRoleType;
+  tenantType: TenantTypes;
+  data: {
+    canHaveChildren: boolean;
+  };
 }
 
 export type ChildrenType = string | JSX.Element | JSX.Element[] | any;
@@ -225,7 +237,6 @@ export interface ClassifierFilters {
   [ClassifierTypes.SPACE_TYPE]: SimpleFilters;
   [ClassifierTypes.SOURCE]: SimpleFilters;
   [ClassifierTypes.SPORTS_BASE_TYPE]: SimpleFilters;
-  [ClassifierTypes.BUILDING_TYPE]: SimpleFilters;
   [ClassifierTypes.SPORT_TYPE]: SimpleFilters;
   [ClassifierTypes.SPORT_ORGANIZATION_TYPE]: SimpleFilters;
   [ClassifierTypes.LEGAL_FORMS]: SimpleFilters;
@@ -331,7 +342,7 @@ export interface TypesAndFields {
   field: Field;
 }
 
-export interface Request {
+export interface Request extends CommonFields {
   id: number;
   canValidate: boolean;
   canEdit: boolean;
@@ -339,7 +350,6 @@ export interface Request {
   field: Field;
   changes: Operation[];
   entity: any;
-  createdAt: Date;
 }
 export interface FormHistory {
   type: HistoryTypes;

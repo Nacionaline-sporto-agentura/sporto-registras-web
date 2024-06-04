@@ -16,7 +16,7 @@ export interface SelectFieldProps {
   error?: string;
   showError?: boolean;
   editable?: boolean;
-  groupOptions: any[];
+  options: any[];
   left?: JSX.Element;
   right?: JSX.Element;
   padding?: string;
@@ -34,14 +34,14 @@ const TreeSelectField = ({
   value,
   error,
   showError = true,
-  groupOptions,
+  options,
   className,
   disabled,
   padding,
   onChange,
   groups,
 }: SelectFieldProps) => {
-  const clonedGroupOptions = cloneDeep(groupOptions);
+  const clonedOptions = cloneDeep(options);
 
   const filterTreeOptions = () => {
     const groupsIds = groups?.map((group) => group.id);
@@ -90,13 +90,13 @@ const TreeSelectField = ({
           }
         }
       };
-      return findParents(clonedGroupOptions);
+      return findParents(clonedOptions);
     });
   };
 
   useEffect(() => {
     filterTreeOptions();
-  }, [value, groups, groupOptions]);
+  }, [value, groups, options]);
 
   return (
     <Container className={className} padding={padding || '0'}>
@@ -110,11 +110,12 @@ const TreeSelectField = ({
           value={value}
           disabled={disabled}
           notFoundContent={inputLabels.noOptions}
-          treeData={clonedGroupOptions}
+          treeData={clonedOptions}
           fieldNames={{ label: 'name', children: 'children', value: 'id' }}
-          onChange={(value) => {
+          onChange={(value, label) => {
             onChange({
               id: value,
+              name: label[0],
             });
           }}
         />
@@ -164,6 +165,15 @@ const StyledTreeSelect = styled(TreeSelect)<{ error: boolean }>`
     outline: none !important;
     animation-duration: 0s !important;
     transition: none !important;
+  }
+
+  &.css-dev-only-do-not-override-11xg00t.ant-select-outlined.ant-select-disabled:not(
+      .ant-select-customize-input
+    )
+    .ant-select-selector {
+    background: inherit !important;
+    color: inherit !important;
+    opacity: ${({ disabled }) => (disabled ? 0.48 : 1)};
   }
 `;
 

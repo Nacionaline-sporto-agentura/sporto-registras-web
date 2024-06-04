@@ -125,6 +125,12 @@ const RequestOrganizationForm = ({
             disabled={disabled}
             onChange={(value) => handleChange('data.nonFormalEducation', value)}
           />
+          <CheckBox
+            label={inputLabels.canHaveChildren}
+            value={values.data?.canHaveChildren}
+            disabled={disabled}
+            onChange={(value) => handleChange('data.canHaveChildren', value)}
+          />
         </FormRow>
       </SimpleContainer>
     </>

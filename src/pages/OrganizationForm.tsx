@@ -11,6 +11,7 @@ import { ReactQueryError } from '../types';
 import Api from '../utils/api';
 import { TenantTypes } from '../utils/constants';
 import { getReactQueryErrorMessage, handleErrorToastFromServer, isNew } from '../utils/functions';
+import { useIsTenantUser } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 import { pageTitles, validationTexts } from '../utils/texts';
 
@@ -99,7 +100,7 @@ const OrganizationFormPage = () => {
 
   const [searchParams] = useSearchParams();
   const { parent } = Object.fromEntries([...Array.from(searchParams)]);
-
+  const isTenantUser = useIsTenantUser();
   const title = pageTitles.newOrganization;
 
   const handleSubmit = async (values: InstitutionProps, { setErrors }) => {
@@ -193,6 +194,8 @@ const OrganizationFormPage = () => {
     },
   );
 
+  const disabled = isTenantUser;
+
   const initialValues: InstitutionProps = {
     companyName: '',
     legalForm: undefined,
@@ -215,12 +218,18 @@ const OrganizationFormPage = () => {
     return (
       <TitleColumn>
         <OrganizationForm
+          disabled={disabled}
           values={values}
           errors={errors}
           handleChange={handleChange}
           groupOptions={groupOptions}
         />
-        <OwnerForm values={values} errors={errors} handleChange={handleChange} />
+        <OwnerForm
+          disabled={disabled}
+          values={values}
+          errors={errors}
+          handleChange={handleChange}
+        />
       </TitleColumn>
     );
   };
@@ -232,6 +241,7 @@ const OrganizationFormPage = () => {
       onSubmit={handleSubmit}
       renderForm={renderForm}
       validationSchema={validateCreateUserForm}
+      disabled={isTenantUser}
     />
   );
 };

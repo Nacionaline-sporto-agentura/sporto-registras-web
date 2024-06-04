@@ -11,6 +11,7 @@ import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
 import { NotFoundInfoProps } from '../types';
 import Api from '../utils/api';
 import { groupUserLabels } from '../utils/columns';
+import { getIlike } from '../utils/functions';
 import { useGenericTablePageHooks, useIsTenantAdmin, useTableData } from '../utils/hooks';
 import { mapGroupUsersList } from '../utils/mapFunctions';
 import { slugs } from '../utils/routes';
@@ -51,7 +52,11 @@ const UserList = () => {
       Api.getTenantUsers({
         id: profileId,
         page,
-        filter: filters,
+        query: {
+          firstName: getIlike(filters?.firstName),
+          lastName: getIlike(filters?.lastName),
+          email: getIlike(filters?.email),
+        },
       }),
     mapData: (list) => mapGroupUsersList(list),
     dependencyArray: [filters, page],

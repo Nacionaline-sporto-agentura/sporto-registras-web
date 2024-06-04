@@ -11,6 +11,7 @@ import { useAppSelector } from '../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
 import { NotFoundInfoProps, TableRow, User } from '../types';
 import Api from '../utils/api';
+import { getIlike } from '../utils/functions';
 import { useGenericTablePageHooks, useTableData } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 import { getInternalTabs } from '../utils/tabs';
@@ -75,7 +76,11 @@ const AdminUserList = () => {
     endpoint: () =>
       Api.getAdminUsers({
         page,
-        filter: filters,
+        query: {
+          firstName: getIlike(filters?.firstName),
+          lastName: getIlike(filters?.lastName),
+          email: getIlike(filters?.email),
+        },
       }),
     mapData: (list) => mapUsersList(list),
     dependencyArray: [filters, page],

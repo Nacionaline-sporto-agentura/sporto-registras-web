@@ -1,7 +1,7 @@
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { NotFoundInfoProps } from '../../types';
 import api from '../../utils/api';
-import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
+import { useGenericTablePageHooks, useIsTenantUser, useTableData } from '../../utils/hooks';
 import { mapGroupUsersList } from '../../utils/mapFunctions';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, emptyState, emptyStateUrl } from '../../utils/texts';
@@ -18,6 +18,7 @@ export const columns = {
 const OrganizationUsers = ({ onClickRow, id }) => {
   const { navigate, page } = useGenericTablePageHooks();
   const newUrl = slugs.newOrganizationUser(id);
+  const isTenantUser = useIsTenantUser();
 
   const { tableData, loading } = useTableData({
     name: 'organizationTenantUsers',
@@ -40,13 +41,15 @@ const OrganizationUsers = ({ onClickRow, id }) => {
     <>
       <TableButtonsRow>
         <TableButtonsInnerRow />
-        <Button
-          onClick={() => {
-            navigate(newUrl);
-          }}
-        >
-          {buttonsTitles.newUser}
-        </Button>
+        {!isTenantUser && (
+          <Button
+            onClick={() => {
+              navigate(newUrl);
+            }}
+          >
+            {buttonsTitles.newUser}
+          </Button>
+        )}
       </TableButtonsRow>
       <MainTable
         loading={loading}

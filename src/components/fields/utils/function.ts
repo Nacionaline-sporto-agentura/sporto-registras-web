@@ -113,10 +113,3 @@ export const mapRequestFormFilters = (
 
   return params;
 };
-
-export const getSportBaseTypeList = async (name: string, page: number) => {
-  return await api.getSportBaseTypes({
-    filter: name,
-    page,
-  });
-};
