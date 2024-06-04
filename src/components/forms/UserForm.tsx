@@ -73,6 +73,7 @@ export const validateCreateUserForm = Yup.object().shape({
     return schema.nullable();
   }),
 
+  role: Yup.string().required(validationTexts.requireText),
   phone: Yup.string()
     .required(validationTexts.requireText)
     .trim()
@@ -200,7 +201,7 @@ const UserForm = ({
     lastName: user?.lastName || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    role: user?.role || AdminRoleType.USER,
+    role: user?.role || undefined,
     userWithPassword: true,
   };
 
