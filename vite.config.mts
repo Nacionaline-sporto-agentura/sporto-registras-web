@@ -7,7 +7,7 @@ export default () => {
   const env = loadEnv('all', process.cwd());
 
   return defineConfig({
-    plugins: [react(), VitePWA(manifestForPlugIn as Partial<VitePWAOptions>)],
+    plugins: [react(), VitePWA(manifestForPlugIn(env.VITE_BASE_URL) as Partial<VitePWAOptions>)],
     base: env.VITE_BASE_URL,
     server: {
       proxy: {
