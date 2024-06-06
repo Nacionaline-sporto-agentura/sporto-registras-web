@@ -7,6 +7,7 @@ export default () => {
   const env = loadEnv('all', process.cwd());
 
   return defineConfig({
+    base: env.VITE_BASE_URL,
     plugins: [react(), VitePWA(manifestForPlugIn as Partial<VitePWAOptions>)],
     server: {
       proxy: {
@@ -17,6 +18,7 @@ export default () => {
         },
       },
     },
+
     assetsInclude: ['**/*.png'],
   });
 };
