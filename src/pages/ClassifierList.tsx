@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Button from '../components/buttons/Button';
 import TablePageLayout from '../components/layouts/TablePageLayout';
@@ -40,8 +41,17 @@ const ClassifierList = () => {
   const filter = useAppSelector((state) =>
     classifierType ? state.filters.classifierFilters?.[classifierType] : {},
   );
+  const [sortedColumn, setSortedColumn] = useState<{
+    key?: string;
+    direction?: 'asc' | 'desc';
+  }>({});
 
-  const query = getSimpleFilter(filter?.name, page);
+  const query = {
+    ...getSimpleFilter(filter?.name, page),
+    ...(sortedColumn.key && {
+      sort: [`${sortedColumn.direction === 'asc' ? '' : '-'}` + sortedColumn.key],
+    }),
+  };
 
   const handleSetFilters = (filters) => {
     if (classifierType) dispatch(filterActions.seClassifierFilters({ [classifierType]: filters }));
@@ -105,7 +115,7 @@ const ClassifierList = () => {
     name: tab.route,
     endpoint: tab.endpoint,
     mapData: (list) => list,
-    dependencyArray: [filter, page],
+    dependencyArray: [filter, page, sortedColumn],
   });
 
   return (
@@ -132,6 +142,9 @@ const ClassifierList = () => {
         </Button>
       </TableButtonsRow>
       <MainTable
+        onColumnSort={(column) => {
+          setSortedColumn(column);
+        }}
         loading={loading}
         onClick={(id) => navigate(slugs.classifier(tab.key, id))}
         isFilterApplied={false}

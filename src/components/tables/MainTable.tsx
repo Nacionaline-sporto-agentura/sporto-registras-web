@@ -16,6 +16,7 @@ export interface LoginLayoutProps {
   isFilterApplied?: boolean;
   loading?: boolean;
   hidePagination?: boolean;
+  onColumnSort?: ({ key, direction }: { key: string; direction?: 'asc' | 'desc' }) => void;
 }
 
 const MainTable = ({
@@ -28,10 +29,9 @@ const MainTable = ({
   loading,
   isFilterApplied = false,
   hidePagination = false,
+  onColumnSort,
 }: LoginLayoutProps) => {
   const isMobile = useWindowSize(device.mobileL);
-
-  if (loading) return <FullscreenLoader />;
 
   return (
     <TableLayout hidePagination={hidePagination} data={data} pageName={pageName} loading={loading}>
@@ -43,6 +43,8 @@ const MainTable = ({
           tableRowStyle={tableRowStyle}
           notFoundInfo={notFoundInfo}
           isFilterApplied={isFilterApplied}
+          onColumnSort={onColumnSort}
+          loading={loading}
         />
       ) : (
         <DesktopTable
@@ -52,6 +54,8 @@ const MainTable = ({
           tableRowStyle={tableRowStyle}
           notFoundInfo={notFoundInfo}
           isFilterApplied={isFilterApplied}
+          onColumnSort={onColumnSort}
+          loading={loading}
         />
       )}
     </TableLayout>

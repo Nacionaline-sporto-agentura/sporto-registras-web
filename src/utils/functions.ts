@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import { User } from '../types';
-import api from './api';
+import api, { SortAscFields } from './api';
 import { AdminRoleType } from './constants';
 import { url, validationTexts } from './texts';
 
@@ -116,54 +116,63 @@ export const getSimpleFilter = (input, page, additionalQuery?: any) => {
     page,
   };
 };
+
+const getInputSimpleFilter = (input, page, additionalQuery?: any) => {
+  return { ...getSimpleFilter(input, page, additionalQuery), sort: [SortAscFields.NAME] };
+};
+
 export const getSportBaseTypeList = async (name: string, page: number) => {
-  return await api.getSportBaseTypes(getSimpleFilter(name, page));
+  return await api.getSportBaseTypes(getInputSimpleFilter(name, page));
 };
 
 export const getSportBaseSourcesList = async (input: string, page: string, query: any) => {
-  return await api.getSportBaseSources(getSimpleFilter(input, page, query));
+  return await api.getSportBaseSources(getInputSimpleFilter(input, page, query));
 };
 
 export const getTenantSourcesList = async (input: string, page: string) => {
-  return await api.getTenantSources(getSimpleFilter(input, page));
+  return await api.getTenantSources(getInputSimpleFilter(input, page));
 };
 
 export const getSportBaseLevelsList = async (input: string, page: string) => {
-  return await api.getSportBaseLevels(getSimpleFilter(input, page));
+  return await api.getSportBaseLevels(getInputSimpleFilter(input, page));
 };
 
 export const getSportBaseTechnicalConditionList = async (input: string, page: string) => {
-  return await api.getSportBaseTechnicalConditions(getSimpleFilter(input, page));
+  return await api.getSportBaseTechnicalConditions(getInputSimpleFilter(input, page));
 };
 
 export const getSportBaseTypesList = async (input: string, page: string) => {
-  return await api.getSportBaseTypes(getSimpleFilter(input, page));
+  return await api.getSportBaseTypes(getInputSimpleFilter(input, page));
 };
 
 export const getOrganizationBasisList = async (input: string, page: string) => {
-  return await api.getOrganizationBasis(getSimpleFilter(input, page));
+  return await api.getOrganizationBasis(getInputSimpleFilter(input, page));
 };
 
 export const getSportBaseSpaceTypesList = async (input: string, page: string) => {
-  return await api.getSportBaseSpaceTypes(getSimpleFilter(input, page));
+  return await api.getSportBaseSpaceTypes(getInputSimpleFilter(input, page));
 };
 
 export const getSportBaseSpaceEnergyClassList = async (input: string, page: string) => {
-  return await api.getSportBaseSpaceEnergyClasses(getSimpleFilter(input, page));
+  return await api.getSportBaseSpaceEnergyClasses(getInputSimpleFilter(input, page));
 };
 
 export const getTenantSportOrganizationTypeList = async (input: string, page: string) => {
-  return await api.getTenantSportOrganizationTypes(getSimpleFilter(input, page));
+  return await api.getTenantSportOrganizationTypes(getInputSimpleFilter(input, page));
 };
 
 export const getTenantLegalFormList = async (input: string, page: string) => {
-  return await api.getTenantLegalForms(getSimpleFilter(input, page));
+  return await api.getTenantLegalForms(getInputSimpleFilter(input, page));
 };
 
 export const getSportBaseSpaceSportTypesList = async (input: string, page: string) => {
-  return await api.getSportBaseSpaceSportTypes(getSimpleFilter(input, page));
+  return await api.getSportBaseSpaceSportTypes(getInputSimpleFilter(input, page));
 };
 
 export const formatDate = (date: string | Date) => format(new Date(date), 'yyyy-MM-dd');
 export const formatDateAndTime = (datetime: Date | string) =>
   datetime ? format(new Date(datetime), 'yyyy-MM-dd HH:mm') : '-';
+
+const env = import.meta.env;
+
+export const getPublicUrl = (url: string) => `${env.VITE_BASE_URL}/${url}`;

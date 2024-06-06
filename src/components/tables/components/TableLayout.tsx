@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { device } from '../../../styles';
 import { ChildrenType, TableData } from '../../../types';
 import { useWindowSize } from '../../../utils/hooks';
-import FullscreenLoader from '../../other/FullscreenLoader';
 import Icon from '../../other/Icons';
 
 export interface TableLayoutProps {
@@ -52,8 +51,6 @@ const TableLayout = ({
       })}`,
     });
   };
-
-  if (loading) return <FullscreenLoader />;
 
   return (
     <Container>

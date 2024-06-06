@@ -76,6 +76,7 @@ interface TableList<T = any> {
   fields?: string[];
   resource?: Resources;
   search?: string;
+  sort?: string[];
 }
 
 interface GetAllProps {
@@ -621,13 +622,13 @@ class Api {
       resource: Resources.PROFILES,
     });
 
-  getSportBaseSources = async ({ page, query }) =>
+  getSportBaseSources = async ({ page, query, sort }: TableList) =>
     await this.getList({
       page,
       query,
       fields: ['id', 'name'],
       resource: Resources.SPORT_BASE_INVESTMENTS_SOURCES,
-      sort: [SortAscFields.NAME],
+      sort,
     });
 
   getTenantSources = async ({ query, page }) =>
@@ -639,30 +640,30 @@ class Api {
       sort: [SortAscFields.NAME],
     });
 
-  getSportBaseLevels = async ({ query, page }) =>
+  getSportBaseLevels = async ({ query, page, sort }: TableList) =>
     await this.getList({
       query,
       page,
       fields: ['id', 'name'],
       resource: Resources.LEVELS,
-      sort: [SortAscFields.NAME],
+      sort,
     });
-  getSportBaseTechnicalConditions = async ({ query, page }) =>
+  getSportBaseTechnicalConditions = async ({ query, page, sort }: TableList) =>
     await this.getList({
       query,
       page,
       fields: ['id', 'name'],
       resource: Resources.TECHNICAL_CONDITIONS,
-      sort: [SortAscFields.NAME],
+      sort,
     });
 
-  getSportBaseTypes = async ({ query, page }) =>
+  getSportBaseTypes = async ({ query, page, sort }: TableList) =>
     await this.getList({
       query,
       page,
       fields: ['id', 'name'],
       resource: Resources.TYPES,
-      sort: [SortAscFields.NAME],
+      sort,
     });
 
   getOrganizationBasis = async ({ query, page }) =>
@@ -673,41 +674,43 @@ class Api {
       resource: Resources.ORGANIZATION_BASIS,
     });
 
-  getSportBaseSpaceSportTypes = async ({ query, page }) =>
+  getSportBaseSpaceSportTypes = async ({ query, page, sort }: TableList) =>
     await this.getList({
       query,
       page,
       fields: ['id', 'name'],
       resource: Resources.SPORT_TYPES,
-      sort: [SortAscFields.NAME],
+      sort,
     });
 
-  getTenantSportOrganizationTypes = async ({ query, page }) =>
+  getTenantSportOrganizationTypes = async ({ query, page, sort }: TableList) =>
     await this.getList({
       query,
       page,
       fields: ['id', 'name'],
       resource: Resources.SPORT_ORGANIZATION_TYPES,
+      sort,
     });
 
-  getTenantLegalForms = async ({ query, page }) =>
+  getTenantLegalForms = async ({ query, page, sort }: TableList) =>
     await this.getList({
       query,
       page,
       fields: ['id', 'name'],
       resource: Resources.LEGAL_FORMS,
+      sort,
     });
 
-  getSportBaseSpaceTypes = async ({ page, query }) =>
+  getSportBaseSpaceTypes = async ({ page, query, sort }: TableList) =>
     await this.getList({
       page,
       fields: ['id', 'name', 'type'],
       query,
       resource: Resources.SPACE_TYPES,
-      sort: [SortAscFields.NAME],
+      sort,
     });
 
-  getSportBaseSpaceEnergyClasses = async ({ page, query }) =>
+  getSportBaseSpaceEnergyClasses = async ({ page, query }: TableList) =>
     await this.getList({
       page,
       fields: ['id', 'name'],
