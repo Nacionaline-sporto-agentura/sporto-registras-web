@@ -8,6 +8,7 @@ export default () => {
 
   return defineConfig({
     plugins: [react(), VitePWA(manifestForPlugIn as Partial<VitePWAOptions>)],
+    base: env.VITE_BASE_URL,
     server: {
       proxy: {
         '/api': {
