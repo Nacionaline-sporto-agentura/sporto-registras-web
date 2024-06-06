@@ -4,4 +4,6 @@
 
 	try_files {path} {file} /index.html
 	file_server
+
+	uri strip_prefix /app
 }
