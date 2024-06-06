@@ -18,7 +18,7 @@ import {
   MdOutlineVisibilityOff,
   MdUnfoldMore,
 } from 'react-icons/md';
-import { RiArrowDownSFill } from 'react-icons/ri';
+import { RiArrowDownSFill, RiArrowUpSFill } from 'react-icons/ri';
 
 export interface IconProps {
   name: IconName | string;
@@ -54,10 +54,16 @@ export enum IconName {
   image = 'image',
   addPhoto = 'addPhoto',
   info = 'info',
+  tableArrowUp = 'tableArrowUp',
+  tableArrowDown = 'tableArrowDown',
 }
 
 const Icon = ({ name, className }: IconProps) => {
   switch (name) {
+    case IconName.tableArrowDown:
+      return <RiArrowDownSFill className={className} />;
+    case IconName.tableArrowUp:
+      return <RiArrowUpSFill className={className} />;
     case IconName.info:
       return <MdOutlineInfo className={className} />;
     case IconName.remove:
@@ -510,8 +516,6 @@ const Icon = ({ name, className }: IconProps) => {
         </svg>
       );
 
-    case IconName.arrowDown:
-      return <RiArrowDownSFill className={className} />;
     case IconName.burger:
       return <GiHamburgerMenu className={className} />;
 

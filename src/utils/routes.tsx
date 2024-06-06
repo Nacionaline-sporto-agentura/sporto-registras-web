@@ -17,11 +17,11 @@ import Profile from '../pages/Profile';
 import SportBase from '../pages/SportBase';
 import SportBaseList from '../pages/SportBaseList';
 import UpdateInstitutionForm from '../pages/UpdateInstitutionForm';
-import UpdateOrganizationForm from '../pages/UpdateOrganizationForm';
 import UserFormPage from '../pages/UserForm';
 import UserList from '../pages/UserList';
 import { useAppSelector } from '../state/hooks';
 import { AdminRoleType, Apps } from './constants';
+import { useGetCurrentProfile } from './hooks';
 import { pageTitles, url } from './texts';
 
 export const slugs = {
@@ -82,7 +82,29 @@ export const routes = [
     slug: slugs.organizations,
     sidebar: true,
     component: <OrganizationList />,
+    canHaveChildren: true,
   },
+  {
+    slug: slugs.organizationUser(':tenantId', ':id'),
+    component: <OrganizationUser />,
+    canHaveChildren: true,
+  },
+
+  {
+    slug: slugs.organizationUsers(':id'),
+    component: <Organization />,
+    canHaveChildren: true,
+  },
+  {
+    slug: slugs.newOrganization,
+    component: <OrganizationForm />,
+    canHaveChildren: true,
+  },
+  // {
+  //   slug: slugs.updateOrganization(':id'),
+  //   component: <UpdateOrganizationForm />,
+  //   canHaveChildren: true,
+  // },
 
   {
     name: pageTitles.myOrganization,
@@ -111,15 +133,7 @@ export const routes = [
     component: <InstitutionForm />,
     role: AdminRoleType.ADMIN,
   },
-  {
-    slug: slugs.organizationUser(':tenantId', ':id'),
-    component: <OrganizationUser />,
-  },
 
-  {
-    slug: slugs.organizationUsers(':id'),
-    component: <Organization />,
-  },
   {
     slug: slugs.institutionUsers(':id'),
     component: <InstitutionPage />,
@@ -131,10 +145,6 @@ export const routes = [
     role: AdminRoleType.ADMIN,
   },
 
-  {
-    slug: slugs.newOrganization,
-    component: <OrganizationForm />,
-  },
   {
     slug: slugs.adminUsers,
     component: <AdminUserList />,
@@ -199,10 +209,7 @@ export const routes = [
     role: AdminRoleType.ADMIN,
     component: <UpdateInstitutionForm />,
   },
-  {
-    slug: slugs.updateOrganization(':id'),
-    component: <UpdateOrganizationForm />,
-  },
+
   {
     name: 'Klasifikatoriai',
     slug: slugs.classifiers(':dynamic'),
@@ -227,6 +234,10 @@ export const routes = [
 
 export const useFilteredRoutes = () => {
   const user = useAppSelector((state) => state.user.userData);
+  const currentProfile = useGetCurrentProfile();
+
+  const isAdmin =
+    user?.type && [AdminRoleType.ADMIN, AdminRoleType.SUPER_ADMIN].includes(user?.type);
 
   return routes.filter((route) => {
     let select = true;
@@ -236,6 +247,10 @@ export const useFilteredRoutes = () => {
 
     if (select && route.appType) {
       select = !!user?.permissions?.[route.appType];
+    }
+
+    if (select && !isAdmin && route.canHaveChildren) {
+      select = !!currentProfile?.data?.canHaveChildren;
     }
 
     return select;

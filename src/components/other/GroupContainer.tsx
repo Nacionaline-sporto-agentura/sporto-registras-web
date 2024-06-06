@@ -42,7 +42,7 @@ const GroupsContainer = ({ handleChange, values, groupOptions, errors }: GroupCo
                   groups={values?.groups}
                   error={groupError?.id}
                   showError={false}
-                  groupOptions={groupOptions}
+                  options={groupOptions}
                   value={item?.id}
                   onChange={(e) => {
                     handleChangeGroup(e, index);

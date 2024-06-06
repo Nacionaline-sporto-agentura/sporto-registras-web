@@ -40,7 +40,6 @@ export const classifierColumns = {
   [ClassifierTypes.SPORTS_BASE_TYPE]: {
     name: { label: 'Sporto bazės rūšies pavadinimas', show: true },
   },
-  [ClassifierTypes.BUILDING_TYPE]: { name: { label: 'Pastato tipo pavadinimas', show: true } },
   [ClassifierTypes.SPORT_TYPE]: { name: { label: 'Sporto šakos pavadinimas', show: true } },
   [ClassifierTypes.SPORT_ORGANIZATION_TYPE]: {
     name: { label: 'Sporto organizacijos tipo pavadinimas', show: true },

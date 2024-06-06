@@ -1,6 +1,7 @@
 import Div100vh from 'react-div-100vh';
 import styled from 'styled-components';
 import { device } from '../../styles';
+import { getPublicUrl } from '../../utils/functions';
 import Logo from '../other/Logo';
 
 export interface LoginLayoutProps {
@@ -11,7 +12,7 @@ const LoginLayout = ({ children }: LoginLayoutProps) => {
   return (
     <Div100vh>
       <Container>
-        <LayoutImage alt="login-background-image" src="./background.png" />
+        <LayoutImage alt="login-background-image" src={getPublicUrl('background.png')} />
         <InnerContainer>
           <StyledLogo />
           {children}

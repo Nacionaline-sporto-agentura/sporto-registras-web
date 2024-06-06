@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import { User } from '../types';
-import api from './api';
+import api, { SortAscFields } from './api';
 import { AdminRoleType } from './constants';
 import { url, validationTexts } from './texts';
 
@@ -108,84 +108,71 @@ export const filterOutGroup = (items?: any[], id?: string): any => {
   return items;
 };
 
-export const getSportBaseSourcesList = async (input: string, page: string, query: any) => {
-  return await api.getSportBaseSources({
-    filter: { name: input },
-    query,
+export const getIlike = (input?: string) => (!!input ? { $ilike: `%${input}%` } : undefined);
+
+export const getSimpleFilter = (input, page, additionalQuery?: any) => {
+  return {
+    query: { name: getIlike(input), ...additionalQuery },
     page,
-  });
+  };
+};
+
+const getInputSimpleFilter = (input, page, additionalQuery?: any) => {
+  return { ...getSimpleFilter(input, page, additionalQuery), sort: [SortAscFields.NAME] };
+};
+
+export const getSportBaseTypeList = async (name: string, page: number) => {
+  return await api.getSportBaseTypes(getInputSimpleFilter(name, page));
+};
+
+export const getSportBaseSourcesList = async (input: string, page: string, query: any) => {
+  return await api.getSportBaseSources(getInputSimpleFilter(input, page, query));
 };
 
 export const getTenantSourcesList = async (input: string, page: string) => {
-  return await api.getTenantSources({
-    filter: { name: input },
-    page,
-  });
+  return await api.getTenantSources(getInputSimpleFilter(input, page));
 };
 
 export const getSportBaseLevelsList = async (input: string, page: string) => {
-  return await api.getSportBaseLevels({
-    filter: { name: input },
-    page,
-  });
+  return await api.getSportBaseLevels(getInputSimpleFilter(input, page));
 };
 
 export const getSportBaseTechnicalConditionList = async (input: string, page: string) => {
-  return await api.getSportBaseTechnicalConditions({
-    filter: { name: input },
-    page,
-  });
+  return await api.getSportBaseTechnicalConditions(getInputSimpleFilter(input, page));
 };
 
 export const getSportBaseTypesList = async (input: string, page: string) => {
-  return await api.getSportBaseTypes({
-    filter: { name: input },
-    page,
-  });
+  return await api.getSportBaseTypes(getInputSimpleFilter(input, page));
 };
 
 export const getOrganizationBasisList = async (input: string, page: string) => {
-  return await api.getOrganizationBasis({
-    filter: { name: input },
-    page,
-  });
+  return await api.getOrganizationBasis(getInputSimpleFilter(input, page));
 };
 
 export const getSportBaseSpaceTypesList = async (input: string, page: string) => {
-  return await api.getSportBaseSpaceTypes({
-    filter: { name: input },
-    page,
-  });
+  return await api.getSportBaseSpaceTypes(getInputSimpleFilter(input, page));
+};
+
+export const getSportBaseSpaceEnergyClassList = async (input: string, page: string) => {
+  return await api.getSportBaseSpaceEnergyClasses(getInputSimpleFilter(input, page));
 };
 
 export const getTenantSportOrganizationTypeList = async (input: string, page: string) => {
-  return await api.getTenantSportOrganizationTypes({
-    filter: { name: input },
-    page,
-  });
+  return await api.getTenantSportOrganizationTypes(getInputSimpleFilter(input, page));
 };
 
 export const getTenantLegalFormList = async (input: string, page: string) => {
-  return await api.getTenantLegalForms({
-    filter: { name: input },
-    page,
-  });
+  return await api.getTenantLegalForms(getInputSimpleFilter(input, page));
 };
 
 export const getSportBaseSpaceSportTypesList = async (input: string, page: string) => {
-  return await api.getSportBaseSpaceSportTypes({
-    filter: { name: input },
-    page,
-  });
-};
-
-export const getSportBaseSpaceBuildingTypesList = async (input: string, page: string) => {
-  return await api.getSportBaseSpaceBuildingTypes({
-    filter: { name: input },
-    page,
-  });
+  return await api.getSportBaseSpaceSportTypes(getInputSimpleFilter(input, page));
 };
 
 export const formatDate = (date: string | Date) => format(new Date(date), 'yyyy-MM-dd');
 export const formatDateAndTime = (datetime: Date | string) =>
   datetime ? format(new Date(datetime), 'yyyy-MM-dd HH:mm') : '-';
+
+const env = import.meta.env;
+
+export const getPublicUrl = (url: string) => `${env.VITE_BASE_URL}/${url}`;

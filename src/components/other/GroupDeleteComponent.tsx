@@ -85,7 +85,7 @@ const GroupDeleteComponent = ({ group }: AdditionalDeleteGroupComponentInterface
           {deleteWithUsers && (
             <StyledTreeSelectField
               name={`group`}
-              groupOptions={groups}
+              options={groups}
               value={groupId}
               showError={false}
               error={error}

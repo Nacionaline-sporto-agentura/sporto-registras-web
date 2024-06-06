@@ -5,7 +5,8 @@ import styled from 'styled-components';
 import { Columns, NotFoundInfoProps, TableRow } from '../../types';
 import { TableItemWidth } from '../../utils/constants';
 import { descriptions } from '../../utils/texts';
-import Icon from '../other/Icons';
+import FullscreenLoader from '../other/FullscreenLoader';
+import Icon, { IconName } from '../other/Icons';
 import NotFoundInfo from '../other/NotFoundInfo';
 
 export interface MobileTableProps {
@@ -16,6 +17,8 @@ export interface MobileTableProps {
   customPageName?: string;
   isFilterApplied?: boolean;
   onClick?: (id: string) => void;
+  onColumnSort?: ({ key, direction }: { key: string; direction?: 'asc' | 'desc' }) => void;
+  loading?: boolean;
 }
 
 const MobileTable = ({
@@ -24,6 +27,8 @@ const MobileTable = ({
   notFoundInfo,
   tableRowStyle,
   isFilterApplied = false,
+  onColumnSort,
+  loading,
   onClick,
 }: MobileTableProps) => {
   const keys = Object.keys(columns);
@@ -31,6 +36,10 @@ const MobileTable = ({
   const mainLabelsLength = isFirstSmallColumn ? 3 : 2;
   const mainLabels = Object.keys(columns).slice(0, mainLabelsLength);
   const restLabels = Object.keys(columns).slice(mainLabelsLength);
+  const [sortedColumn, setSortedColumn] = useState<{
+    key?: string;
+    direction?: 'asc' | 'desc';
+  }>({});
 
   const handleRowClick = (row: TableRow) => {
     if (onClick && row.id) {
@@ -38,7 +47,24 @@ const MobileTable = ({
     }
   };
 
-  const RenderRow = (row: TableRow, index: number) => {
+  const isEmptyData = isEmpty(data);
+  const canSort = !!onColumnSort && !isEmptyData;
+
+  const handleColumnClick = (key) => {
+    if (!canSort) return;
+
+    const direction =
+      sortedColumn.key === key ? (sortedColumn?.direction === 'asc' ? 'desc' : 'asc') : 'asc';
+
+    onColumnSort({ key, direction });
+
+    setSortedColumn({
+      key,
+      direction,
+    });
+  };
+
+  const RenderRow = ({ row, index }: { row: TableRow; index: number }) => {
     const [expand, setExpand] = useState(false);
 
     return (
@@ -101,8 +127,8 @@ const MobileTable = ({
   };
 
   const generateTableContent = () => {
-    if (!isEmpty(data)) {
-      return map(data, (row: TableRow, index: number) => RenderRow(row, index));
+    if (!isEmptyData) {
+      return map(data, (row: TableRow, index: number) => <RenderRow row={row} index={index} />);
     }
 
     if (isFilterApplied) {
@@ -134,16 +160,58 @@ const MobileTable = ({
           >
             <ArrowTh />
             {mainLabels.map((key: any, i: number) => {
-              return <TH key={`tr-th-${i}`}>{columns[key].label}</TH>;
+              const column = columns[key];
+              const label = column?.label;
+              const isSelectedKey = key === sortedColumn.key;
+              const isSelectedUp = isSelectedKey && sortedColumn?.direction === 'asc';
+              const isSelectedDown = isSelectedKey && sortedColumn?.direction === 'desc';
+
+              return (
+                <TH
+                  onClick={() => {
+                    handleColumnClick(key);
+                  }}
+                  key={`tr-th-${i}`}
+                >
+                  <LabelContainer>
+                    {label}
+                    {canSort && (
+                      <IconContainer>
+                        <ArrowIconUp $isActive={isSelectedUp} name={IconName.tableArrowUp} />
+                        <ArrowIconDown $isActive={isSelectedDown} name={IconName.tableArrowDown} />
+                      </IconContainer>
+                    )}
+                  </LabelContainer>
+                </TH>
+              );
             })}
           </MainTR>
         </THEAD>
-
-        <tbody>{generateTableContent()}</tbody>
+        {loading ? <FullscreenLoader /> : <tbody>{generateTableContent()}</tbody>}
       </CustomTable>
     </TableContainer>
   );
 };
+
+const IconContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const LabelContainer = styled.div`
+  display: flex;
+  gap: 4px;
+  align-items: center;
+`;
+
+const ArrowIconUp = styled(Icon)<{ $isActive: boolean }>`
+  opacity: ${({ $isActive }) => ($isActive ? '1' : '0.4')};
+`;
+
+const ArrowIconDown = styled(Icon)<{ $isActive: boolean }>`
+  margin-top: -6px;
+  opacity: ${({ $isActive }) => ($isActive ? '1' : '0.4')};
+`;
 
 const ExpandedColumnName = styled.div`
   font-size: 1.2rem;

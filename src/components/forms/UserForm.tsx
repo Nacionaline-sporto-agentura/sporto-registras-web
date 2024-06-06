@@ -73,6 +73,7 @@ export const validateCreateUserForm = Yup.object().shape({
     return schema.nullable();
   }),
 
+  role: Yup.string().required(validationTexts.requireText),
   phone: Yup.string()
     .required(validationTexts.requireText)
     .trim()
@@ -94,7 +95,7 @@ const UserForm = ({
   const navigate = useNavigate();
   const { id = '' } = useParams();
   const currentUser = useAppSelector((state) => state.user.userData);
-  const disabled = !isNew(id);
+  const partialDisabled = !isNew(id);
 
   const title = isNew(id) ? pageTitles.newUser : pageTitles.updateUser;
 
@@ -200,12 +201,12 @@ const UserForm = ({
     lastName: user?.lastName || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    role: user?.role || AdminRoleType.USER,
+    role: user?.role || undefined,
     userWithPassword: true,
   };
 
   const renderForm = (values: UserProps, errors: any, handleChange) => {
-    const showPersonalCodeField = !disabled && !values.userWithPassword;
+    const showPersonalCodeField = !partialDisabled && !values.userWithPassword;
 
     return (
       <TitleColumn>
@@ -216,7 +217,7 @@ const UserForm = ({
               value={values.firstName}
               error={errors.firstName}
               name="firstName"
-              disabled={disabled}
+              disabled={partialDisabled}
               onChange={(firstName) => handleChange('firstName', firstName)}
             />
             <TextField
@@ -224,7 +225,7 @@ const UserForm = ({
               name="lastName"
               value={values.lastName}
               error={errors.lastName}
-              disabled={disabled}
+              disabled={partialDisabled}
               onChange={(lastName) => handleChange('lastName', lastName)}
             />
           </FormRow>
@@ -233,14 +234,14 @@ const UserForm = ({
               label={inputLabels.phone}
               value={values.phone}
               error={errors.phone}
-              disabled={disabled}
+              disabled={partialDisabled}
               name="phone"
               placeholder="868888888"
               onChange={(phone) => handleChange('phone', phone)}
             />
             <TextField
               label={inputLabels.email}
-              disabled={disabled}
+              disabled={partialDisabled}
               name="email"
               type="email"
               placeholder="vardas.pavardė@ltusportas.lt"
@@ -269,7 +270,7 @@ const UserForm = ({
               getOptionLabel={(option) => roleLabels[option]}
             />
           </FormRow>
-          {!disabled && (
+          {!partialDisabled && (
             <FormRow columns={1}>
               <CheckBox
                 label={inputLabels.userWithPassword}

@@ -196,13 +196,12 @@ const InstitutionForm = () => {
     return (
       <TitleColumn>
         <OrganizationForm
-          toggleCanHaveChildren={true}
           values={values}
           errors={errors}
           handleChange={handleChange}
           groupOptions={groupOptions}
         />
-        <OwnerForm values={values} errors={errors} handleChange={handleChange} />
+        <OwnerForm disabled={false} values={values} errors={errors} handleChange={handleChange} />
       </TitleColumn>
     );
   };

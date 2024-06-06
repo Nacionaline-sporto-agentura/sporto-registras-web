@@ -99,7 +99,7 @@ const GroupsFormPage = () => {
             label={inputLabels.group}
             name={`group`}
             error={errors?.group}
-            groupOptions={groupOptions}
+            options={groupOptions}
             value={values.parent}
             onChange={(value) => {
               handleChange('parent', value.id);

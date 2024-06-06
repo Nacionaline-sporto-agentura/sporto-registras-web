@@ -13,7 +13,7 @@ import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
 import { NotFoundInfoProps } from '../types';
 import Api from '../utils/api';
 import { groupColumns } from '../utils/columns';
-import { isSuperAdmin } from '../utils/functions';
+import { getSimpleFilter, isSuperAdmin } from '../utils/functions';
 import { useGenericTablePageHooks, useTableData } from '../utils/hooks';
 import { mapGroupList } from '../utils/mapFunctions';
 import { slugs } from '../utils/routes';
@@ -45,7 +45,7 @@ const GroupsList = () => {
 
   const { tableData, loading } = useTableData({
     name: 'groups',
-    endpoint: () => Api.getGroups({ page, filter: filters, id }),
+    endpoint: () => Api.getGroups(getSimpleFilter(filters.name, page, { parent: id })),
     mapData: (list) => mapGroupList(list),
     dependencyArray: [id, filters, page],
   });

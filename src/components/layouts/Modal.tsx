@@ -23,16 +23,7 @@ const Modal = ({ visible, children, onClose }: ModalProps) => {
     return <React.Fragment />;
   }
 
-  return (
-    <ModalContainer
-      onClick={(e) => {
-        if (e.target !== e.currentTarget) return;
-        onClose && onClose(false);
-      }}
-    >
-      {children}
-    </ModalContainer>
-  );
+  return <ModalContainer>{children}</ModalContainer>;
 };
 
 const ModalContainer = styled.div`

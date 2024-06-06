@@ -14,14 +14,12 @@ const OrganizationForm = ({
   errors,
   handleChange,
   groupOptions,
-  toggleCanHaveChildren = false,
   disabled,
   toggleShowParentOrganization = true,
 }: {
   values: any;
   errors: any;
   handleChange;
-  toggleCanHaveChildren?: boolean;
   groupOptions;
   disabled?: boolean;
   toggleShowParentOrganization?: boolean;
@@ -43,7 +41,7 @@ const OrganizationForm = ({
               label={inputLabels.parentOrganization}
               name={`parentOrganization`}
               error={errors?.parent}
-              groupOptions={groupOptions}
+              options={groupOptions}
               disabled={disabled}
               value={values.parent}
               onChange={(value) => {
@@ -77,21 +75,6 @@ const OrganizationForm = ({
             onChange={(companyEmail) => handleChange('companyEmail', companyEmail)}
           />
         </FormRow>
-        {toggleCanHaveChildren && (
-          <FormRow columns={1}>
-            <CheckBox
-              label={inputLabels.canHaveChildren}
-              value={values.tenantType === TenantTypes.ORGANIZATION}
-              disabled={disabled}
-              onChange={(value) =>
-                handleChange(
-                  'tenantType',
-                  value ? TenantTypes.ORGANIZATION : TenantTypes.MUNICIPALITY,
-                )
-              }
-            />
-          </FormRow>
-        )}
       </SimpleContainer>
 
       {values.tenantType === TenantTypes.ORGANIZATION && (
@@ -160,6 +143,12 @@ const OrganizationForm = ({
               value={values.data?.nonFormalEducation}
               disabled={disabled}
               onChange={(value) => handleChange('data.nonFormalEducation', value)}
+            />
+            <CheckBox
+              label={inputLabels.canHaveChildren}
+              value={values.data?.canHaveChildren}
+              disabled={disabled}
+              onChange={(value) => handleChange('data.canHaveChildren', value)}
             />
           </FormRow>
         </SimpleContainer>

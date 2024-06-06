@@ -11,13 +11,12 @@ import { useAppSelector } from '../../state/hooks';
 import { device } from '../../styles';
 import api from '../../utils/api';
 import { AdminRoleType, RequestEntityTypes, StatusTypes, TenantTypes } from '../../utils/constants';
-import { isNew } from '../../utils/functions';
+import { formatDate, isNew } from '../../utils/functions';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, inputLabels, validationTexts } from '../../utils/texts';
 import Button from '../buttons/Button';
 import GoverningBodiesContainer from '../containers/GoverningBodies';
 import OrganizationUsers from '../containers/OrganizationUsers';
-import TenantFundingSourcesContainer from '../containers/TenantFundingSources';
 import TenantMembershipsContainer from '../containers/TenantMemberships';
 import { extractIdKeys, flattenArrays, processDiffs } from '../fields/utils/function';
 import { FormErrorMessage } from '../other/FormErrorMessage';
@@ -47,7 +46,7 @@ const organizationTabTitles = {
   governingBodies: 'Valdymo organai',
   memberships: 'Narystės',
   fundingSources: 'Finansavimo šaltiniai',
-  members: 'Nariai',
+  members: 'Naudotojai',
 };
 
 export const tabs = [
@@ -57,7 +56,7 @@ export const tabs = [
   },
   { label: organizationTabTitles.governingBodies },
   { label: organizationTabTitles.memberships },
-  { label: organizationTabTitles.fundingSources },
+  // { label: organizationTabTitles.fundingSources },
   { label: organizationTabTitles.members },
 ];
 
@@ -215,13 +214,13 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
               governingBodies={values.governingBodies}
             />
           ),
-          [organizationTabTitles.fundingSources]: (
-            <TenantFundingSourcesContainer
-              disabled={disabled}
-              handleChange={setFieldValue}
-              fundingSources={values.fundingSources}
-            />
-          ),
+          // [organizationTabTitles.fundingSources]: (
+          //   <TenantFundingSourcesContainer
+          //     disabled={disabled}
+          //     handleChange={setFieldValue}
+          //     fundingSources={values.fundingSources}
+          //   />
+          // ),
           [organizationTabTitles.memberships]: (
             <TenantMembershipsContainer
               disabled={disabled}
@@ -333,6 +332,22 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
             setErrors(yupToFormErrors(e));
           }
         };
+        const info = [
+          ...(organization?.id
+            ? [
+                <>
+                  Identifikavimo kodas: <strong>{`#${organization.id}`}</strong>
+                </>,
+              ]
+            : []),
+          ...(organization?.createdAt
+            ? [`Įregistruota: ${formatDate(organization.createdAt)}`]
+            : []),
+          ...(organization?.updatedAt ? [`Atnaujinta: ${formatDate(organization.updatedAt)}`] : []),
+          ...(organization?.deletedAt
+            ? [`Objekto išregistravimo data: ${formatDate(organization.deletedAt)}`]
+            : []),
+        ];
 
         return (
           <Container>
@@ -352,6 +367,7 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
                 onSetStatus={(status) => setStatus(status)}
                 tabs={tabs}
                 back={back}
+                info={info}
               />
 
               <Column>
@@ -361,7 +377,7 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
                   {hasPrevious && <Button onClick={handlePrevious}>{buttonsTitles.back}</Button>}
                   {hasNext && <Button onClick={handleNext}>{buttonsTitles.next}</Button>}
                   {!disabled && !hasNext && (
-                    <Button onClick={onSubmit}>{buttonsTitles.save}</Button>
+                    <Button onClick={onSubmit}>{buttonsTitles.submit}</Button>
                   )}
                 </ButtonRow>
               </Column>

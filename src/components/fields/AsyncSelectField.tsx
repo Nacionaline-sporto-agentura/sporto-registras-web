@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import Icon from '../other/Icons';
+import Icon, { IconName } from '../other/Icons';
 import FieldWrapper from './components/FieldWrapper';
 import OptionsContainer from './components/OptionsContainer';
 import TextFieldInput from './components/TextFieldInput';
@@ -86,7 +86,22 @@ const AsyncSelectField = ({
         name={name}
         error={error}
         leftIcon={left}
-        rightIcon={<StyledIcon name={'dropdownArrow'} />}
+        rightIcon={
+          <>
+            {value && !disabled && (
+              <IconContainer
+                $disabled={!!disabled}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  !disabled && onChange(undefined);
+                }}
+              >
+                <ClearIcon $disabled={disabled!} name={IconName.close} />
+              </IconContainer>
+            )}
+            <StyledIcon name={IconName.dropdownArrow} />
+          </>
+        }
         onChange={handleInputChange}
         disabled={disabled}
         placeholder={(value && getOptionLabel(value)) || 'Pasirinkite'}
@@ -104,6 +119,20 @@ const AsyncSelectField = ({
     </FieldWrapper>
   );
 };
+
+const ClearIcon = styled(Icon)<{ $disabled: boolean }>`
+  color: #cdd5df;
+  font-size: 2.4rem;
+  margin-right: 12px;
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
+`;
+
+const IconContainer = styled.div<{ $disabled: boolean }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
+`;
 
 const StyledIcon = styled(Icon)`
   color: #cdd5df;

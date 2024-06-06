@@ -12,12 +12,14 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 const { store, persistor } = redux;
 const queryClient = new QueryClient();
+const env = import.meta.env;
+const basename = env?.VITE_BASE_URL || '/';
 
 root.render(
   <QueryClientProvider client={queryClient}>
     <Provider store={store}>
       <PersistGate persistor={persistor}>
-        <BrowserRouter>
+        <BrowserRouter basename={basename}>
           <ThemeProvider theme={theme}>
             <App />
           </ThemeProvider>

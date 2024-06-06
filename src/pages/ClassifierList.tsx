@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Button from '../components/buttons/Button';
 import TablePageLayout from '../components/layouts/TablePageLayout';
@@ -12,6 +13,7 @@ import { NotFoundInfoProps } from '../types';
 import api from '../utils/api';
 import { classifierColumns } from '../utils/columns';
 import { ClassifierTypes } from '../utils/constants';
+import { getSimpleFilter } from '../utils/functions';
 import { useGenericTablePageHooks, useTableData } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 import { classifierLabels, newClassifierLabels } from '../utils/texts';
@@ -39,6 +41,17 @@ const ClassifierList = () => {
   const filter = useAppSelector((state) =>
     classifierType ? state.filters.classifierFilters?.[classifierType] : {},
   );
+  const [sortedColumn, setSortedColumn] = useState<{
+    key?: string;
+    direction?: 'asc' | 'desc';
+  }>({});
+
+  const query = {
+    ...getSimpleFilter(filter?.name, page),
+    ...(sortedColumn.key && {
+      sort: [`${sortedColumn.direction === 'asc' ? '' : '-'}` + sortedColumn.key],
+    }),
+  };
 
   const handleSetFilters = (filters) => {
     if (classifierType) dispatch(filterActions.seClassifierFilters({ [classifierType]: filters }));
@@ -49,55 +62,50 @@ const ClassifierList = () => {
       label: classifierLabels[ClassifierTypes.SPORT_TYPE],
       key: ClassifierTypes.SPORT_TYPE,
       route: slugs.classifiers(ClassifierTypes.SPORT_TYPE),
-      endpoint: () => api.getSportBaseSpaceSportTypes({ filter, page }),
+      endpoint: () => api.getSportBaseSpaceSportTypes(query),
     },
-    {
-      label: classifierLabels[ClassifierTypes.BUILDING_TYPE],
-      key: ClassifierTypes.BUILDING_TYPE,
-      route: slugs.classifiers(ClassifierTypes.BUILDING_TYPE),
-      endpoint: () => api.getSportBaseSpaceBuildingTypes({ filter, page }),
-    },
+
     {
       label: classifierLabels[ClassifierTypes.SPORTS_BASE_TYPE],
       key: ClassifierTypes.SPORTS_BASE_TYPE,
       route: slugs.classifiers(ClassifierTypes.SPORTS_BASE_TYPE),
-      endpoint: () => api.getSportBaseTypes({ filter, page }),
+      endpoint: () => api.getSportBaseTypes(query),
     },
     {
       label: classifierLabels[ClassifierTypes.SOURCE],
       key: ClassifierTypes.SOURCE,
       route: slugs.classifiers(ClassifierTypes.SOURCE),
-      endpoint: () => api.getSportBaseSources({ filter, page, query: {} }),
+      endpoint: () => api.getSportBaseSources(query),
     },
     {
       label: classifierLabels[ClassifierTypes.LEVEL],
       key: ClassifierTypes.LEVEL,
       route: slugs.classifiers(ClassifierTypes.LEVEL),
-      endpoint: () => api.getSportBaseLevels({ filter, page }),
+      endpoint: () => api.getSportBaseLevels(query),
     },
     {
       label: classifierLabels[ClassifierTypes.TECHNICAL_CONDITION],
       key: ClassifierTypes.TECHNICAL_CONDITION,
       route: slugs.classifiers(ClassifierTypes.TECHNICAL_CONDITION),
-      endpoint: () => api.getSportBaseTechnicalConditions({ filter, page }),
+      endpoint: () => api.getSportBaseTechnicalConditions(query),
     },
     {
       label: classifierLabels[ClassifierTypes.SPACE_TYPE],
       key: ClassifierTypes.SPACE_TYPE,
       route: slugs.classifiers(ClassifierTypes.SPACE_TYPE),
-      endpoint: () => api.getSportBaseSpaceTypes({ filter, page }),
+      endpoint: () => api.getSportBaseSpaceTypes(query),
     },
     {
       label: classifierLabels[ClassifierTypes.SPORT_ORGANIZATION_TYPE],
       key: ClassifierTypes.SPORT_ORGANIZATION_TYPE,
       route: slugs.classifiers(ClassifierTypes.SPORT_ORGANIZATION_TYPE),
-      endpoint: () => api.getTenantSportOrganizationTypes({ filter, page }),
+      endpoint: () => api.getTenantSportOrganizationTypes(query),
     },
     {
       label: classifierLabels[ClassifierTypes.LEGAL_FORMS],
       key: ClassifierTypes.LEGAL_FORMS,
       route: slugs.classifiers(ClassifierTypes.LEGAL_FORMS),
-      endpoint: () => api.getTenantLegalForms({ filter, page }),
+      endpoint: () => api.getTenantLegalForms(query),
     },
   ];
 
@@ -107,7 +115,7 @@ const ClassifierList = () => {
     name: tab.route,
     endpoint: tab.endpoint,
     mapData: (list) => list,
-    dependencyArray: [filter, page],
+    dependencyArray: [filter, page, sortedColumn],
   });
 
   return (
@@ -134,6 +142,9 @@ const ClassifierList = () => {
         </Button>
       </TableButtonsRow>
       <MainTable
+        onColumnSort={(column) => {
+          setSortedColumn(column);
+        }}
         loading={loading}
         onClick={(id) => navigate(slugs.classifier(tab.key, id))}
         isFilterApplied={false}
