@@ -41,8 +41,11 @@ const DesktopTable = ({
       onClick(`${row.id}`);
     }
   };
+  const isEmptyData = isEmpty(data);
+  const canSort = !!onColumnSort && !isEmptyData;
+
   const handleColumnClick = (key) => {
-    if (!onColumnSort) return;
+    if (!canSort) return;
 
     const direction =
       sortedColumn.key === key ? (sortedColumn?.direction === 'asc' ? 'desc' : 'asc') : 'asc';
@@ -56,7 +59,7 @@ const DesktopTable = ({
   };
 
   const GenerateTableContent = ({ data }) => {
-    if (!isEmpty(data)) {
+    if (!isEmptyData) {
       return (
         <>
           {map(data, (row: TableRow, index: number) => (
@@ -118,7 +121,7 @@ const DesktopTable = ({
                 >
                   <LabelContainer>
                     {label}
-                    {!!onColumnSort && (
+                    {canSort && (
                       <IconContainer>
                         <ArrowIconUp $isActive={isSelectedUp} name={IconName.tableArrowUp} />
                         <ArrowIconDown $isActive={isSelectedDown} name={IconName.tableArrowDown} />

@@ -47,8 +47,11 @@ const MobileTable = ({
     }
   };
 
+  const isEmptyData = isEmpty(data);
+  const canSort = !!onColumnSort && !isEmptyData;
+
   const handleColumnClick = (key) => {
-    if (!onColumnSort) return;
+    if (!canSort) return;
 
     const direction =
       sortedColumn.key === key ? (sortedColumn?.direction === 'asc' ? 'desc' : 'asc') : 'asc';
@@ -124,7 +127,7 @@ const MobileTable = ({
   };
 
   const generateTableContent = () => {
-    if (!isEmpty(data)) {
+    if (!isEmptyData) {
       return map(data, (row: TableRow, index: number) => <RenderRow row={row} index={index} />);
     }
 
@@ -172,7 +175,7 @@ const MobileTable = ({
                 >
                   <LabelContainer>
                     {label}
-                    {!!onColumnSort && (
+                    {canSort && (
                       <IconContainer>
                         <ArrowIconUp $isActive={isSelectedUp} name={IconName.tableArrowUp} />
                         <ArrowIconDown $isActive={isSelectedDown} name={IconName.tableArrowDown} />
