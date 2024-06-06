@@ -38,7 +38,7 @@ export const manifestForPlugIn = {
     background_color: '#0a1353',
     display: 'standalone',
     scope: '/',
-    start_url: '/',
+    start_url: '/app/',
     orientation: 'portrait',
   },
 };
