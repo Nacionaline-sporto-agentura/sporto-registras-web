@@ -1,5 +1,6 @@
 import Div100vh from 'react-div-100vh';
 import styled from 'styled-components';
+import LoginImage from '../../assets/background.png';
 import { device } from '../../styles';
 import Logo from '../other/Logo';
 
@@ -11,7 +12,8 @@ const LoginLayout = ({ children }: LoginLayoutProps) => {
   return (
     <Div100vh>
       <Container>
-        <LayoutImage alt="login-background-image" src="./background.png" />
+        <LayoutImage alt="login-background-image" src={LoginImage} />
+
         <InnerContainer>
           <StyledLogo />
           {children}

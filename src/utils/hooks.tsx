@@ -56,12 +56,6 @@ export const useCheckUserInfo = () => {
   const dispatch = useAppDispatch();
   const token = cookies.get('token');
 
-  const profileMutation = useMutation(api.getProfiles, {
-    onSuccess: (data) => {
-      handleSetProfile(data);
-    },
-  });
-
   const { isLoading } = useQuery([token], () => api.getUserInfo(), {
     onError: ({ response }: any) => {
       clearCookies();
@@ -71,8 +65,8 @@ export const useCheckUserInfo = () => {
     },
     onSuccess: async (data: User) => {
       if (data) {
-        const profiles = await profileMutation.mutateAsync();
-        dispatch(userAction.setUser({ userData: { ...data, profiles: profiles }, loggedIn: true }));
+        handleSetProfile(data?.profiles);
+        dispatch(userAction.setUser({ userData: data, loggedIn: true }));
       }
     },
     retry: false,
@@ -80,7 +74,7 @@ export const useCheckUserInfo = () => {
     enabled: !!token,
   });
 
-  return { isLoading: isLoading || profileMutation.isLoading };
+  return { isLoading: isLoading };
 };
 
 export const useSetPassword = () => {
