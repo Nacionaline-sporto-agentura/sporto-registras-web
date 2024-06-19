@@ -38,8 +38,8 @@ export const manifestForPlugIn = (baseUrl) => {
       theme_color: '#171717',
       background_color: '#0a1353',
       display: 'standalone',
-      scope: '/',
-      start_url: '/',
+      scope: '/app/',
+      start_url: '/app/index.html',
       orientation: 'portrait',
     },
   };
