@@ -100,3 +100,8 @@ export enum ClassifierTypes {
   SPORT_ORGANIZATION_TYPE = 'sporto_organizacijos_tipas',
   LEGAL_FORMS = 'teisine_forma',
 }
+
+export enum LegalForms {
+  COMPANY = 'COMPANY',
+  PERSON = 'PERSON',
+}

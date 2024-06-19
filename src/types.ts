@@ -5,6 +5,7 @@ import {
   ClassifierTypes,
   FieldTypes,
   HistoryTypes,
+  LegalForms,
   MembershipTypes,
   StatusTypes,
   TableItemWidth,
@@ -80,6 +81,13 @@ export interface SportBaseSpaceSportType {
   name: string;
 }
 
+export interface SportsBaseOwner {
+  legalForm: LegalForms;
+  name: string;
+  code: string;
+  website: string;
+}
+
 export interface SportBaseSpace {
   id?: number;
   name: string;
@@ -105,6 +113,8 @@ export interface SportBaseSpace {
 export interface SportBase extends CommonFields {
   id?: number;
   name: string;
+  phone?: string;
+  email?: string;
   canCreateRequest: boolean;
   type?: SportsBasesType;
   level?: SportsBasesLevel;
@@ -133,7 +143,7 @@ export interface SportBase extends CommonFields {
   publicWifi: boolean;
   lastRequest: Request;
   spaces: SportBaseSpace[];
-  owners: { name: string; companyCode: string; website: string }[];
+  owners: SportsBaseOwner[];
   tenants: {
     name: string;
     startAt: string;

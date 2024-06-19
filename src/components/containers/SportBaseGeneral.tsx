@@ -92,6 +92,31 @@ const SportBaseGeneralContainer = ({
             onChange={(endAt) => handleChange(`webPage`, endAt)}
           />
         </FormRow>
+        <FormRow columns={2}>
+          <TextField
+            disabled={disabled}
+            label={inputLabels.companyPhone}
+            value={sportBase?.phone}
+            error={errors?.phone}
+            name="phone"
+            placeholder="+37060000000"
+            onChange={(phone) => {
+              handleChange(`phone`, phone);
+            }}
+          />
+          <TextField
+            disabled={disabled}
+            label={inputLabels.companyEmail}
+            value={sportBase?.email}
+            error={errors?.email}
+            name="email"
+            type="email"
+            placeholder="sportobaze@sportoorg.lt"
+            onChange={(email) => {
+              handleChange(`email`, email);
+            }}
+          />
+        </FormRow>
         <FormRow columns={5}>
           <TextField
             disabled={disabled}

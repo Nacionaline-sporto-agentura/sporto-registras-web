@@ -3,6 +3,7 @@ import {
   AdminRoleType,
   ClassifierTypes,
   HistoryTypes,
+  LegalForms,
   MembershipTypes,
   ServerErrorTypes,
   StatusTypes,
@@ -151,6 +152,8 @@ export const inputLabels = {
   address: 'Adresas',
   jarName: 'JAR Pavadinimas',
   jarCode: 'JAR Kodas',
+  owner: 'Savininkas',
+  code: 'JAR/Asmens Kodas',
   website: 'Svetainės adresas',
   source: 'Investicijų šaltinis',
   fundingSource: 'Finansavimo šaltinis',
@@ -204,6 +207,8 @@ export const inputLabels = {
   street: 'Gatvės pavadinimas',
   houseNo: 'Namo Nr.',
   apartmentNo: 'Buto Nr.',
+  ownerType: 'Asmens tipas',
+  fullName: 'Vardas, Pavardė',
 };
 export const pageTitles = {
   users: 'Naudotojai',
@@ -375,4 +380,9 @@ export const classifierLabels = {
   [ClassifierTypes.SPORT_TYPE]: 'Sporto šaka',
   [ClassifierTypes.SPORT_ORGANIZATION_TYPE]: 'Sporto organizacijos tipas',
   [ClassifierTypes.LEGAL_FORMS]: 'Teisinė forma',
+};
+
+export const legalFormLabels = {
+  [LegalForms.COMPANY]: 'Juridinis',
+  [LegalForms.PERSON]: 'Fizinis',
 };

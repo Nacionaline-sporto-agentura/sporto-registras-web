@@ -8,6 +8,7 @@ import { descriptions } from '../../utils/texts';
 import FullscreenLoader from '../other/FullscreenLoader';
 import Icon, { IconName } from '../other/Icons';
 import NotFoundInfo from '../other/NotFoundInfo';
+import MobileTableRow from './MobileTableRow';
 
 export interface MobileTableProps {
   data?: TableRow[];
@@ -128,7 +129,16 @@ const MobileTable = ({
 
   const generateTableContent = () => {
     if (!isEmptyData) {
-      return map(data, (row: TableRow, index: number) => <RenderRow row={row} index={index} />);
+      return map(data, (row: TableRow, index: number) => (
+        <MobileTableRow
+          row={row}
+          index={index}
+          columns={columns}
+          mainLabels={mainLabels}
+          onClick={onClick}
+          tableRowStyle={tableRowStyle}
+        />
+      ));
     }
 
     if (isFilterApplied) {

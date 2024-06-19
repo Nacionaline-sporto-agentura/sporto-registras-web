@@ -4,12 +4,13 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 import { FormRow } from '../../styles/CommonStyles';
-import { Source, SportBase } from '../../types';
+import { Source } from '../../types';
 import {
   buttonsTitles,
   descriptions,
   formLabels,
   inputLabels,
+  legalFormLabels,
   pageTitles,
   validationTexts,
 } from '../../utils/texts';
@@ -20,23 +21,53 @@ import { generateUniqueString } from '../fields/utils/function';
 import Popup from '../layouts/Popup';
 import InnerContainerRow from '../other/InnerContainerRow';
 import MainTable from '../tables/MainTable';
+import ButtonsGroup from '../buttons/ButtonsGroup';
+import { LegalForms } from '../../utils/constants';
+import { companyCode, personalCode } from 'lt-codes';
 
 const ownersSchema = Yup.object().shape({
+  legalForm: Yup.mixed().oneOf(Object.values(LegalForms)),
   name: Yup.string().required(validationTexts.requireText),
-  companyCode: Yup.string().required(validationTexts.requireText),
+  code: Yup.string()
+    .required(validationTexts.requireText)
+    .when(['legalForm'], (items: any[], schema) => {
+      const legalForm = items[0];
+      const validation = legalForm === LegalForms.COMPANY ? companyCode : personalCode;
+      const validationText =
+        legalForm === LegalForms.COMPANY
+          ? validationTexts.companyCode
+          : validationTexts.personalCode;
+
+      return schema.trim().test('validateCode', validationText, (value) => {
+        return validation.validate(value).isValid;
+      });
+    }),
   website: Yup.string().required(validationTexts.requireText),
 });
 
 const ownersLabels = {
-  name: { label: inputLabels.jarName, show: true },
-  companyCode: { label: inputLabels.jarCode, show: true },
+  name: {
+    label: inputLabels.owner,
+    show: true,
+  },
+  code: {
+    label: inputLabels.code,
+    show: true,
+  },
   website: { label: inputLabels.website, show: true },
+};
+
+const getInitialValues = (owner: any = {}) => {
+  if (!owner?.legalForm) {
+    return { ...owner, legalForm: LegalForms.COMPANY };
+  }
+  return owner;
 };
 
 const OwnersContainer = ({ owners = {}, handleChange, disabled }) => {
   const ownerKeys = Object.keys(owners);
   const [validateOnChange, setValidateOnChange] = useState(false);
-  const [current, setCurrent] = useState<SportBase['owners'] | {}>();
+  const [current, setCurrent] = useState<any>();
 
   const onSubmit = async (values: any) => {
     if (typeof values?.index !== 'undefined') {
@@ -52,7 +83,7 @@ const OwnersContainer = ({ owners = {}, handleChange, disabled }) => {
     setCurrent(undefined);
   };
 
-  const initialValues: any = current || {};
+  const initialValues = getInitialValues(current);
 
   return (
     <>
@@ -66,7 +97,12 @@ const OwnersContainer = ({ owners = {}, handleChange, disabled }) => {
       <MainTable
         notFoundInfo={{ text: 'Nėra sukurtų savininkų' }}
         isFilterApplied={false}
-        data={{ data: ownerKeys.map((key) => ({ ...owners[key], id: key })) }}
+        data={{
+          data: ownerKeys.map((key) => ({
+            ...owners[key],
+            id: key,
+          })),
+        }}
         hidePagination={true}
         columns={ownersLabels}
         onClick={(id) => {
@@ -89,9 +125,20 @@ const OwnersContainer = ({ owners = {}, handleChange, disabled }) => {
             return (
               <Form>
                 <FormRow columns={1}>
+                  <ButtonsGroup
+                    options={Object.values(LegalForms)}
+                    onChange={(value) => setFieldValue('legalForm', value)}
+                    isSelected={(option) => option === (values.legalForm || LegalForms.COMPANY)}
+                    getOptionLabel={(option) => legalFormLabels[option]}
+                    label={inputLabels.ownerType}
+                  />
                   <TextField
                     disabled={disabled}
-                    label={inputLabels.jarName}
+                    label={
+                      values.legalForm === LegalForms.COMPANY
+                        ? inputLabels.jarName
+                        : inputLabels.fullName
+                    }
                     value={values?.name}
                     error={errors?.name}
                     name="name"
@@ -101,12 +148,16 @@ const OwnersContainer = ({ owners = {}, handleChange, disabled }) => {
                   />
                   <TextField
                     disabled={disabled}
-                    label={inputLabels.jarCode}
-                    value={values?.companyCode}
-                    error={errors?.companyCode}
-                    name="companyCode"
-                    onChange={(companyCode: string) => {
-                      setFieldValue(`companyCode`, companyCode);
+                    label={
+                      values.legalForm === LegalForms.COMPANY
+                        ? inputLabels.jarCode
+                        : inputLabels.personalCode
+                    }
+                    value={values?.code}
+                    error={errors?.code}
+                    name="code"
+                    onChange={(code: string) => {
+                      setFieldValue(`code`, code);
                     }}
                   />
                   <UrlField
