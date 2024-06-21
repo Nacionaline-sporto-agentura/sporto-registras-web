@@ -333,6 +333,7 @@ export const buttonsTitles = {
 
 export const emptyState = {
   sportBases: 'Nėra sukurtų sporto infrastruktūrų',
+  sportsPersons: 'Nėra sukurtų sporto asmenų',
   results: 'Nėra sukurtų rezultatų',
   unConfirmedSportBases: 'Nėra sukurtų nepatvirtintų sporto infrastruktūrų',
   users: 'Jūs neturite Naudotojų. Sukurkite',

@@ -92,7 +92,7 @@ const SportsPersons = () => {
   });
 
   const notFound: NotFoundInfoProps = {
-    text: emptyState.sportBases,
+    text: emptyState.sportsPersons,
   };
 
   const isAdmin = user.type === AdminRoleType.ADMIN;

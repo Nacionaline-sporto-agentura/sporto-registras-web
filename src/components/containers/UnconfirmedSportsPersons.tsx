@@ -81,7 +81,7 @@ const UnconfirmedSportsPersons = () => {
   });
 
   const notFound: NotFoundInfoProps = {
-    text: emptyState.sportBases,
+    text: emptyState.sportsPersons,
   };
   const isAdmin = user.type === AdminRoleType.ADMIN;
   const labels = isAdmin ? adminSportsPersonLabels : sportsPersonLabels;
