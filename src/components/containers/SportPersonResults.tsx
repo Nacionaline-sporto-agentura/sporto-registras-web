@@ -17,7 +17,6 @@ const resultsLabels = {
 
 const mapData = (results: Result[]) => {
   return results.map((item) => {
-    console.log(results, 'results');
     const resultType = item?.resultType?.type;
 
     const result =
