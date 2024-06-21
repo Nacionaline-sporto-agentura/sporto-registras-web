@@ -209,7 +209,6 @@ const HistoryContainer = ({
             {diff.map((item, index) => {
               const lastItemIndex = item.length - 1;
 
-              console.log(item[lastItemIndex], 'item[lastItemIndex]');
               return (
                 <Column key={`history-changes-${index}`}>
                   <Text> {getLabel(item[lastItemIndex], titles, oldData)}</Text>
