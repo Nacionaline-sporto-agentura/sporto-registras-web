@@ -1,5 +1,5 @@
 import { map } from 'lodash';
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { device } from '../../styles';
@@ -143,7 +143,7 @@ const DragAndDropUploadField = ({
       </FieldWrapper>
       {uploadLoading && <FullscreenLoader />}
       {map(files, (file, index) => {
-        if (!file) return <></>;
+        if (!file) return <React.Fragment key={`${index}-file`} />;
 
         return (
           <FileContainer key={`${index}-file`}>

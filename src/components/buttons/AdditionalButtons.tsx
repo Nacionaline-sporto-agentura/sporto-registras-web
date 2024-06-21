@@ -17,6 +17,7 @@ const AdditionalButtons = ({ handleChange, disabled = false }: ButtonProps) => {
         variant={ButtonColors.SUCCESS}
         height={32}
         type="button"
+        disabled={disabled}
         onClick={() => !disabled && handleChange(StatusTypes.APPROVED)}
       >
         {buttonsTitles.approve}
@@ -25,6 +26,7 @@ const AdditionalButtons = ({ handleChange, disabled = false }: ButtonProps) => {
         variant={ButtonColors.PRIMARY}
         height={32}
         type="button"
+        disabled={disabled}
         onClick={() => !disabled && handleChange(StatusTypes.RETURNED)}
       >
         {buttonsTitles.returnToCorrect}
@@ -33,6 +35,7 @@ const AdditionalButtons = ({ handleChange, disabled = false }: ButtonProps) => {
         variant={ButtonColors.DANGER}
         height={32}
         type="button"
+        disabled={disabled}
         onClick={() => !disabled && handleChange(StatusTypes.REJECTED)}
       >
         {buttonsTitles.reject}

@@ -62,7 +62,7 @@ const ClassifierList = () => {
       label: classifierLabels[ClassifierTypes.SPORT_TYPE],
       key: ClassifierTypes.SPORT_TYPE,
       route: slugs.classifiers(ClassifierTypes.SPORT_TYPE),
-      endpoint: () => api.getSportBaseSpaceSportTypes(query),
+      endpoint: () => api.getSportTypes(query),
     },
 
     {
@@ -122,10 +122,10 @@ const ClassifierList = () => {
     <TablePageLayout title={'Klasifikatoriai'}>
       <TabBar
         tabs={tabs}
-        onClick={(tab: any, index) => {
+        onClick={(tab: any) => {
           navigate(tab.route);
         }}
-        isActive={(_: any, index) => _.key == tab.key}
+        isActive={(_: any) => _.key == tab.key}
       />
       <TableButtonsRow>
         <TableButtonsInnerRow>
@@ -137,7 +137,15 @@ const ClassifierList = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        <Button onClick={() => navigate(slugs.newClassifier(tab.key))}>
+        <Button
+          onClick={() =>
+            navigate(
+              tab.key === ClassifierTypes.SPORT_TYPE
+                ? slugs.newSportType
+                : slugs.newClassifier(tab.key),
+            )
+          }
+        >
           {newClassifierLabels[tab.key]}
         </Button>
       </TableButtonsRow>
@@ -146,7 +154,13 @@ const ClassifierList = () => {
           setSortedColumn(column);
         }}
         loading={loading}
-        onClick={(id) => navigate(slugs.classifier(tab.key, id))}
+        onClick={(id) =>
+          navigate(
+            tab.key === ClassifierTypes.SPORT_TYPE
+              ? slugs.sportType(id)
+              : slugs.classifier(tab.key, id),
+          )
+        }
         isFilterApplied={false}
         notFoundInfo={notFound}
         data={tableData}

@@ -23,6 +23,8 @@ export interface NumericTextFieldProps {
   digitsAfterComma?: number;
   secondLabel?: JSX.Element;
   subLabel?: string;
+  minValue?: string;
+  maxValue?: string;
 }
 
 const NumericTextField = ({
@@ -41,13 +43,27 @@ const NumericTextField = ({
   showError,
   digitsAfterComma,
   bottomLabel,
+  maxValue,
+  minValue,
   onInputClick,
 }: NumericTextFieldProps) => {
   const handleBlur = (event: any) => {
     if (!event.currentTarget.contains(event.relatedTarget)) {
-      const inputValue = value?.toString();
+      const inputValue = value?.toString() || '';
       if (inputValue?.endsWith('.')) {
         onChange(inputValue.replaceAll('.', ''));
+      }
+
+      if ((maxValue || minValue) && inputValue) {
+        const parsedValue = parseFloat(inputValue?.replaceAll(',', '.'));
+
+        const isValidRange =
+          (minValue === undefined || parsedValue >= parseFloat(minValue)) &&
+          (maxValue === undefined || parsedValue <= parseFloat(maxValue));
+
+        if (!isValidRange) {
+          onChange('');
+        }
       }
     }
   };

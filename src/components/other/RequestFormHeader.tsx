@@ -23,7 +23,12 @@ const RequestFormHeader = ({
   tabs,
   back,
   info,
-}) => (
+  options,
+  onAddTab,
+  onDeleteTab,
+  loading,
+  addTabLabel,
+}: any) => (
   <TitleColumn>
     {!!back ? <BackButton /> : <Line />}
     <Row>
@@ -37,13 +42,26 @@ const RequestFormHeader = ({
         )}
       </InnerRow>
       <InnerRow>
-        {showDraftButton && <Button onClick={handleDraft}>{buttonsTitles.saveAsDraft}</Button>}
-        {!disabled && <Button onClick={onSubmit}>{buttonsTitles.submit}</Button>}
-        {canValidate && <AdditionalButtons handleChange={onSetStatus} />}
+        {showDraftButton && handleDraft && (
+          <Button disabled={loading} onClick={handleDraft}>
+            {buttonsTitles.saveAsDraft}
+          </Button>
+        )}
+        {!disabled && onSubmit && (
+          <Button disabled={loading} loading={loading} onClick={onSubmit}>
+            {buttonsTitles.submit}
+          </Button>
+        )}
+        {canValidate && <AdditionalButtons disabled={loading} handleChange={onSetStatus} />}
       </InnerRow>
     </Row>
     {request && <InfoRow info={info} />}
     <TabBar
+      options={options}
+      onAdd={onAddTab}
+      onDelete={onDeleteTab}
+      addLabel={addTabLabel}
+      disabled={disabled}
       tabs={tabs}
       onClick={onSetCurrentTabIndex}
       isActive={(_, index) => currentTabIndex == index}

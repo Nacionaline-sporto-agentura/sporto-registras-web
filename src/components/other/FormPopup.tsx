@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { device } from '../../styles';
-import { StatusTypes } from '../../utils/constants';
 import {
   actionButtonLabels,
   buttonColors,
@@ -18,9 +17,10 @@ interface FormPopupProps {
   status?: string;
   onClose: () => void;
   onSubmit: (props: any) => void;
+  loading: boolean;
 }
 
-const FormPopUp = ({ status, onClose, onSubmit }: FormPopupProps) => {
+const FormPopUp = ({ status, onClose, onSubmit, loading }: FormPopupProps) => {
   const [comment, setComment] = useState('');
 
   const visible = !!status;
@@ -41,10 +41,17 @@ const FormPopUp = ({ status, onClose, onSubmit }: FormPopupProps) => {
         />
 
         <BottomRow>
-          <Button onClick={onClose} variant={ButtonColors.TRANSPARENT} height={32}>
+          <Button
+            disabled={loading}
+            onClick={onClose}
+            variant={ButtonColors.TRANSPARENT}
+            height={32}
+          >
             {buttonsTitles.cancel}
           </Button>
           <Button
+            disabled={loading}
+            loading={loading}
             onClick={() => onSubmit({ comment, status })}
             variant={buttonColors[status!]}
             height={32}

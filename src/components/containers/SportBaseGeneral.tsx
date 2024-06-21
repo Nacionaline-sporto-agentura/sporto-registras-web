@@ -1,5 +1,5 @@
 import { FormRow } from '../../styles/CommonStyles';
-import { SportBase, SportsBasesCondition, SportsBasesLevel, SportsBasesType } from '../../types';
+import { SportBase, SportsBasesCondition, SportsBasesLevel, Types } from '../../types';
 import {
   getSportBaseLevelsList,
   getSportBaseTechnicalConditionList,
@@ -52,7 +52,7 @@ const SportBaseGeneralContainer = ({
             value={sportBase?.type}
             error={errors?.type}
             name="type"
-            onChange={(type: SportsBasesType) => {
+            onChange={(type: Types) => {
               handleChange(`type`, type);
             }}
             getOptionLabel={(option) => option?.name}

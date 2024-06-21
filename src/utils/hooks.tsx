@@ -58,8 +58,10 @@ export const useCheckUserInfo = () => {
 
   const { isLoading } = useQuery([token], () => api.getUserInfo(), {
     onError: ({ response }: any) => {
+      dispatch(userAction.setUser(emptyUser));
       clearCookies();
       dispatch(userAction.setUser(emptyUser));
+      return;
 
       return handleErrorToastFromServer(response);
     },
@@ -147,7 +149,7 @@ export const useTableData = ({ endpoint, mapData, dependencyArray, name }: Table
 };
 
 export const useGenericTablePageHooks = () => {
-  const { id } = useParams();
+  const { id = '' } = useParams();
   const [searchParams] = useSearchParams();
   const { page } = Object.fromEntries([...Array.from(searchParams)]);
   const navigate = useNavigate();
@@ -160,8 +162,9 @@ export const useGenericTablePageHooks = () => {
 export const useGetCurrentRoute = (tabs: Tab[]) => {
   const currentLocation = useLocation();
 
-  return tabs.find((tab) =>
-    matchPath({ path: tab.slug || '', end: false }, currentLocation.pathname),
+  return (
+    tabs.find((tab) => matchPath({ path: tab.slug || '', end: false }, currentLocation.pathname)) ||
+    tabs[0]
   );
 };
 

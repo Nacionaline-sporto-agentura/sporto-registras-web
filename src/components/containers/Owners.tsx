@@ -200,12 +200,4 @@ const ButtonRow = styled.div`
   margin: 16px 0;
 `;
 
-const Title = styled.div`
-  font-size: 2rem;
-  line-height: 25px;
-  font-weight: bold;
-  color: #231f20;
-  margin-right: 16px;
-`;
-
 export default OwnersContainer;
