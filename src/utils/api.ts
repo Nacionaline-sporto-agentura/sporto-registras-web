@@ -2,7 +2,7 @@ import Axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { isEmpty, isFinite } from 'lodash';
 import Cookies from 'universal-cookie';
 import { GroupProps } from '../pages/GroupForm';
-import { Group, Request, SportBase, Tenant, TypesAndFields } from '../types';
+import { Group, Request, ResultType, SportBase, SportType, Tenant, TypesAndFields } from '../types';
 const cookies = new Cookies();
 
 export enum Resources {
@@ -18,12 +18,18 @@ export enum Resources {
   REMIND_PASSWORD = 'auth/remind',
   REQUESTS = 'api/requests',
   SPORT_BASES = 'api/sportsBases',
+  SPORTS_PERSONS = 'api/sportsPersons',
+  RESULTS = 'api/competitions/results',
+  COMPETITIONS = 'api/competitions',
   SPORT_BASE_INVESTMENTS_SOURCES = 'api/sportsBases/investments/sources',
   TENANT_INVESTMENTS_SOURCES = 'api/tenants/fundingSources/types',
   LEVELS = 'api/sportsBases/levels',
   TECHNICAL_CONDITIONS = 'api/sportsBases/technicalConditions',
   TYPES = 'api/sportsBases/types',
-  SPORT_TYPES = 'api/sportsBases/spaces/sportTypes',
+  SPORT_TYPES = 'api/types/sportTypes',
+  COMPETITION_TYPES = 'api/types/competitions/types',
+  RESULT_TYPES = 'api/types/competitions/resultTypes',
+  MATCH_TYPES = 'api/types/sportTypes/matches',
   SPACE_TYPES = 'api/sportsBases/spaces/types',
   ENERGY_CLASSES = 'api/sportsBases/spaces/energyClasses',
   FIELDS = 'api/sportsBases/spaces/typesAndFields',
@@ -41,6 +47,8 @@ export enum Resources {
 }
 
 export enum Populations {
+  SPORT_TYPES = 'sportTypes',
+  ATHLETE = 'athlete',
   CHILDREN = 'children',
   PARENT = 'parent',
   GROUPS = 'groups',
@@ -52,6 +60,8 @@ export enum Populations {
   CAN_CREATE_REQUEST = 'canCreateRequest',
   CAN_VALIDATE = 'canValidate',
   LEGAL_FORM = 'legalForm',
+  TENANT = 'tenant',
+  COMPETITION_TYPE = 'competitionType',
 }
 
 export enum SortAscFields {
@@ -191,7 +201,7 @@ class Api {
       },
     };
 
-    return this.errorWrapper(() => this.axios.get(`/${resource}/${id ? `/${id}` : ''}`, config));
+    return this.errorWrapper(() => this.axios.get(`/${resource}${id ? `/${id}` : ''}`, config));
   };
 
   patch = async ({ resource, id, params }: Update) => {
@@ -431,10 +441,44 @@ class Api {
       query,
     });
 
+  getSportsPersons = async ({ page, query }: TableList) =>
+    await this.getList({
+      resource: Resources.SPORTS_PERSONS,
+      populate: [
+        Populations.TYPE,
+        Populations.LAST_REQUEST,
+        Populations.TENANT,
+        Populations.SPORT_TYPES,
+        Populations.ATHLETE,
+      ],
+      sort: [SortDescFields.ID],
+      page,
+      query,
+    });
+
+  getSportsPerson = async (id: string): Promise<SportBase> =>
+    await this.getOne({
+      resource: `${Resources.SPORTS_PERSONS}/${id}/base`,
+    });
+
+  getCompetitions = async ({ page, query }: TableList) =>
+    await this.getList({
+      resource: Resources.COMPETITIONS,
+      populate: [
+        Populations.TYPE,
+        Populations.LAST_REQUEST,
+        Populations.TENANT,
+        Populations.COMPETITION_TYPE,
+      ],
+      sort: [SortDescFields.ID],
+      page,
+      query,
+    });
+
   getNewRequests = async ({ page, query }: TableList) =>
     await this.getList({
       resource: Resources.REQUESTS + '/new',
-      populate: [Populations.ENTITY],
+      populate: [Populations.ENTITY, Populations.TENANT],
       sort: [SortDescFields.ID],
       page,
       query,
@@ -456,6 +500,11 @@ class Api {
         'owners',
         'canValidate',
       ],
+    });
+
+  getCompetition = async (id: string): Promise<SportBase> =>
+    await this.getOne({
+      resource: `${Resources.COMPETITIONS}/${id}/base`,
     });
 
   getRequest = async (id: string): Promise<Request> =>
@@ -666,6 +715,32 @@ class Api {
       sort,
     });
 
+  getSportType = async ({ id }: TableList): Promise<SportType> =>
+    await this.getOne({
+      resource: Resources.SPORT_TYPES,
+      id,
+    });
+
+  createSportType = async ({ params }: { params: SportType }) =>
+    await this.post({
+      resource: Resources.SPORT_TYPES,
+      params,
+    });
+
+  updateSportType = async ({ params, id }: { params: SportType; id: string }) =>
+    await this.patch({
+      resource: Resources.SPORT_TYPES,
+      params,
+      id,
+    });
+
+  deleteSportType = async ({ id }: { id: string }) => {
+    return this.delete({
+      resource: Resources.SPORT_TYPES,
+      id,
+    });
+  };
+
   getOrganizationBasis = async ({ query, page }) =>
     await this.getList({
       query,
@@ -674,14 +749,65 @@ class Api {
       resource: Resources.ORGANIZATION_BASIS,
     });
 
-  getSportBaseSpaceSportTypes = async ({ query, page, sort }: TableList) =>
+  getSportTypes = async ({ query, page, sort }: TableList) =>
     await this.getList({
       query,
       page,
-      fields: ['id', 'name'],
       resource: Resources.SPORT_TYPES,
       sort,
     });
+
+  getCompetitionTypes = async ({ query, page, sort }: TableList) =>
+    await this.getList({
+      query,
+      page,
+      resource: Resources.COMPETITION_TYPES,
+      sort,
+    });
+
+  getMatchTypes = async ({ query, page, sort }: TableList) =>
+    await this.getList({
+      query,
+      page,
+      resource: Resources.MATCH_TYPES,
+      sort,
+    });
+
+  getAllMatchTypes = async ({ query, page, sort }: TableList) =>
+    await this.getAll({
+      query,
+      page,
+      resource: Resources.MATCH_TYPES,
+      sort,
+    });
+
+  getAllResultTypes = async ({ query, page, sort }: TableList): Promise<ResultType[]> =>
+    await this.getAll({
+      query,
+      page,
+      resource: Resources.RESULT_TYPES,
+      sort,
+    });
+
+  createMatchType = async ({ params }: { params: SportType }) =>
+    await this.post({
+      resource: Resources.MATCH_TYPES,
+      params,
+    });
+
+  updateMatchType = async ({ params, id }: { params: SportType; id: string }) =>
+    await this.patch({
+      resource: Resources.MATCH_TYPES,
+      params,
+      id,
+    });
+
+  deleteMatchType = async ({ id }: { id: string }) => {
+    return this.delete({
+      resource: Resources.MATCH_TYPES,
+      id,
+    });
+  };
 
   getTenantSportOrganizationTypes = async ({ query, page, sort }: TableList) =>
     await this.getList({

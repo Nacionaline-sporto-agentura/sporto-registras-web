@@ -11,7 +11,7 @@ import { useAppSelector } from '../../state/hooks';
 import { device } from '../../styles';
 import api from '../../utils/api';
 import { AdminRoleType, RequestEntityTypes, StatusTypes, TenantTypes } from '../../utils/constants';
-import { formatDate, isNew } from '../../utils/functions';
+import { formatDate, handleErrorToastFromServer, isNew } from '../../utils/functions';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, inputLabels, validationTexts } from '../../utils/texts';
 import Button from '../buttons/Button';
@@ -104,6 +104,9 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
     (params: any) =>
       canCreateRequest ? api.createRequests(params) : api.updateRequest(params, request?.id),
     {
+      onError: ({ response }) => {
+        handleErrorToastFromServer(response);
+      },
       onSuccess: () => {
         navigate(backUrl);
         queryClient.invalidateQueries();
@@ -265,7 +268,7 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
                 children: {
                   firstName: { name: inputLabels.firstName },
                   lastName: { name: inputLabels.lastName },
-                  duties: { name: inputLabels.duties },
+                  position: { name: inputLabels.position },
                   personalCode: { name: inputLabels.personalCode },
                 },
               },
@@ -353,6 +356,7 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
           <Container>
             <InnerContainer>
               <RequestFormHeader
+                loading={createOrUpdateRequest.isLoading}
                 title={title}
                 request={request}
                 showDraftButton={showDraftButton}
@@ -374,15 +378,32 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
                 {containers[tabs[currentTabIndex]?.label]}
                 <FormErrorMessage errors={errors} />
                 <ButtonRow>
-                  {hasPrevious && <Button onClick={handlePrevious}>{buttonsTitles.back}</Button>}
-                  {hasNext && <Button onClick={handleNext}>{buttonsTitles.next}</Button>}
-                  {!disabled && !hasNext && (
-                    <Button onClick={onSubmit}>{buttonsTitles.submit}</Button>
-                  )}
+                  <ButtonRow>
+                    {hasPrevious && (
+                      <Button disabled={createOrUpdateRequest.isLoading} onClick={handlePrevious}>
+                        {buttonsTitles.back}
+                      </Button>
+                    )}
+                    {hasNext && (
+                      <Button disabled={createOrUpdateRequest.isLoading} onClick={handleNext}>
+                        {buttonsTitles.next}
+                      </Button>
+                    )}
+                    {!disabled && !hasNext && (
+                      <Button
+                        disabled={createOrUpdateRequest.isLoading}
+                        loading={createOrUpdateRequest.isLoading}
+                        onClick={onSubmit}
+                      >
+                        {buttonsTitles.submit}
+                      </Button>
+                    )}
+                  </ButtonRow>
                 </ButtonRow>
               </Column>
             </InnerContainer>
             <FormPopUp
+              loading={createOrUpdateRequest.isLoading}
               onClose={() => setStatus('')}
               status={status}
               onSubmit={({ comment, status }) => {

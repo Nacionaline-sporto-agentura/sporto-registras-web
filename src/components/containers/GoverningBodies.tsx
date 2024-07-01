@@ -82,7 +82,7 @@ const GoverningBodiesContainer = ({
   const initialUser = {
     firstName: '',
     lastName: '',
-    duties: '',
+    position: '',
     personalCode: '',
   };
 
@@ -177,12 +177,12 @@ const GoverningBodiesContainer = ({
                           />
                           <TextField
                             disabled={disabled}
-                            label={inputLabels.duties}
-                            error={error?.duties}
-                            value={item.duties}
+                            label={inputLabels.position}
+                            error={error?.position}
+                            value={item.position}
                             showError={false}
-                            name="duties"
-                            onChange={(input) => setFieldValue(`users.${key}.duties`, input)}
+                            name="position"
+                            onChange={(input) => setFieldValue(`users.${key}.position`, input)}
                           />
                           <TextField
                             disabled={disabled}

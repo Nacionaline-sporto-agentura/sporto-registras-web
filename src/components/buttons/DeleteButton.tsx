@@ -5,11 +5,15 @@ import { buttonsTitles } from '../../utils/texts';
 import Icon, { IconName } from '../other/Icons';
 import Button, { ButtonColors } from './Button';
 
-const DeleteButton = ({ onClick }) => {
+const DeleteButton = ({ onClick, className, disabled, loading }: any) => {
   const isMobile = useWindowSize(device.mobileL);
 
   return (
     <StyledButton
+      className={className}
+      disabled={disabled}
+      loading={loading}
+      loaderColor={'black'}
       onClick={onClick}
       variant={ButtonColors.TRANSPARENT}
       type="button"

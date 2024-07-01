@@ -1,9 +1,9 @@
 import { FormRow } from '../../styles/CommonStyles';
-import { SportBaseSpace, SportsBasesCondition, SportsBasesType } from '../../types';
+import { SportBaseSpace, SportsBasesCondition, Types } from '../../types';
 import {
-  getSportBaseSpaceSportTypesList,
   getSportBaseSpaceTypesList,
   getSportBaseTechnicalConditionList,
+  getSportTypesList,
 } from '../../utils/functions';
 import { inputLabels } from '../../utils/texts';
 import AsyncMultiSelect from '../fields/AsyncMultiSelect';
@@ -42,7 +42,7 @@ const SportBaseSpaceGeneralContainer = ({
         value={sportBaseSpace?.type}
         error={errors?.type}
         name="spaceType"
-        onChange={(type: SportsBasesType) => {
+        onChange={(type: Types) => {
           handleChange(`type`, type);
         }}
         getOptionLabel={(option) => option?.name}
@@ -54,7 +54,7 @@ const SportBaseSpaceGeneralContainer = ({
         values={sportValues}
         error={errors?.sportTypes}
         name="sportTypes"
-        onChange={(types: SportsBasesType[]) => {
+        onChange={(types: Types[]) => {
           const filteredSportTypes = {};
 
           Object.entries(sportTypes).forEach(([key, type]) => {
@@ -74,7 +74,7 @@ const SportBaseSpaceGeneralContainer = ({
           handleChange(`sportTypes`, filteredSportTypes);
         }}
         getOptionLabel={(option) => option?.name}
-        loadOptions={(input, page) => getSportBaseSpaceSportTypesList(input, page)}
+        loadOptions={(input, page) => getSportTypesList(input, page)}
       />
       <AsyncSelectField
         disabled={disabled}

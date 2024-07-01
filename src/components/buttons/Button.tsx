@@ -58,6 +58,7 @@ export interface ButtonProps {
   fontWeight?: string;
   radius?: string;
   borderType?: string;
+  loaderColor?: string;
 }
 
 const Button = ({
@@ -71,6 +72,7 @@ const Button = ({
   buttonPadding,
   rightIcon,
   color,
+  loaderColor = 'white',
   type = 'button',
   loading = false,
   className,
@@ -93,7 +95,7 @@ const Button = ({
       {...rest}
     >
       {leftIcon && <IconContainer>{leftIcon}</IconContainer>}
-      {loading ? <Loader color="white" /> : children}
+      {loading ? <Loader color={loaderColor} /> : children}
       {rightIcon && <IconContainer>{rightIcon}</IconContainer>}
     </StyledButton>
   );

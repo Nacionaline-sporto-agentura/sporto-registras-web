@@ -56,9 +56,9 @@ export const validateCreateUserForm = Yup.object().shape({
       }),
     )
     .min(1),
-  duties: Yup.string()
+  position: Yup.string()
     .nullable()
-    .test('validDuties', validationTexts.minCharacters, (value) => {
+    .test('validposition', validationTexts.minCharacters, (value) => {
       if (value && value.length < 3) {
         return false;
       }
@@ -90,7 +90,7 @@ const AdminUserForm = () => {
   );
 
   const handleSubmit = async (values: User, { setErrors }) => {
-    const { firstName, lastName, email, phone, groups, duties } = values;
+    const { firstName, lastName, email, phone, groups, position } = values;
 
     const params = {
       firstName,
@@ -98,7 +98,7 @@ const AdminUserForm = () => {
       email: email?.toLowerCase(),
       phone,
       groups,
-      duties,
+      position,
     };
 
     if (isNew(id)) {
@@ -195,7 +195,7 @@ const AdminUserForm = () => {
     email: user?.email || '',
     phone: user?.phone || '',
     groups: getUserGroups(),
-    duties: user?.duties || '',
+    position: user?.position || '',
   };
   const renderForm = (values: User, errors: any, handleChange) => {
     return (
@@ -238,11 +238,11 @@ const AdminUserForm = () => {
           </FormRow>
           <FormRow columns={1}>
             <TextField
-              label={inputLabels.duties}
-              value={values.duties}
-              error={errors.duties}
-              name="duties"
-              onChange={(duties) => handleChange('duties', duties)}
+              label={inputLabels.position}
+              value={values.position}
+              error={errors.position}
+              name="position"
+              onChange={(position) => handleChange('position', position)}
             />
           </FormRow>
         </SimpleContainer>

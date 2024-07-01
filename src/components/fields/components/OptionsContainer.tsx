@@ -17,6 +17,7 @@ export interface OptionsContainerProps {
   showSelect: boolean;
   observerRef?: any;
   handleClick: (option: any) => any;
+  className?: string;
 }
 
 const OptionsContainer = ({
@@ -27,6 +28,7 @@ const OptionsContainer = ({
   showSelect,
   loading,
   observerRef,
+  className,
 }: OptionsContainerProps) => {
   const display = showSelect && !disabled;
 
@@ -57,7 +59,7 @@ const OptionsContainer = ({
     );
   };
   return (
-    <OptionContainer $display={display}>
+    <OptionContainer className={className} $display={display}>
       {renderOptions()}
       {observerRef && <ObserverRef $display={display} ref={observerRef} />}
     </OptionContainer>

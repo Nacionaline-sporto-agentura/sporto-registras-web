@@ -27,7 +27,7 @@ import { device } from '../styles';
 import { SportBase } from '../types';
 import api from '../utils/api';
 import { AdminRoleType, RequestEntityTypes, StatusTypes } from '../utils/constants';
-import { formatDate, isNew } from '../utils/functions';
+import { formatDate, handleErrorToastFromServer, isNew } from '../utils/functions';
 import { slugs } from '../utils/routes';
 import { buttonsTitles, descriptions, inputLabels, validationTexts } from '../utils/texts';
 
@@ -161,6 +161,9 @@ const SportBasePage = () => {
     (params: any) =>
       canCreateRequest ? api.createRequests(params) : api.updateRequest(params, request.id),
     {
+      onError: ({ response }) => {
+        handleErrorToastFromServer(response);
+      },
       onSuccess: () => {
         navigate(backUrl);
         queryClient.invalidateQueries();
@@ -508,6 +511,7 @@ const SportBasePage = () => {
           <Container>
             <InnerContainer>
               <RequestFormHeader
+                loading={createOrUpdateRequest.isLoading}
                 title={title}
                 request={request}
                 showDraftButton={showDraftButton}
@@ -529,15 +533,30 @@ const SportBasePage = () => {
                 {containers[tabs[currentTabIndex]?.label]}
                 <FormErrorMessage errors={errors} />
                 <ButtonRow>
-                  {hasPrevious && <Button onClick={handlePrevious}>{buttonsTitles.back}</Button>}
-                  {hasNext && <Button onClick={handleNext}>{buttonsTitles.next}</Button>}
+                  {hasPrevious && (
+                    <Button disabled={createOrUpdateRequest.isLoading} onClick={handlePrevious}>
+                      {buttonsTitles.back}
+                    </Button>
+                  )}
+                  {hasNext && (
+                    <Button disabled={createOrUpdateRequest.isLoading} onClick={handleNext}>
+                      {buttonsTitles.next}
+                    </Button>
+                  )}
                   {!disabled && !hasNext && (
-                    <Button onClick={onSubmit}>{buttonsTitles.submit}</Button>
+                    <Button
+                      disabled={createOrUpdateRequest.isLoading}
+                      loading={createOrUpdateRequest.isLoading}
+                      onClick={onSubmit}
+                    >
+                      {buttonsTitles.submit}
+                    </Button>
                   )}
                 </ButtonRow>
               </Column>
             </InnerContainer>
             <FormPopUp
+              loading={createOrUpdateRequest.isLoading}
               onClose={() => setStatus('')}
               status={status}
               onSubmit={({ comment, status }) => {

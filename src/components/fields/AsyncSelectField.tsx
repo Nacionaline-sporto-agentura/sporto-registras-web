@@ -25,7 +25,7 @@ export interface AsyncSelectFieldProps {
   placeholder?: string;
   backgroundColor?: string;
   hasBorder?: boolean;
-  loadOptions: (input: any, page: string, id?: any) => any;
+  loadOptions: (input: any, page: string, value?: any) => any;
   dependsOnTheValue?: any;
   optionsKey?: string;
 }
