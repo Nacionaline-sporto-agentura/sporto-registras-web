@@ -268,7 +268,7 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
                 children: {
                   firstName: { name: inputLabels.firstName },
                   lastName: { name: inputLabels.lastName },
-                  duties: { name: inputLabels.duties },
+                  position: { name: inputLabels.position },
                   personalCode: { name: inputLabels.personalCode },
                 },
               },

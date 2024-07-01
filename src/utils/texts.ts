@@ -222,7 +222,7 @@ export const inputLabels = {
   repeatNewPassword: 'Pakartokite naują slaptažodį',
   phone: 'Telefonas',
   email: 'El. pašto adresas',
-  duties: 'Pareigos',
+  position: 'Pareigos',
   group: 'Grupė',
   organizationBasis: 'Kokiu pagrindu veikia organizacija',
   organizationType: 'Sporto organizacijos tipas',

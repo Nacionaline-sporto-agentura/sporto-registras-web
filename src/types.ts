@@ -38,7 +38,7 @@ export interface User {
   groups?: Group[];
   authStrategy?: AuthStrategy;
   permissions?: { [key: string]: { accesses: string[]; features: string[] } };
-  duties?: string;
+  position?: string;
 }
 
 export interface SportsBasesLevel {
@@ -319,7 +319,7 @@ export interface GoverningBody {
   users: {
     firstName: string;
     lastName: string;
-    duties: string;
+    position: string;
     personalCode: string;
   }[];
 }
