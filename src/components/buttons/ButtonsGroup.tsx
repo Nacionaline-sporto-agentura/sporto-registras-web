@@ -9,7 +9,7 @@ export interface ToggleButtonProps {
   className?: string;
   label?: string;
   getOptionLabel?: (option: any) => string;
-  error?: string;
+  error?: any;
   showError?: boolean;
 }
 
@@ -48,7 +48,12 @@ const ButtonsGroup = ({
 
 const Container = styled.div`
   border-radius: 4px;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
 `;
 
 const StyledButton = styled.button<{

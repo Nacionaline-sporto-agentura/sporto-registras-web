@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { device } from '.';
+import InnerContainerRow from '../components/other/InnerContainerRow';
 import NavigateTabBar from '../components/Tabs/NavigateTabBar';
 
 export const FormRow = styled.div<{ columns?: number }>`
@@ -117,4 +118,28 @@ export const ViewTitle = styled.div`
   font-weight: bold;
   color: #121926;
   line-height: 20px;
+`;
+
+export const InnerContainer = styled.div`
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 32px;
+  margin: 32px 0;
+  @media ${device.mobileL} {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const StyledInnerContainerRow = styled(InnerContainerRow)`
+  margin: 0px;
+`;
+
+export const AutoFitFormRow = styled.div`
+  display: grid;
+  margin-top: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+  @media ${device.mobileL} {
+    grid-template-columns: 1fr;
+  }
 `;

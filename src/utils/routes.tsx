@@ -2,6 +2,8 @@ import AdminUserForm from '../pages/AdminUserForm';
 import AdminUserList from '../pages/AdminUserList';
 import Classifier from '../pages/Classifier';
 import ClassifierList from '../pages/ClassifierList';
+import CompetitionPage from '../pages/Competition';
+import CompetitionList from '../pages/CompetitionList';
 import GroupPage from '../pages/Group';
 import GroupsFormPage from '../pages/GroupForm';
 import GroupsList from '../pages/GroupList';
@@ -16,6 +18,10 @@ import OrganizationUser from '../pages/OrganizationUser';
 import Profile from '../pages/Profile';
 import SportBase from '../pages/SportBase';
 import SportBaseList from '../pages/SportBaseList';
+import SportsPersonPage from '../pages/SportsPerson';
+import SportsPersonsList from '../pages/SportsPersonsList';
+import SportTypePage from '../pages/SportType';
+import SportTypeForm from '../pages/SportTypeForm';
 import UpdateInstitutionForm from '../pages/UpdateInstitutionForm';
 import UserFormPage from '../pages/UserForm';
 import UserList from '../pages/UserList';
@@ -63,9 +69,21 @@ export const slugs = {
   unConfirmedSportBases: '/nepatvirtinta-sporto-infrastruktura',
   newSportBase: '/sporto-bazes/naujas',
   sportBase: (id: string) => `/sporto-bazes/${id}`,
+  sportsPersons: '/sporto-asmenys',
+  unConfirmedSportsPersons: '/nepatvirtinti-sporto-asmenys',
+  newSportsPerson: '/sporto-asmenys/naujas',
+  sportsPerson: (id: string) => `/sporto-asmenys/${id}`,
   classifiers: (classifier: string) => `/klasifikatoriai/${classifier}`,
   newClassifier: (classifier: string) => `/klasifikatoriai/${classifier}/${url.new}`,
   classifier: (classifier: string, id: string) => `/klasifikatoriai/${classifier}/${id}`,
+  newSportType: `/klasifikatoriai/sporto-saka/${url.new}`,
+  sportType: (id: string) => `/klasifikatoriai/sporto-saka/${id}`,
+  updateSportType: (id: string) => `/klasifikatoriai/sporto-saka/${id}/atnaujinti`,
+  result: (id: string) => `/rezultatai/${id}`,
+  results: '/rezultatai',
+  newResult: `/rezultatai/${url.new}`,
+  sportPerson: '/sporto-asmenys/naujas',
+  unconfirmedResults: '/nepatvirtinti-rezultatai',
 };
 
 export const routes = [
@@ -200,9 +218,56 @@ export const routes = [
     component: <SportBaseList />,
   },
   {
+    name: pageTitles.sportsPersons,
+    sidebar: true,
+    slug: slugs.sportsPersons,
+    component: <SportsPersonsList />,
+  },
+  {
+    slug: slugs.unConfirmedSportsPersons,
+    component: <SportsPersonsList />,
+  },
+  {
+    slug: slugs.newSportsPerson,
+    component: <SportsPersonPage />,
+  },
+  {
+    slug: slugs.sportsPerson(':id'),
+    component: <SportsPersonPage />,
+  },
+  {
+    name: pageTitles.results,
+    sidebar: true,
+    slug: slugs.results,
+    component: <CompetitionList />,
+  },
+  {
+    slug: slugs.unconfirmedResults,
+    component: <CompetitionList />,
+  },
+
+  {
+    slug: slugs.result(':id'),
+    component: <CompetitionPage />,
+  },
+
+  {
     role: AdminRoleType.USER,
     slug: slugs.user(':id'),
     component: <UserFormPage />,
+  },
+  {
+    slug: slugs.newSportType,
+    component: <SportTypeForm />,
+  },
+  {
+    slug: slugs.sportType(':id'),
+    component: <SportTypePage />,
+  },
+
+  {
+    slug: slugs.updateSportType(':id'),
+    component: <SportTypeForm />,
   },
   {
     slug: slugs.updateInstitution(':id'),
@@ -216,19 +281,17 @@ export const routes = [
     sidebar: true,
     component: <ClassifierList />,
     role: AdminRoleType.ADMIN,
-    default: 'sporto_sakos',
+    default: 'sporto_saka',
   },
   {
     slug: slugs.newClassifier(':dynamic'),
     component: <Classifier />,
     role: AdminRoleType.ADMIN,
-    default: 'sporto_sakos',
   },
   {
     slug: slugs.classifier(':dynamic', ':id'),
     component: <Classifier />,
     role: AdminRoleType.ADMIN,
-    default: 'sporto_sakos',
   },
 ];
 

@@ -6,19 +6,23 @@ import {
   FieldTypes,
   HistoryTypes,
   LegalForms,
+  MatchTypes,
   MembershipTypes,
+  ResultTypeTypes,
   StatusTypes,
   TableItemWidth,
   TenantTypes,
 } from './utils/constants';
 
 export interface CommonFields {
-  updatedAt: Date;
-  createdAt: Date;
-  deletedAt: Date;
-  createdBy: User;
-  updatedBy: User;
-  deletedBy: User;
+  id?: number;
+  updatedAt?: Date;
+  createdAt?: Date;
+  deletedAt?: Date;
+  createdBy?: User;
+  updatedBy?: User;
+  deletedBy?: User;
+  tenant?: Tenant;
 }
 
 export interface User {
@@ -42,7 +46,7 @@ export interface SportsBasesLevel {
   name: string;
 }
 
-export interface SportsBasesType {
+export interface Types {
   id: any;
   name: string;
 }
@@ -91,8 +95,8 @@ export interface SportsBaseOwner {
 export interface SportBaseSpace {
   id?: number;
   name: string;
-  type?: SportsBasesType;
-  sportTypes?: SportBaseSpaceSportType[];
+  type?: Types;
+  sportTypes?: SportType[];
   sportBase?: SportBase;
   technicalCondition?: SportsBasesCondition;
   buildingNumber?: string;
@@ -116,7 +120,7 @@ export interface SportBase extends CommonFields {
   phone?: string;
   email?: string;
   canCreateRequest: boolean;
-  type?: SportsBasesType;
+  type?: Types;
   level?: SportsBasesLevel;
   technicalCondition?: SportsBasesCondition;
   address: {
@@ -348,7 +352,7 @@ export interface Field {
 
 export interface TypesAndFields {
   id: number;
-  type: SportsBasesType;
+  type: Types;
   field: Field;
 }
 
@@ -401,3 +405,74 @@ type CoordinatesTypes =
   | CoordinatesMultiPoint
   | CoordinatesMultiLineString
   | CoordinatesMultiPolygon;
+
+export interface SportsPerson extends CommonFields {
+  id?: number;
+  firstName: string;
+  lastName: string;
+  type?: { id: number; name: string };
+  sportTypes: SportType[];
+  competitionCount: any;
+  canCreateRequest: boolean;
+  lastRequest: Request;
+  personalCode: string;
+  nationality: string;
+  competitionsCount: number;
+}
+
+export interface Athlete extends CommonFields {
+  id?: number;
+  competitionResults: Result[];
+}
+
+export interface SportType extends CommonFields {
+  name: string;
+  olympic: boolean;
+  paralympic: boolean;
+  strategic: boolean;
+  technical: boolean;
+  deaf: boolean;
+  specialOlympics: boolean;
+}
+
+export interface Match extends CommonFields {
+  name: string;
+  type: MatchTypes;
+  olympic: boolean;
+  paralympic: boolean;
+  deaf: boolean;
+  specialOlympics: boolean;
+  index?: number;
+}
+
+export interface Competition extends CommonFields {
+  id?: number;
+  name: string;
+  year: string;
+  competitionType?: { id: number; name: string };
+  lastRequest: Request;
+  results: Result[];
+}
+
+export interface Result extends CommonFields {
+  sportType: SportType;
+  match: Match;
+  competition: Competition;
+  selection: boolean;
+  sportsPersons: SportsPerson[];
+  resultType: ResultType;
+  result?: {
+    value: any;
+  };
+  participantsNumber: string;
+  stages: string;
+  countriesCount?: string;
+  otherMatch?: string;
+  matchType?: MatchTypes;
+  index?: number;
+}
+
+export interface ResultType {
+  name: string;
+  type: ResultTypeTypes;
+}

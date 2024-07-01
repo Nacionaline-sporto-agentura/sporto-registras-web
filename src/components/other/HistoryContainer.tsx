@@ -52,7 +52,7 @@ const getLabel = (diff: Diff, titles, oldData) => {
       continue;
     }
 
-    label = [...label, <BoldText>{`${currentTitlesObject?.name} `}</BoldText>];
+    label = [...label, <BoldText key={key}>{`${currentTitlesObject?.name} `}</BoldText>];
     tempTitles = currentTitlesObject?.children;
     labelField = currentTitlesObject?.labelField;
   }
@@ -113,7 +113,7 @@ const getLabel = (diff: Diff, titles, oldData) => {
   }
 
   if (diff.op == ActionTypes.ADD) {
-    label = [...label, ` pridėjo `, <BreakWord>{value}</BreakWord>];
+    label = [...label, ` pridėjo `, <BreakWord key={`break-word-${key}`}>{value}</BreakWord>];
   }
 
   return label;
@@ -208,9 +208,10 @@ const HistoryContainer = ({
           <Container>
             {diff.map((item, index) => {
               const lastItemIndex = item.length - 1;
+
               return (
-                <Column key={`changes-${index}`}>
-                  <Text>{getLabel(item[lastItemIndex], titles, oldData)}</Text>
+                <Column key={`history-changes-${index}`}>
+                  <Text> {getLabel(item[lastItemIndex], titles, oldData)}</Text>
                   {!disabled && (
                     <ContentRow onClick={() => handleAction(item[lastItemIndex])}>
                       <StyledIcon name={IconName.close} />
@@ -231,11 +232,11 @@ const HistoryContainer = ({
       <Container>
         {history?.pages.map((page: { data: FormHistory[] }, pageIndex: number) => {
           return (
-            <React.Fragment key={pageIndex}>
+            <React.Fragment key={`history-${pageIndex}`}>
               {page?.data.map((history, index) => {
                 const createdBy = `${history?.createdBy?.firstName?.[0]}. ${history?.createdBy?.lastName}`;
                 return (
-                  <Column key={`history-${index}`}>
+                  <Column key={`inner-history-${index}`}>
                     <HistoryRow>
                       <DateContainer>{formatDateAndTime(history.createdAt)}</DateContainer>
                       <StatusTag

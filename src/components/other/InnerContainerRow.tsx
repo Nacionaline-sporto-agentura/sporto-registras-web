@@ -1,8 +1,15 @@
 import styled from 'styled-components';
 import Button from '../buttons/Button';
 
-const InnerContainerRow = ({ title, description, buttonTitle, disabled, onCreateNew }: any) => (
-  <Column>
+const InnerContainerRow = ({
+  title,
+  description,
+  buttonTitle,
+  disabled,
+  onCreateNew,
+  className,
+}: any) => (
+  <Column className={className}>
     <TableButtonsRow>
       <Title>{title}</Title>
       {!disabled && onCreateNew && <Button onClick={onCreateNew}>{buttonTitle}</Button>}

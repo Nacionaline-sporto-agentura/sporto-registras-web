@@ -4,13 +4,16 @@ import {
   ClassifierTypes,
   HistoryTypes,
   LegalForms,
+  MatchTypes,
   MembershipTypes,
   ServerErrorTypes,
+  SportTypeButtonKeys,
   StatusTypes,
   TenantTypes,
 } from './constants';
 
 export const validationTexts = {
+  yearFormat: 'Blogas metų formatas',
   badFileTypes: 'Blogi failų tipai',
   fileSizesExceeded: 'Viršyti failų dydžiai',
   requireText: 'Privalote įvesti',
@@ -36,6 +39,11 @@ export const validationTexts = {
 };
 
 export const descriptions = {
+  protocolDocument: 'Protokolo dokumentas',
+  resultInfo: 'Sporto varžybose pasiekti rezultatai',
+  sportMatches: 'Sporto šakoje esančios sporto rungtys',
+  competitionInfo: 'Sporto varžybų informacija',
+  results: 'Rezultatai aukšto meistriškumo sporto varžybose',
   fundingSources: 'Pridėkite visas gautas investicijas skirtas pagerinimui',
   cantLogin: 'Norint prisijungti turi būti suteikta prieiga',
   tableNotFound: 'Atsiprašome nieko neradome pagal pasirinktus filtrus',
@@ -46,6 +54,7 @@ export const descriptions = {
   plans: 'Pridėti sporto bazės planus geoerdviniais formatais (2D ir 3D)',
   energyClassCertificate: 'Energetinės klasės pažymėjimas',
   sportBaseGeneral: 'Sporto bazės pagrindinė informacija',
+  sportsPersonGeneral: 'Sporto asmens asmeninė informacija',
   sportBaseSpecification: 'Nurodykite sporto bazės parametrus',
   sportBaseSpaces: 'Nurodykite sporto bazės erdves',
   organizations: 'Pridėkite organizacijas, kurios veikia šioje sporto bazėje',
@@ -57,6 +66,8 @@ export const descriptions = {
 };
 
 export const formLabels = {
+  teamResult: 'Komandos rezultatai ir sportininkai',
+  addMatch: 'Pridėti rungtį',
   history: 'Istorija',
   inActiveProfile: 'Anketa neaktyvi',
   groupInfo: 'Informacija apie grupę',
@@ -108,6 +119,35 @@ export const deleteDescriptionSecondPart = {
 };
 
 export const inputLabels = {
+  statesCount: 'Valstybių skaičius tarptautinėse aukšto mesitriškumo sporto varžybose',
+  stagesCount: 'Etapų skaičius',
+  athlete: 'Sportininkas',
+  matchMemberCount: 'Dalyvių skaičius rungtyje',
+  teamCount: 'Dalyvavusių komandų skaičius',
+  result: 'Rezultatas',
+  competitionType: 'Varžybų tipas',
+  year: 'Metai',
+  type: 'Tipas',
+  isOlympic: 'Ar olimpinė sporto šaka?',
+  isParalympic: 'Ar paralimpinė sporto šaka?',
+  isStrategic: 'Ar strateginė sporto šaka?',
+  isTechnical: 'Ar techninė sporto šaka?',
+  isDeafs: 'Ar tai kurčiųjų sporto šaka?',
+  isSpecialOlympic: 'Ar specialioji olimpiada?',
+  sportTypeName: 'Sporto šakos pavadinimas',
+  competitionName: 'Varžybų pavadinimas',
+  matchName: 'Rungties pavadinimas',
+  olympicMatch: 'Olimpinė rungtis',
+  sportType: 'Sporto šaka',
+  sportMatchType: 'Sporto šakos rungtis',
+  placeFrom: 'Užimta vieta nuo',
+  placeTo: 'Užimta vieta iki',
+  place: 'Užimta  vieta',
+  membersNo: 'Dalyvių/Komandų sk.',
+  isInternationalSelection:
+    'Ar vykdoma atranka į tarptautines aukšto meistriškumo sporto varžybas?',
+  matchType: 'Rungties tipas',
+  date: 'Data',
   users: 'naudotojai',
   basis: 'Pagrindas',
   spaces: 'Erdvės',
@@ -147,6 +187,8 @@ export const inputLabels = {
   technicalBaseCondition: 'Techninė bazės būklė',
   technicalSpaceCondition: 'Techninė erdvės būklė',
   sportBaseType: 'Sporto bazės rūšis',
+  sportPersonSportType: 'Sporto šaka/-os',
+  sportPersonType: 'Asmens tipas',
   sportBaseSpaceType: 'Sporto erdvės tipas',
   sportTypes: 'Kultivuojamos sporto šakos',
   address: 'Adresas',
@@ -155,6 +197,7 @@ export const inputLabels = {
   owner: 'Savininkas',
   code: 'JAR/Asmens Kodas',
   website: 'Svetainės adresas',
+  websiteToProtocols: 'Nuoroda į interneto svetainę, kurioje pateikiami protokolai',
   source: 'Investicijų šaltinis',
   fundingSource: 'Finansavimo šaltinis',
   governingBodyName: 'Valdymo organo pavadinimas',
@@ -207,11 +250,16 @@ export const inputLabels = {
   street: 'Gatvės pavadinimas',
   houseNo: 'Namo Nr.',
   apartmentNo: 'Buto Nr.',
+  citizenship: 'Pilietybė (-ės)',
   ownerType: 'Asmens tipas',
   fullName: 'Vardas, Pavardė',
 };
 export const pageTitles = {
+  resultInfo: 'Rezultatų informacija',
+  competitionInfo: 'Varžybų informacija',
+  results: 'Rezultatai',
   users: 'Naudotojai',
+  sportMatches: 'Sporto rungtys',
   groups: 'Grupės',
   newUser: 'Naujas naudotojas',
   updateUser: 'Redaguoti naudotoją',
@@ -227,7 +275,9 @@ export const pageTitles = {
   updateInstitution: 'Atnaujinti instituciją',
   myOrganization: 'Mano organizacija',
   sportBases: 'Sporto infrastruktūra',
+  sportsPersons: 'Sporto asmenys',
   info: 'Informacija',
+  personalInfo: 'Asmeninė informacija',
   sportBasePhotos: 'Sporto bazės nuotraukos',
   sportBaseSpecification: 'Techniniai sporto bazės parametrai',
   sportBaseSpaces: 'Sporto bazių erdvės',
@@ -236,9 +286,13 @@ export const pageTitles = {
   governingBodies: 'Valdymo organai ir asmenys',
   fundingSources: 'Finasavimo šaltiniai',
   memberships: 'Narystės',
+  newSportType: 'Nauja sporto šaka',
+  updateSportType: 'Atnaujinti sporto šaką',
 };
 
 export const buttonsTitles = {
+  addResult: 'Pridėti rezultatą',
+  addMatch: 'Pridėti rungtį',
   edit: 'Redaguoti',
   view: 'Peržiūrėti',
   approve: 'Tvirtinti',
@@ -271,12 +325,16 @@ export const buttonsTitles = {
   newInstitution: 'Nauja įstaiga',
   newOrganization: 'Nauja organizacija',
   registerSportBase: 'Įregistruoti sporto bazę',
+  registerSportsPerson: 'Įregistruoti sporto asmenį',
+  registerResult: 'Naujas prašymas įvesti rezultatą',
   back: 'Atgal',
   next: 'Kitas',
 };
 
 export const emptyState = {
   sportBases: 'Nėra sukurtų sporto infrastruktūrų',
+  sportsPersons: 'Nėra sukurtų sporto asmenų',
+  results: 'Nėra sukurtų rezultatų',
   unConfirmedSportBases: 'Nėra sukurtų nepatvirtintų sporto infrastruktūrų',
   users: 'Jūs neturite Naudotojų. Sukurkite',
   groupUsers: 'Grupė neturi Naudotojų. Sukurkite',
@@ -380,6 +438,29 @@ export const classifierLabels = {
   [ClassifierTypes.SPORT_TYPE]: 'Sporto šaka',
   [ClassifierTypes.SPORT_ORGANIZATION_TYPE]: 'Sporto organizacijos tipas',
   [ClassifierTypes.LEGAL_FORMS]: 'Teisinė forma',
+};
+
+export const trueLabels = {
+  [SportTypeButtonKeys.olympic]: 'Olimpinė',
+  [SportTypeButtonKeys.paralympic]: 'Paralimpinė',
+  [SportTypeButtonKeys.strategic]: 'Strateginė',
+  [SportTypeButtonKeys.technical]: 'Techninė',
+  [SportTypeButtonKeys.deaf]: 'Kurčiųjų',
+  [SportTypeButtonKeys.specialOlympics]: 'Specialioji olimpiada',
+};
+
+export const falseLabels = {
+  [SportTypeButtonKeys.olympic]: 'Neolimpinė',
+  [SportTypeButtonKeys.paralympic]: 'Ne',
+  [SportTypeButtonKeys.strategic]: 'Nestrateginė',
+  [SportTypeButtonKeys.technical]: 'Ne',
+  [SportTypeButtonKeys.deaf]: 'Ne',
+  [SportTypeButtonKeys.specialOlympics]: 'Ne',
+};
+
+export const matchTypeLabels = {
+  [MatchTypes.INDIVIDUAL]: 'Individuali',
+  [MatchTypes.TEAM]: 'Komandinė',
 };
 
 export const legalFormLabels = {

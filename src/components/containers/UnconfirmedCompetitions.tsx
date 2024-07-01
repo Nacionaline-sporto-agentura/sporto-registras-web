@@ -15,11 +15,16 @@ import { FilterInputTypes } from '../other/DynamicFilter/Filter';
 import StatusTag from '../other/StatusTag';
 import MainTable from '../tables/MainTable';
 
-const sportBaseLabels = {
-  name: { label: 'Sporto bazė', show: true },
-  type: { label: 'Sporto bazės rūšis', show: true },
-  address: { label: 'Adresas', show: true },
+const resultLabels = {
+  name: { label: 'Varžybų pavadinimas', show: true },
+  year: { label: 'Metai', show: true },
+  type: { label: 'Tipas', show: true },
   status: { label: 'Būsena', show: true },
+};
+
+const adminResultLabels = {
+  ...resultLabels,
+  tenant: { label: 'Pateikė', show: true },
 };
 
 const filterConfig = () => ({
@@ -35,53 +40,49 @@ const rowConfig = [['status']];
 
 const mapRequestList = (requests: Request[]): TableRow[] =>
   requests.map((request: Request) => {
-    const data = applyPatch(request.entity, request.changes).newDocument;
-
-    const address = data?.address;
-
-    const formattedAddress =
-      address?.street && address?.house && address?.city && address?.municipality
-        ? `${address.street} ${address.house} ${
-            address.apartment ? `-${address.apartment}` : ''
-          }, ${address.city} ${address.municipality}`
-        : '-';
-
+    const result = applyPatch(request.entity, request.changes).newDocument;
     const status = request?.status;
+
     return {
       id: request.id,
-      type: data?.type?.name,
-      name: data.name,
-      address: formattedAddress,
+      type: result?.competitionType?.name,
+      year: result?.year,
+      name: result.name,
       ...(status && {
         status: <StatusTag label={requestStatusLabels[status]} color={colorsByStatus[status]} />,
       }),
+      tenant: result?.tenant?.name,
     };
   });
 
-const UnconfirmedSportBases = () => {
+const UnconfirmedCompetitions = () => {
   const { navigate, page, dispatch } = useGenericTablePageHooks();
   const user = useAppSelector((state) => state.user.userData);
 
-  const filters = useAppSelector((state) => state.filters.unconfirmedSportBaseFilters);
+  const filters = useAppSelector((state) => state.filters.unconfirmedCompetitionFilters);
 
   const handleSetFilters = (filters) => {
-    dispatch(filterActions.setUnconfirmedSportBaseFilters(filters));
+    dispatch(filterActions.setUnconfirmedCompetitionFilters(filters));
   };
 
   const { tableData, loading } = useTableData({
-    name: 'sportBasesRequests',
+    name: 'unconfirmedResults',
     endpoint: () =>
       api.getNewRequests({
         page,
-        query: { ...mapRequestFormFilters(filters), entityType: RequestEntityTypes.SPORTS_BASES },
+        query: { ...mapRequestFormFilters(filters), entityType: RequestEntityTypes.COMPETITIONS },
       }),
     mapData: (list) => mapRequestList(list),
     dependencyArray: [page, filters],
   });
 
   const notFound: NotFoundInfoProps = {
-    text: emptyState.unConfirmedSportBases,
+    text: emptyState.results,
   };
+
+  const isAdmin = user.type === AdminRoleType.ADMIN;
+
+  const labels = isAdmin ? adminResultLabels : resultLabels;
 
   return (
     <>
@@ -95,10 +96,8 @@ const UnconfirmedSportBases = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        {user.type === AdminRoleType.USER && (
-          <Button onClick={() => navigate(slugs.newSportBase)}>
-            {buttonsTitles.registerSportBase}
-          </Button>
+        {!isAdmin && (
+          <Button onClick={() => navigate(slugs.newResult)}>{buttonsTitles.registerResult}</Button>
         )}
       </TableButtonsRow>
       <MainTable
@@ -106,11 +105,11 @@ const UnconfirmedSportBases = () => {
         notFoundInfo={notFound}
         isFilterApplied={false}
         data={tableData}
-        columns={sportBaseLabels}
-        onClick={(id) => navigate(`${slugs.newSportBase}?prasymas=${id}`)}
+        columns={labels}
+        onClick={(id) => navigate(`${slugs.newResult}?prasymas=${id}`)}
       />
     </>
   );
 };
 
-export default UnconfirmedSportBases;
+export default UnconfirmedCompetitions;

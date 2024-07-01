@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
+import { ActionTypes } from '../components/other/HistoryContainer';
 import { User } from '../types';
 import api, { SortAscFields } from './api';
 import { AdminRoleType } from './constants';
@@ -165,14 +166,115 @@ export const getTenantLegalFormList = async (input: string, page: string) => {
   return await api.getTenantLegalForms(getInputSimpleFilter(input, page));
 };
 
-export const getSportBaseSpaceSportTypesList = async (input: string, page: string) => {
-  return await api.getSportBaseSpaceSportTypes(getInputSimpleFilter(input, page));
+export const getSportTypesList = async (input: string, page: string) => {
+  return await api.getSportTypes(getInputSimpleFilter(input, page));
 };
 
-export const formatDate = (date: string | Date) => format(new Date(date), 'yyyy-MM-dd');
+export const getSportsPersonList = async (input: string, page: string) => {
+  return await api.getSportsPersons(getInputSimpleFilter(input, page));
+};
+
+export const getCompetitionTypesList = async (input: string, page: string) => {
+  return await api.getCompetitionTypes(getInputSimpleFilter(input, page));
+};
+
+export const formatDate = (date?: string | Date) =>
+  date ? format(new Date(date), 'yyyy-MM-dd') : '-';
 export const formatDateAndTime = (datetime: Date | string) =>
   datetime ? format(new Date(datetime), 'yyyy-MM-dd HH:mm') : '-';
 
 const env = import.meta.env;
 
 export const getPublicUrl = (url: string) => `${env.VITE_BASE_URL}/${url}`;
+
+export const generateUniqueString = () => {
+  const timestamp = new Date().getTime().toString(36);
+  const randomString = Math.random().toString(36).substr(2, 5);
+  return timestamp + randomString;
+};
+
+export const processDiffs = (diffs, idKeys, index, obj) => {
+  for (const key of diffs) {
+    const pathArr = key.path.split('/');
+    const prop = pathArr.pop() || '';
+    const parentPath = pathArr.join('/');
+    const item = key;
+
+    const actionType = item.op === ActionTypes.TEST ? 'oldValue' : 'value';
+    const currentOperation = item.op !== ActionTypes.TEST ? item.op : undefined;
+    const isParentPath = !!idKeys[parentPath];
+    const path = isParentPath ? parentPath : item.path;
+    const curr = obj[path]?.[index];
+    const entry = {
+      path,
+      op: curr?.op || currentOperation,
+      oldValue: isParentPath ? { ...(curr?.oldValue || {}) } : curr?.oldValue,
+      value: isParentPath ? { ...(curr?.value || {}) } : curr?.value,
+    };
+
+    if (idKeys[parentPath]) {
+      entry[actionType][prop] = item.value;
+    } else {
+      entry[actionType] = item.value;
+    }
+
+    if (index !== 0 && (!obj[path] || !obj[path][0])) {
+      // If the 0 index element doesn't exist, don't create the 1 index element
+      continue;
+    }
+
+    if (idKeys[parentPath]) {
+      obj[parentPath] = obj[parentPath] || [];
+      obj[parentPath][index] = entry;
+    } else {
+      obj[item.path] = obj[item.path] || [];
+      obj[item.path][index] = entry;
+    }
+  }
+};
+
+export const extractIdKeys = (diff, idKeys) => {
+  for (const key of diff) {
+    if (key.path.endsWith('/id')) {
+      const parentPath = key.path.replace('/id', '');
+      idKeys[parentPath] = 1;
+    }
+  }
+};
+
+export const flattenArrays = (data: any): any => {
+  if (Array.isArray(data)) {
+    const obj: any = {};
+    data.forEach((item, index) => {
+      obj[index] = flattenArrays(item);
+    });
+    return obj;
+  } else if (typeof data === 'object' && data !== null) {
+    for (let key in data) {
+      data[key] = flattenArrays(data[key]);
+    }
+  }
+  return data;
+};
+
+export const filterAndUpdateTypes = (existingTypes, newTypes, currentValues, updateCallback) => {
+  const filteredTypes = {};
+
+  // Filter existing types based on new types
+  Object.entries(existingTypes).forEach(([key, type]: any) => {
+    const found = newTypes.find((c) => c.id === type.id);
+    if (found) {
+      filteredTypes[key] = type;
+    }
+  });
+
+  // Add new types that are not already in current values
+  newTypes.forEach((type) => {
+    if (currentValues.every((value) => value.id !== type.id)) {
+      filteredTypes[generateUniqueString()] = type;
+    }
+  });
+
+  // Invoke the update callback with the filtered types
+  updateCallback(filteredTypes);
+};

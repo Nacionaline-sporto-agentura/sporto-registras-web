@@ -87,7 +87,9 @@ export enum HistoryTypes {
 
 export enum RequestEntityTypes {
   SPORTS_BASES = 'SPORTS_BASES',
+  SPORTS_PERSONS = 'SPORTS_PERSONS',
   TENANTS = 'TENANTS',
+  COMPETITIONS = 'COMPETITIONS',
 }
 
 export enum ClassifierTypes {
@@ -99,6 +101,26 @@ export enum ClassifierTypes {
   SPORT_TYPE = 'sporto_saka',
   SPORT_ORGANIZATION_TYPE = 'sporto_organizacijos_tipas',
   LEGAL_FORMS = 'teisine_forma',
+}
+
+export enum SportTypeButtonKeys {
+  olympic = 'olympic',
+  paralympic = 'paralympic',
+  strategic = 'strategic',
+  technical = 'technical',
+  deaf = 'deaf',
+  specialOlympics = 'specialOlympics',
+}
+
+export enum ResultTypeTypes {
+  NONE = 'NONE',
+  RANGE = 'RANGE',
+  NUMBER = 'NUMBER',
+}
+
+export enum MatchTypes {
+  INDIVIDUAL = 'INDIVIDUAL',
+  TEAM = 'TEAM',
 }
 
 export enum LegalForms {

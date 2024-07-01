@@ -15,7 +15,7 @@ export interface SelectFieldProps {
   name?: string;
   label?: string;
   values?: any;
-  error?: string;
+  error?: any;
   showError?: boolean;
   onChange: (option: any) => void;
   disabled?: boolean;

@@ -13,8 +13,12 @@ interface UsersFiltersState {
   institutionFilters: SimpleFilters;
   organizationFilters: any;
   sportBaseFilters: SimpleFilters;
+  sportsPersonFilters: SimpleFilters;
+  competitionFilters: SimpleFilters;
   unconfirmedOrganizationFilters: UnconfirmedRequestFilters;
   unconfirmedSportBaseFilters: UnconfirmedRequestFilters;
+  unconfirmedCompetitionFilters: UnconfirmedRequestFilters;
+  unconfirmedSportsPersonFilters: UnconfirmedRequestFilters;
   classifierFilters: ClassifierFilters;
 }
 
@@ -36,6 +40,10 @@ const initialState: UsersFiltersState = {
     [ClassifierTypes.SPORT_ORGANIZATION_TYPE]: {},
     [ClassifierTypes.LEGAL_FORMS]: {},
   },
+  sportsPersonFilters: {},
+  competitionFilters: {},
+  unconfirmedCompetitionFilters: {},
+  unconfirmedSportsPersonFilters: {},
 };
 
 export const filtersReducer = createSlice({
@@ -57,11 +65,23 @@ export const filtersReducer = createSlice({
     setSportBaseFilters: (state, action) => {
       return { ...state, sportBaseFilters: action.payload };
     },
+    setSportsPersonFilters: (state, action) => {
+      return { ...state, sportsPersonFilters: action.payload };
+    },
+    setCompetitionFilters: (state, action) => {
+      return { ...state, competitionFilters: action.payload };
+    },
     setUnconfirmedOrganizationFilters: (state, action) => {
       return { ...state, unconfirmedOrganizationFilters: action.payload };
     },
     setUnconfirmedSportBaseFilters: (state, action) => {
       return { ...state, unconfirmedSportBaseFilters: action.payload };
+    },
+    setUnconfirmedSportsPersonFilters: (state, action) => {
+      return { ...state, unconfirmedSportsPersonFilters: action.payload };
+    },
+    setUnconfirmedCompetitionFilters: (state, action) => {
+      return { ...state, unconfirmedCompetitionFilters: action.payload };
     },
     seClassifierFilters: (state, action) => {
       return {
