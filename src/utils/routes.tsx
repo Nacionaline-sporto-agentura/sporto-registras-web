@@ -239,53 +239,53 @@ export const routes = [
     slug: slugs.unConfirmedSportBases,
     component: <SportBaseList />,
   },
-  // {
-  //   name: pageTitles.sportsPersons,
-  //   sidebar: true,
-  //   slug: slugs.sportsPersons,
-  //   component: <SportsPersonsList />,
-  //   role: AdminRoleType.ADMIN,
-  // },
+  {
+    name: pageTitles.sportsPersons,
+    sidebar: true,
+    slug: slugs.sportsPersons,
+    component: <SportsPersonsList />,
+    environment: 'development',
+  },
   {
     slug: slugs.unConfirmedSportsPersons,
     component: <SportsPersonsList />,
-    role: AdminRoleType.ADMIN,
+    environment: 'development',
   },
   {
     slug: slugs.newSportsPerson,
     component: <SportsPersonPage />,
-    role: AdminRoleType.ADMIN,
+    environment: 'development',
   },
   {
     slug: slugs.sportsPerson(':id'),
     component: <SportsPersonPage />,
-    role: AdminRoleType.ADMIN,
+    environment: 'development',
   },
-  // {
-  //   name: pageTitles.nationalTeams,
-  //   sidebar: true,
-  //   slug: slugs.nationalTeams,
-  //   component: <NationalTeamsList />,
-  //   role: AdminRoleType.ADMIN,
-  // },
+  {
+    name: pageTitles.nationalTeams,
+    sidebar: true,
+    slug: slugs.nationalTeams,
+    component: <NationalTeamsList />,
+    environment: 'development',
+  },
   {
     slug: slugs.unConfirmedNationalTeams,
     component: <NationalTeamsList />,
-    role: AdminRoleType.ADMIN,
+    environment: 'development',
   },
   {
     slug: slugs.nationalTeam(':id'),
     component: <NationalTeamPage />,
-    role: AdminRoleType.ADMIN,
+    environment: 'development',
   },
 
-  // {
-  //   name: pageTitles.results,
-  //   sidebar: true,
-  //   slug: slugs.results,
-  //   component: <CompetitionList />,
-  //   role: AdminRoleType.ADMIN,
-  // },
+  {
+    name: pageTitles.results,
+    sidebar: true,
+    slug: slugs.results,
+    component: <CompetitionList />,
+    environment: 'development',
+  },
   {
     slug: slugs.unconfirmedResults,
     component: <CompetitionList />,
@@ -322,43 +322,49 @@ export const routes = [
     component: <UpdateInstitutionForm />,
   },
 
-  // {
-  //   name: pageTitles.bonuses,
-  //   slug: slugs.bonuses,
-  //   sidebar: true,
-  //   component: <BonusesList />,
-  //   role: AdminRoleType.ADMIN,
-  // },
+  {
+    name: pageTitles.bonuses,
+    slug: slugs.bonuses,
+    sidebar: true,
+    component: <BonusesList />,
+    role: AdminRoleType.ADMIN,
+    environment: 'development',
+  },
 
   {
     slug: slugs.bonus(':id'),
     component: <BonusForm />,
     role: AdminRoleType.ADMIN,
+    environment: 'development',
   },
-  // {
-  //   name: pageTitles.scholarships,
-  //   sidebar: true,
-  //   slug: slugs.scholarships,
-  //   component: <ScholarshipsList />,
-  //   role: AdminRoleType.ADMIN,
-  // },
+  {
+    name: pageTitles.scholarships,
+    sidebar: true,
+    slug: slugs.scholarships,
+    component: <ScholarshipsList />,
+    role: AdminRoleType.ADMIN,
+    environment: 'development',
+  },
   {
     slug: slugs.scholarship(':id'),
     component: <ScholarshipForm />,
     role: AdminRoleType.ADMIN,
+    environment: 'development',
   },
 
-  // {
-  //   name: pageTitles.rents,
-  //   sidebar: true,
-  //   slug: slugs.rents,
-  //   component: <RentsList />,
-  //   role: AdminRoleType.ADMIN,
-  // },
+  {
+    name: pageTitles.rents,
+    sidebar: true,
+    slug: slugs.rents,
+    component: <RentsList />,
+    role: AdminRoleType.ADMIN,
+    environment: 'development',
+  },
   {
     slug: slugs.rent(':id'),
     component: <RentForm />,
     role: AdminRoleType.ADMIN,
+    environment: 'development',
   },
 
   {
@@ -385,6 +391,8 @@ export const useFilteredRoutes = () => {
   const user = useAppSelector((state) => state.user.userData);
   const currentProfile = useGetCurrentProfile();
 
+  const VITE_NODE_ENV = import.meta?.env?.VITE_NODE_ENV;
+
   const isAdmin =
     user?.type && [AdminRoleType.ADMIN, AdminRoleType.SUPER_ADMIN].includes(user?.type);
 
@@ -392,6 +400,9 @@ export const useFilteredRoutes = () => {
     let select = true;
     if (route.role) {
       select = !!user?.type && user?.type === route?.role;
+    }
+    if (select && route.environment) {
+      select = route.environment === VITE_NODE_ENV;
     }
 
     if (select && route.appType) {
