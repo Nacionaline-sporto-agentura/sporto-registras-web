@@ -393,6 +393,8 @@ export const useFilteredRoutes = () => {
 
   const VITE_NODE_ENV = import.meta?.env?.VITE_NODE_ENV;
 
+  console.log(VITE_NODE_ENV, 'VITE_NODE_ENV');
+
   const isAdmin =
     user?.type && [AdminRoleType.ADMIN, AdminRoleType.SUPER_ADMIN].includes(user?.type);
 
