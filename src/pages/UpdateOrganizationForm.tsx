@@ -23,6 +23,7 @@ import {
   validationTexts,
 } from '../utils/texts';
 
+import { phoneNumberRegexPattern } from '@aplinkosministerija/design-system';
 import { companyCode } from 'lt-codes';
 import { TenantTypes } from '../utils/constants';
 
@@ -37,7 +38,7 @@ export const validateCreateUserForm = Yup.object().shape({
   companyPhone: Yup.string()
     .required(validationTexts.requireText)
     .trim()
-    .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
+    .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
   companyEmail: Yup.string()
     .email(validationTexts.badEmailFormat)
     .required(validationTexts.requireText),
@@ -150,8 +151,8 @@ const UpdateOrganizationForm = () => {
   );
 
   const deleteInfo: DeleteInfoProps = {
-    deleteButtonText: buttonsTitles.group,
-    deleteDescriptionFirstPart: deleteDescriptionFirstPart.group,
+    deleteButtonText: buttonsTitles.deleteGroup,
+    deleteDescriptionFirstPart: deleteDescriptionFirstPart.delete,
     deleteDescriptionSecondPart: deleteDescriptionSecondPart.group,
     deleteTitle: deleteTitles.group,
     deleteName: institution?.name,

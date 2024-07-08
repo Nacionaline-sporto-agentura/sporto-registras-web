@@ -1,3 +1,4 @@
+import { phoneNumberRegexPattern } from '@aplinkosministerija/design-system';
 import { applyPatch, compare } from 'fast-json-patch';
 import { Formik, yupToFormErrors } from 'formik';
 import { cloneDeep, isEmpty } from 'lodash';
@@ -24,12 +25,26 @@ import HistoryContainer from '../components/other/HistoryContainer';
 import RequestFormHeader from '../components/other/RequestFormHeader';
 import { useAppSelector } from '../state/hooks';
 import { device } from '../styles';
-import { SportBase } from '../types';
+import { DeleteInfoProps, FeatureCollection, SportsBase } from '../types';
 import api from '../utils/api';
 import { AdminRoleType, RequestEntityTypes, StatusTypes } from '../utils/constants';
-import { formatDate, handleErrorToastFromServer, isNew } from '../utils/functions';
+import {
+  formatDate,
+  getFormattedAddress,
+  handleErrorToastFromServer,
+  isNew,
+} from '../utils/functions';
 import { slugs } from '../utils/routes';
-import { buttonsTitles, descriptions, inputLabels, validationTexts } from '../utils/texts';
+import {
+  areUnitLabels,
+  buttonsTitles,
+  deleteDescriptionFirstPart,
+  deleteDescriptionSecondPart,
+  deleteTitles,
+  descriptions,
+  inputLabels,
+  validationTexts,
+} from '../utils/texts';
 
 const generalSchema = Yup.object().shape({
   address: Yup.object().shape({
@@ -40,6 +55,10 @@ const generalSchema = Yup.object().shape({
   }),
   name: Yup.string().required(validationTexts.requireText),
   type: Yup.object().required(validationTexts.requireText),
+  phone: Yup.string()
+    .required(validationTexts.requireText)
+    .trim()
+    .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
   webPage: Yup.string().required(validationTexts.requireText),
   level: Yup.object().required(validationTexts.requireText),
   technicalCondition: Yup.object().required(validationTexts.requireText),
@@ -57,8 +76,9 @@ const photosSchema = Yup.object().shape({
   ),
 });
 
-const specificationSxhema = Yup.object().shape({
+const specificationSchema = Yup.object().shape({
   plotNumber: Yup.string().required(validationTexts.requireText),
+  areaUnits: Yup.string().required(validationTexts.requireText),
   plotArea: Yup.string().required(validationTexts.requireText),
   builtPlotArea: Yup.string().required(validationTexts.requireText),
   methodicalClasses: Yup.string().required(validationTexts.requireText),
@@ -73,13 +93,14 @@ const spacesSchema = Yup.object().shape({
   spaces: Yup.object().test('at-least-one', validationTexts.requireSelect, (obj) => !isEmpty(obj)),
 });
 
-const sportBaseSchema = Yup.object()
+const sportsBaseSchema = Yup.object()
   .shape({})
   .concat(generalSchema)
-  .concat(specificationSxhema)
+  .concat(photosSchema)
+  .concat(specificationSchema)
   .concat(spacesSchema);
 
-const sportBaseTabTitles = {
+const sportsBaseTabTitles = {
   generalInfo: 'Bendra informacija',
   specification: 'Specifikacija',
   photos: 'Nuotraukos',
@@ -91,39 +112,39 @@ const sportBaseTabTitles = {
 
 export const tabs = [
   {
-    label: sportBaseTabTitles.generalInfo,
+    label: sportsBaseTabTitles.generalInfo,
     validation: generalSchema,
   },
-  { label: sportBaseTabTitles.photos, validation: photosSchema },
+  { label: sportsBaseTabTitles.photos, validation: photosSchema },
   {
-    label: sportBaseTabTitles.specification,
-    validation: specificationSxhema,
+    label: sportsBaseTabTitles.specification,
+    validation: specificationSchema,
   },
-  { label: sportBaseTabTitles.spaces, validation: spacesSchema },
-  { label: sportBaseTabTitles.owners },
-  { label: sportBaseTabTitles.organizations },
-  { label: sportBaseTabTitles.investments },
+  { label: sportsBaseTabTitles.spaces, validation: spacesSchema },
+  { label: sportsBaseTabTitles.owners },
+  { label: sportsBaseTabTitles.organizations },
+  { label: sportsBaseTabTitles.investments },
 ];
 
-const SportBasePage = () => {
+const SportsBasePage = () => {
   const navigate = useNavigate();
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
   const { id = '' } = useParams();
   const [searchParams] = useSearchParams();
   const title = isNew(id) ? 'Prašymas įregistruoti sporto bazę' : 'Sporto bazė';
   const { prasymas: queryStringRequestId } = Object.fromEntries([...Array.from(searchParams)]);
-  const backUrl = isNew(id) ? slugs.unConfirmedSportBases : slugs.sportBases;
+  const backUrl = isNew(id) ? slugs.unConfirmedSportBases : slugs.sportsBases;
   const [status, setStatus] = useState('');
   const user = useAppSelector((state) => state.user.userData);
   const [validateOnChange, setValidateOnChange] = useState<any>({});
   const queryClient = useQueryClient();
 
-  const { isLoading: sportBaseLoading, data: sportBase } = useQuery(
+  const { isLoading: sportsBaseLoading, data: sportsBase } = useQuery(
     ['sportBase', id],
-    () => api.getSportBase(id),
+    () => api.getSportsBase(id),
     {
       onError: () => {
-        navigate(slugs.sportBases);
+        navigate(slugs.sportsBases);
       },
       refetchOnWindowFocus: false,
       enabled: !isNew(id),
@@ -143,17 +164,34 @@ const SportBasePage = () => {
   );
 
   const lastRequestApprovalOrRejection =
-    sportBase &&
-    [StatusTypes.APPROVED, StatusTypes.REJECTED].includes(sportBase?.lastRequest?.status);
+    sportsBase &&
+    [StatusTypes.APPROVED, StatusTypes.REJECTED].includes(sportsBase?.lastRequest?.status);
 
-  const request = sportBase?.lastRequest || requestResponse;
+  const request = sportsBase?.lastRequest || requestResponse;
 
   const canValidate = request?.canValidate;
 
   const isNewRequest = isNew(id) && !queryStringRequestId;
+  const isUser = user.type === AdminRoleType.USER;
 
-  const canEdit = isNewRequest || request?.canEdit || sportBase?.canCreateRequest;
-  const canCreateRequest = sportBase?.canCreateRequest || !request?.id;
+  const showDraftButton =
+    isUser &&
+    (isNewRequest ||
+      [request?.status].includes(StatusTypes.DRAFT) ||
+      lastRequestApprovalOrRejection);
+
+  const canEdit = isNewRequest || request?.canEdit || (isUser && lastRequestApprovalOrRejection);
+  const canCreateRequest = (isUser && lastRequestApprovalOrRejection) || !request?.id;
+
+  const disabled = !canEdit;
+  const isRequestSubmittedOrCreated =
+    request?.status && [StatusTypes.SUBMITTED, StatusTypes.CREATED].includes(request?.status);
+
+  const isRequestReturnedOrDraft =
+    request?.status && [StatusTypes.RETURNED, StatusTypes.DRAFT].includes(request?.status);
+
+  const canDelete =
+    (!isUser && isRequestSubmittedOrCreated) || (isUser && isRequestReturnedOrDraft);
 
   const isCreateStatus = canCreateRequest || request.status === StatusTypes.DRAFT;
 
@@ -169,6 +207,21 @@ const SportBasePage = () => {
         queryClient.invalidateQueries();
       },
       retry: false,
+    },
+  );
+
+  const deleteRequest = useMutation(
+    () =>
+      api.deleteRequest({
+        id: request?.id,
+      }),
+    {
+      onError: () => {
+        handleErrorToastFromServer();
+      },
+      onSuccess: () => {
+        navigate(backUrl);
+      },
     },
   );
 
@@ -194,14 +247,14 @@ const SportBasePage = () => {
   };
 
   const sportBaseWithoutLastRequest = useMemo(() => {
-    if (!sportBase) return {};
+    if (!sportsBase) return {};
 
-    const { lastRequest, ...rest } = sportBase;
+    const { lastRequest, ...rest } = sportsBase;
 
     return flattenArrays({ ...rest });
-  }, [sportBase]);
+  }, [sportsBase]);
 
-  if (sportBaseLoading || requestLoading) return <FullscreenLoader />;
+  if (sportsBaseLoading || requestLoading) return <FullscreenLoader />;
 
   const getFormValues = () => {
     // Do not apply diff if the last request status type is APPROVED OR REJECTED
@@ -216,16 +269,18 @@ const SportBasePage = () => {
   };
 
   const formValues: any = getFormValues();
-  const disabled = !canEdit;
 
-  const showDraftButton =
-    user.type === AdminRoleType.USER &&
-    (isNewRequest ||
-      [request?.status].includes(StatusTypes.DRAFT) ||
-      lastRequestApprovalOrRejection);
+  const deleteInfo: DeleteInfoProps = {
+    deleteButtonText: buttonsTitles.deleteRequest,
+    deleteDescriptionFirstPart: deleteDescriptionFirstPart.delete,
+    deleteDescriptionSecondPart: deleteDescriptionSecondPart.request,
+    deleteTitle: deleteTitles.request,
+    deleteName: formValues?.name,
+    handleDelete: deleteRequest.mutateAsync,
+  };
 
   const validationSchema =
-    tabs.length - 1 == currentTabIndex ? sportBaseSchema : tabs[currentTabIndex]?.validation;
+    tabs.length - 1 == currentTabIndex ? sportsBaseSchema : tabs[currentTabIndex]?.validation;
 
   const oldData = isEmpty(sportBaseWithoutLastRequest) ? formValues : sportBaseWithoutLastRequest;
 
@@ -238,7 +293,7 @@ const SportBasePage = () => {
       onSubmit={() => {}}
     >
       {({ values, errors, setFieldValue, setErrors, setValues }) => {
-        const spaceTypeIds = (Object.values(values?.spaces || {}) as SportBase[])?.map(
+        const spaceTypeIds = (Object.values(values?.spaces || {}) as SportsBase[])?.map(
           (space) => space?.type?.id,
         );
 
@@ -251,7 +306,7 @@ const SportBasePage = () => {
           extractIdKeys(sportBaseDif, idKeys);
           processDiffs(sportBaseDif, idKeys, 0, obj);
 
-          if (sportBase && !lastRequestApprovalOrRejection) {
+          if (sportsBase && !lastRequestApprovalOrRejection) {
             const requestDif = compare(formValues, values, true);
             extractIdKeys(requestDif, idKeys);
             processDiffs(requestDif, idKeys, 1, obj);
@@ -265,7 +320,7 @@ const SportBasePage = () => {
         const submitChanges = changes.map((change: any) => change[0]);
 
         const containers = {
-          [sportBaseTabTitles.generalInfo]: (
+          [sportsBaseTabTitles.generalInfo]: (
             <SportBaseGeneral
               sportBase={values}
               errors={errors}
@@ -273,7 +328,7 @@ const SportBasePage = () => {
               disabled={disabled}
             />
           ),
-          [sportBaseTabTitles.photos]: (
+          [sportsBaseTabTitles.photos]: (
             <SportBasePhotos
               sportBase={values}
               errors={errors}
@@ -281,7 +336,7 @@ const SportBasePage = () => {
               disabled={disabled}
             />
           ),
-          [sportBaseTabTitles.specification]: (
+          [sportsBaseTabTitles.specification]: (
             <SpecificationContainer
               sportBase={values}
               errors={errors}
@@ -289,7 +344,7 @@ const SportBasePage = () => {
               disabled={disabled}
             />
           ),
-          [sportBaseTabTitles.spaces]: (
+          [sportsBaseTabTitles.spaces]: (
             <SportBaseSpaceContainer
               spaces={values.spaces || {}}
               handleChange={setFieldValue}
@@ -297,21 +352,21 @@ const SportBasePage = () => {
               disabled={disabled}
             />
           ),
-          [sportBaseTabTitles.owners]: (
+          [sportsBaseTabTitles.owners]: (
             <OwnersContainer
               owners={values.owners || {}}
               handleChange={setFieldValue}
               disabled={disabled}
             />
           ),
-          [sportBaseTabTitles.organizations]: (
+          [sportsBaseTabTitles.organizations]: (
             <OrganizationsContainer
               organizations={values.tenants || {}}
               handleChange={setFieldValue}
               disabled={disabled}
             />
           ),
-          [sportBaseTabTitles.investments]: (
+          [sportsBaseTabTitles.investments]: (
             <InvestmentsContainer
               investments={values.investments || {}}
               handleChange={setFieldValue}
@@ -337,7 +392,7 @@ const SportBasePage = () => {
           name: { name: inputLabels.sportBaseName },
           photos: {
             name: inputLabels.photos,
-            labelField: 'description',
+            getValueLabel: (val) => val?.description,
             children: {
               representative: { name: inputLabels.representative },
               public: { name: inputLabels.public },
@@ -346,7 +401,7 @@ const SportBasePage = () => {
           },
           address: {
             name: inputLabels.address,
-            labelField: 'city',
+            getValueLabel: (val) => getFormattedAddress(val),
             children: {
               city: { name: inputLabels.town },
               house: { name: inputLabels.houseNo },
@@ -355,9 +410,23 @@ const SportBasePage = () => {
               municipality: { name: inputLabels.municipality },
             },
           },
-          type: { name: inputLabels.sportBaseType, labelField: 'name' },
-          technicalCondition: { name: inputLabels.technicalBaseCondition, labelField: 'name' },
-          level: { name: inputLabels.level, labelField: 'name' },
+          type: { name: inputLabels.sportBaseType, getValueLabel: (val) => val?.name },
+          technicalCondition: {
+            name: inputLabels.technicalBaseCondition,
+            getValueLabel: (val) => val?.name,
+          },
+          geom: {
+            name: inputLabels.coordinates,
+            getValueLabel: (val: FeatureCollection) =>
+              val?.features
+                ?.map((feature) =>
+                  feature?.geometry?.coordinates
+                    ? `X: ${feature.geometry.coordinates[0]} Y: ${feature.geometry.coordinates[1]}`
+                    : '',
+                )
+                .join(', '),
+          },
+          level: { name: inputLabels.level, getValueLabel: (val) => val?.name },
           coordinates: {
             name: inputLabels.coordinates,
             children: {
@@ -366,6 +435,9 @@ const SportBasePage = () => {
             },
           },
           webPage: { name: inputLabels.website },
+          email: { name: inputLabels.companyEmail },
+          phone: { name: inputLabels.companyPhone },
+          areaUnits: { name: inputLabels.areaUnits, getValueLabel: (val) => areUnitLabels[val] },
           plotNumber: { name: inputLabels.plotNumber },
           plotArea: { name: inputLabels.plotArea },
           builtPlotArea: { name: inputLabels.builtPlotArea },
@@ -378,10 +450,10 @@ const SportBasePage = () => {
           disabledAccessible: { name: descriptions.disabledAccessible },
           blindAccessible: { name: descriptions.blindAccessible },
           publicWifi: { name: descriptions.publicWifi },
-          plans: { labelField: 'name', name: descriptions.plans },
+          plans: { getValueLabel: (val) => val?.name, name: descriptions.plans },
           owners: {
-            labelField: 'name',
-            name: sportBaseTabTitles.owners,
+            getValueLabel: (val) => val?.name,
+            name: sportsBaseTabTitles.owners,
             children: {
               name: { name: inputLabels.jarName },
               companyCode: { name: inputLabels.jarCode },
@@ -390,12 +462,20 @@ const SportBasePage = () => {
           },
           investments: {
             labelField: 'items source.name',
-            name: sportBaseTabTitles.investments,
+            getValueLabel: (val) =>
+              val?.items &&
+              Object.keys(val.items)
+                .map((key) => val.items[key]?.source?.name)
+                .join(', '),
+            name: sportsBaseTabTitles.investments,
             children: {
               items: {
-                name: 'Šaltiniai',
+                name: inputLabels.sources,
                 children: {
-                  source: { name: inputLabels.source, labelField: 'name' },
+                  source: {
+                    name: inputLabels.investmentSources,
+                    getValueLabel: (val) => val?.name,
+                  },
                   fundsAmount: { name: inputLabels.fundsAmount },
                 },
               },
@@ -403,8 +483,8 @@ const SportBasePage = () => {
             },
           },
           tenants: {
-            labelField: 'companyName',
-            name: sportBaseTabTitles.organizations,
+            getValueLabel: (val) => val?.companyName,
+            name: sportsBaseTabTitles.organizations,
             children: {
               companyName: { name: inputLabels.name },
               startAt: { name: inputLabels.startAt },
@@ -413,27 +493,33 @@ const SportBasePage = () => {
             },
           },
           spaces: {
-            labelField: 'name',
-            name: sportBaseTabTitles.spaces,
+            getValueLabel: (val) => val?.name,
+            name: sportsBaseTabTitles.spaces,
             children: {
               name: { name: inputLabels.name },
+              group: { name: inputLabels.sportBaseSpaceGroup },
               type: { name: inputLabels.sportBaseSpaceType },
-              sportTypes: { name: inputLabels.sportTypes, labelField: 'name' },
+              sportTypes: { name: inputLabels.sportTypes, getValueLabel: (val) => val?.name },
               photos: {
                 name: inputLabels.photos,
-                labelField: 'description',
+                getValueLabel: (val) => val?.description,
                 children: {
                   representative: { name: inputLabels.representative },
                   public: { name: inputLabels.public },
                   description: { name: inputLabels.description },
                 },
               },
-              technicalCondition: { name: inputLabels.technicalSpaceCondition, labelField: 'name' },
+              technicalCondition: {
+                name: inputLabels.technicalSpaceCondition,
+                getValueLabel: (val) => val?.name,
+              },
               buildingNumber: { name: inputLabels.buildingNumber },
               buildingArea: { name: inputLabels.buildingArea },
-              energyClass: { name: inputLabels.energyClass },
-              energyClassCertificate: { name: descriptions.energyClassCertificate },
-              buildingPurpose: { name: inputLabels.buildingPurpose },
+              energyClass: { name: inputLabels.energyClass, getValueLabel: (val) => val?.name },
+              buildingPurpose: {
+                name: inputLabels.buildingPurpose,
+                getValueLabel: (val) => val?.name,
+              },
               constructionDate: { name: inputLabels.constructionDate },
               latestRenovationDate: { name: inputLabels.latestRenovationDate },
               additionalValues: {
@@ -447,7 +533,7 @@ const SportBasePage = () => {
         const onSubmit = async () => {
           let errors = {};
           try {
-            await validationSchema?.validate(values, { abortEarly: false });
+            await sportsBaseSchema?.validate(values, { abortEarly: false });
           } catch (e) {
             const updatedValidateOnChange = {
               ...validateOnChange,
@@ -493,17 +579,17 @@ const SportBasePage = () => {
         };
 
         const info = [
-          ...(sportBase?.id
+          ...(sportsBase?.id
             ? [
                 <>
-                  Identifikavimo kodas: <strong>{`#${sportBase.id}`}</strong>
+                  Identifikavimo kodas: <strong>{`#${sportsBase.id}`}</strong>
                 </>,
               ]
             : []),
-          ...(sportBase?.createdAt ? [`Įregistruota: ${formatDate(sportBase.createdAt)}`] : []),
-          ...(sportBase?.updatedAt ? [`Atnaujinta: ${formatDate(sportBase.updatedAt)}`] : []),
-          ...(sportBase?.deletedAt
-            ? [`Objekto išregistravimo data: ${formatDate(sportBase.deletedAt)}`]
+          ...(sportsBase?.createdAt ? [`Įregistruota: ${formatDate(sportsBase.createdAt)}`] : []),
+          ...(sportsBase?.updatedAt ? [`Atnaujinta: ${formatDate(sportsBase.updatedAt)}`] : []),
+          ...(sportsBase?.deletedAt
+            ? [`Objekto išregistravimo data: ${formatDate(sportsBase.deletedAt)}`]
             : []),
         ];
 
@@ -527,6 +613,7 @@ const SportBasePage = () => {
                 tabs={tabs}
                 back={true}
                 info={info}
+                deleteInfo={canDelete ? deleteInfo : undefined}
               />
 
               <Column>
@@ -621,4 +708,4 @@ const Column = styled.div`
   flex-direction: column;
 `;
 
-export default SportBasePage;
+export default SportsBasePage;

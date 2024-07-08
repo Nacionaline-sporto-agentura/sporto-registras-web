@@ -3,10 +3,9 @@ import { FormRow } from '../../styles/CommonStyles';
 import { SportBaseSpace } from '../../types';
 import api from '../../utils/api';
 import { getSportBaseSpaceEnergyClassList } from '../../utils/functions';
-import { descriptions, inputLabels } from '../../utils/texts';
+import { inputLabels } from '../../utils/texts';
 import AsyncSelectField from '../fields/AsyncSelectField';
 import DateField from '../fields/DateField';
-import DragAndDropUploadField from '../fields/DragAndDropUploadField';
 import NumericTextField from '../fields/NumericTextField';
 import TextField from '../fields/TextField';
 import TreeSelectField from '../fields/TreeSelect';
@@ -64,15 +63,6 @@ const BuildingParametersContainer = ({
           getOptionLabel={(option) => option?.name}
           loadOptions={(input, page) => getSportBaseSpaceEnergyClassList(input, page)}
         />
-
-        <DragAndDropUploadField
-          disabled={disabled}
-          onChange={(files: any) => handleChange('energyClassCertificate', files[0])}
-          multiple={false}
-          files={[sportBaseSpace?.energyClassCertificate]}
-          label={descriptions.energyClassCertificate}
-          error={errors?.energyClassCertificate}
-        />
       </FormRow>
       <FormRow columns={1}>
         <TreeSelectField
@@ -89,21 +79,24 @@ const BuildingParametersContainer = ({
         />
       </FormRow>
       <FormRow columns={2}>
-        <DateField
+        <NumericTextField
           disabled={disabled}
-          name={'constructionDate'}
-          label={inputLabels.constructionDate}
+          label={inputLabels.year}
           value={sportBaseSpace?.constructionDate}
-          maxDate={sportBaseSpace?.latestRenovationDate}
           error={errors?.constructionDate}
-          onChange={(constructionDate) => handleChange(`constructionDate`, constructionDate)}
+          name="constructionDate"
+          onChange={(year) => {
+            if (year.length > 4) return;
+
+            handleChange(`constructionDate`, year);
+          }}
         />
+
         <DateField
           disabled={disabled}
           name={'latestRenovationDate'}
           label={inputLabels.latestRenovationDate}
           value={sportBaseSpace?.latestRenovationDate}
-          minDate={sportBaseSpace?.constructionDate}
           error={errors?.latestRenovationDate}
           onChange={(endAt) => handleChange(`latestRenovationDate`, endAt)}
         />

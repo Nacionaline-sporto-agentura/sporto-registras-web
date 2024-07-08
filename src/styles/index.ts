@@ -41,9 +41,13 @@ export interface Theme {
   };
 }
 
-export const theme: Theme = {
+export const palette = {
+  primary: '#003D2B',
+};
+
+export const theme: any = {
   colors: {
-    primary: '#003D2B',
+    primary: palette.primary,
     secondary: '#ADE6B9',
     tertiary: '#7A7E9F',
     background: '#F8FAFC',
@@ -79,6 +83,14 @@ export const theme: Theme = {
     light: '#f3f3f7',
     white: '#ffffff',
     grey: '#B3B5C4',
+
+    fields: {
+      borderFocus: palette.primary,
+    },
+  },
+  height: {
+    fields: 4,
+    buttons: 4,
   },
 };
 

@@ -1,13 +1,12 @@
+import { AsyncSelectField, PhoneField, TextField } from '@aplinkosministerija/design-system';
 import { FormRow } from '../../styles/CommonStyles';
-import { SportBase, SportsBasesCondition, SportsBasesLevel, Types } from '../../types';
+import { SportsBase, SportsBasesCondition, SportsBasesLevel, Types } from '../../types';
 import {
   getSportBaseLevelsList,
   getSportBaseTechnicalConditionList,
   getSportBaseTypesList,
 } from '../../utils/functions';
 import { descriptions, formLabels, inputLabels, pageTitles } from '../../utils/texts';
-import AsyncSelectField from '../fields/AsyncSelectField';
-import TextField from '../fields/TextField';
 import UrlField from '../fields/UrlField';
 import InnerContainerRow from '../other/InnerContainerRow';
 import MapField from '../other/MapField';
@@ -20,17 +19,10 @@ const SportBaseGeneralContainer = ({
   disabled,
 }: {
   disabled: boolean;
-  sportBase: SportBase;
+  sportBase: SportsBase;
   errors: any;
   handleChange: any;
 }) => {
-  const address = sportBase?.address;
-
-  const formattedAddress =
-    address?.street && address?.house && address?.city && address?.municipality
-      ? `${address.street} ${address.house}, ${address.city}`
-      : '';
-
   return (
     <>
       <InnerContainerRow title={pageTitles.info} description={descriptions.sportBaseGeneral} />
@@ -57,6 +49,7 @@ const SportBaseGeneralContainer = ({
             }}
             getOptionLabel={(option) => option?.name}
             loadOptions={(input, page) => getSportBaseTypesList(input, page)}
+            getInputValue={(option) => option?.name}
           />
           <AsyncSelectField
             disabled={disabled}
@@ -69,6 +62,7 @@ const SportBaseGeneralContainer = ({
             }}
             getOptionLabel={(option) => option?.name}
             loadOptions={(input, page) => getSportBaseTechnicalConditionList(input, page)}
+            getInputValue={(option) => option?.name}
           />
         </FormRow>
         <FormRow columns={2}>
@@ -83,6 +77,7 @@ const SportBaseGeneralContainer = ({
             }}
             getOptionLabel={(option) => option?.name}
             loadOptions={(input, page) => getSportBaseLevelsList(input, page)}
+            getInputValue={(option) => option?.name}
           />
           <UrlField
             disabled={disabled}
@@ -93,7 +88,7 @@ const SportBaseGeneralContainer = ({
           />
         </FormRow>
         <FormRow columns={2}>
-          <TextField
+          <PhoneField
             disabled={disabled}
             label={inputLabels.companyPhone}
             value={sportBase?.phone}
@@ -172,10 +167,9 @@ const SportBaseGeneralContainer = ({
         </FormRow>
         <FormRow columns={1}>
           <MapField
-            address={formattedAddress}
-            onChange={(address) => {
-              const coordinates = address?.features?.[0]?.geometry?.coordinates;
-              handleChange('coordinates', { x: coordinates[0], y: coordinates[1] });
+            value={sportBase.geom}
+            onChange={(geom) => {
+              handleChange('geom', geom);
             }}
             disabled={disabled}
           />

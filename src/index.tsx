@@ -1,3 +1,4 @@
+import { DesignSystemProvider } from '@aplinkosministerija/design-system';
 import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Provider } from 'react-redux';
@@ -18,13 +19,15 @@ const basename = env?.VITE_BASE_URL || '/';
 root.render(
   <QueryClientProvider client={queryClient}>
     <Provider store={store}>
-      <PersistGate persistor={persistor}>
-        <BrowserRouter basename={basename}>
-          <ThemeProvider theme={theme}>
-            <App />
-          </ThemeProvider>
-        </BrowserRouter>
-      </PersistGate>
+      <DesignSystemProvider>
+        <PersistGate persistor={persistor}>
+          <BrowserRouter basename={basename}>
+            <ThemeProvider theme={theme}>
+              <App />
+            </ThemeProvider>
+          </BrowserRouter>
+        </PersistGate>
+      </DesignSystemProvider>
     </Provider>
   </QueryClientProvider>,
 );

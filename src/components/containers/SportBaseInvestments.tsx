@@ -49,7 +49,7 @@ const investmentsSchema = Yup.object().shape({
 });
 
 const investmentsLabels = {
-  source: { label: inputLabels.source, show: true },
+  source: { label: inputLabels.investmentSources, show: true },
   fundsAmount: { label: inputLabels.totalFundsAmount, show: true },
   appointedAt: { label: inputLabels.appointedAt, show: true },
 };
@@ -155,7 +155,7 @@ const InvestmentsContainer = ({ investments, handleChange, disabled }) => {
                         <SourcesRow key={`items-${key}`}>
                           <AsyncSelectField
                             disabled={disabled}
-                            label={inputLabels.source}
+                            label={inputLabels.investmentSources}
                             value={item?.source}
                             showError={false}
                             error={error?.source}

@@ -51,7 +51,7 @@ const NumericTextField = ({
     if (!event.currentTarget.contains(event.relatedTarget)) {
       const inputValue = value?.toString() || '';
       if (inputValue?.endsWith('.')) {
-        onChange(inputValue.replaceAll('.', ''));
+        handleOnChange(inputValue.replaceAll('.', ''));
       }
 
       if ((maxValue || minValue) && inputValue) {
@@ -62,11 +62,18 @@ const NumericTextField = ({
           (maxValue === undefined || parsedValue <= parseFloat(maxValue));
 
         if (!isValidRange) {
-          onChange('');
+          handleOnChange('');
         }
       }
     }
   };
+
+  const handleOnChange = (value) => {
+    if (!value) return onChange('');
+
+    onChange(Number(value));
+  };
+
   const preventNumInputFromScrolling = (e: any) =>
     e.target.addEventListener(
       'wheel',
@@ -81,7 +88,7 @@ const NumericTextField = ({
       ? new RegExp(/^\d*$/)
       : new RegExp(`^(?:\\d+)?(?:[.,]\\d{0,${digitsAfterComma}})?$`);
 
-    if (regex.test(input)) onChange(input.replaceAll(',', '.'));
+    if (regex.test(input)) handleOnChange(input.replaceAll(',', '.'));
   };
 
   return (

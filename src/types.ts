@@ -2,6 +2,7 @@ import { Operation } from 'fast-json-patch';
 import {
   AdminRoleType,
   AuthStrategy,
+  BonusType,
   ClassifierTypes,
   FieldTypes,
   HistoryTypes,
@@ -9,7 +10,9 @@ import {
   MatchTypes,
   MembershipTypes,
   ResultTypeTypes,
+  ScholarshipType,
   StatusTypes,
+  StudiesType,
   TableItemWidth,
   TenantTypes,
 } from './utils/constants';
@@ -49,6 +52,12 @@ export interface SportsBasesLevel {
 export interface Types {
   id: any;
   name: string;
+}
+
+export interface SportBaseSpaceType {
+  id: any;
+  name: string;
+  needSportType: boolean;
 }
 
 export interface SportsBasesCondition {
@@ -95,9 +104,10 @@ export interface SportsBaseOwner {
 export interface SportBaseSpace {
   id?: number;
   name: string;
-  type?: Types;
+  group?: Types;
+  type?: SportBaseSpaceType;
   sportTypes?: SportType[];
-  sportBase?: SportBase;
+  sportBase?: SportsBase;
   technicalCondition?: SportsBasesCondition;
   buildingNumber?: string;
   buildingPurpose?: { id: number; name: string };
@@ -107,14 +117,9 @@ export interface SportBaseSpace {
   latestRenovationDate?: string;
   photos: Photo[];
   additionalValues: { [key: string]: any };
-  energyClassCertificate?: {
-    url: string;
-    name: string;
-    size: number;
-  };
 }
 
-export interface SportBase extends CommonFields {
+export interface SportsBase extends CommonFields {
   id?: number;
   name: string;
   phone?: string;
@@ -130,13 +135,14 @@ export interface SportBase extends CommonFields {
     house: string;
     apartment?: string;
   };
-  coordinates: { x: string; y: string };
+  geom: FeatureCollection;
   webPage: string;
   photos: Photo[];
   plotNumber: string;
   disabledAccessible: boolean;
   blindAccessible: boolean;
   plotArea?: number;
+  areaUnits?: number;
   builtPlotArea?: number;
   parkingPlaces?: number;
   dressingRooms?: number;
@@ -348,6 +354,7 @@ export interface Field {
   scale?: number;
   options: any[];
   type: FieldTypes;
+  required: boolean;
 }
 
 export interface TypesAndFields {
@@ -417,12 +424,96 @@ export interface SportsPerson extends CommonFields {
   lastRequest: Request;
   personalCode: string;
   nationality: string;
+  studies: Study[];
   competitionsCount: number;
+  workRelations: WorkRelation[];
+  sportsBases: SportsBase[];
+}
+
+export interface Coach extends CommonFields {
+  competences: CoachCategory[];
+  bonuses: Bonus[];
+  nationalTeams: NationalTeam[];
+}
+
+export interface CoachCategory {
+  company: Types;
+  category: Types;
+  issuedAt: string;
+  expiresAt: string;
+}
+
+export interface Referee extends CommonFields {
+  categories: RefereeCategory[];
+  careerEndedAt: string;
+}
+
+export interface FaInstructor extends CommonFields {
+  faSpecialists: FaSpecialist[];
+}
+
+export interface AmsInstructor extends CommonFields {
+  coaches: FaSpecialist[];
+}
+
+export interface FaSpecialist extends CommonFields {
+  faSpecialist: SportsPerson;
+  dateFrom: string;
+  dateTo: string;
+}
+
+export interface AmsInstructor extends CommonFields {
+  coach: SportsPerson;
+  startAt: string;
+  endAt: string;
+}
+
+export interface RefereeCategory {
+  company: Types;
+  documentNumber: string;
+  formCode: string;
+  series: string;
+  issuedAt: string;
+}
+
+export interface WorkRelation extends CommonFields {
+  organization: Tenant;
+  basis: Types;
+  startAt: string;
+  endAt: string;
+  index?: any;
+}
+
+export interface Study extends CommonFields {
+  type: StudiesType;
+  program: Types;
+  company: Types;
+  startAt: string;
+  endAt: string;
+  index?: any;
 }
 
 export interface Athlete extends CommonFields {
-  id?: number;
   competitionResults: Result[];
+  bonuses: Bonus[];
+  nationalTeams: NationalTeam[];
+  memberships: AthleteMembership[];
+  coaches: AthleteCoach[];
+  careerEndedAt: string;
+  rents: Rent[];
+  scholarships: ScholarShip[];
+}
+
+export interface AthleteCoach {
+  sportsPerson: any;
+  startAt: string;
+  endAt: string;
+}
+
+export interface AthleteMembership {
+  documentNumber: string;
+  series: string;
+  date: string;
 }
 
 export interface SportType extends CommonFields {
@@ -475,4 +566,62 @@ export interface Result extends CommonFields {
 export interface ResultType {
   name: string;
   type: ResultTypeTypes;
+}
+
+export type ArrayToObject<T> = {
+  [K in keyof T]: T[K] extends Array<infer U> ? { [key: string]: U } : T[K];
+};
+
+export interface Bonus extends CommonFields {
+  sportsPerson?: SportsPerson;
+  result?: Result;
+  documentNumber?: string;
+  date?: Date;
+  amount?: string;
+  type: BonusType;
+}
+
+export interface ScholarShip extends CommonFields {
+  sportsPerson?: SportsPerson;
+  result?: Result;
+  documentNumber?: string;
+  date?: Date;
+  amount?: string;
+  dateFrom?: Date;
+  dateTo?: Date;
+  data?: {
+    from: Date;
+    reason: string;
+    renewFrom?: Date;
+  };
+  status: ScholarshipType;
+}
+
+export interface Rent extends CommonFields {
+  sportsPerson?: SportsPerson;
+  result?: Result;
+  documentNumber?: string;
+  date?: Date;
+  amount?: string;
+  unit?: Types;
+  dateFrom?: Date;
+  data?: {
+    from: Date;
+    reason: string;
+    renewFrom?: Date;
+  };
+  status: ScholarshipType;
+}
+
+export interface NationalTeam extends CommonFields {
+  name: string;
+  startAt: Date;
+  endAt: Date;
+  ageGroup: Types;
+  gender: Types;
+  sportType: SportType;
+  athletes: SportsPerson[];
+  coaches: SportsPerson[];
+  canCreateRequest: boolean;
+  lastRequest: Request;
 }

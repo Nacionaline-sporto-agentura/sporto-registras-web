@@ -2,13 +2,25 @@ import Axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { isEmpty, isFinite } from 'lodash';
 import Cookies from 'universal-cookie';
 import { GroupProps } from '../pages/GroupForm';
-import { Group, Request, ResultType, SportBase, SportType, Tenant, TypesAndFields } from '../types';
+import {
+  Bonus,
+  Group,
+  Rent,
+  Request,
+  ResultType,
+  ScholarShip,
+  SportsBase,
+  SportType,
+  Tenant,
+  TypesAndFields,
+} from '../types';
 const cookies = new Cookies();
 
 export enum Resources {
+  NATIONAL_TEAMS = 'api/nationalTeams',
   LOGIN = 'auth/login',
   HISTORY = 'history',
-
+  WORK_RELATIONS = 'api/tenants/workRelations',
   FILES_UPLOAD = 'api/files/upload',
   REFRESH_TOKEN = 'auth/refresh',
   E_GATES_LOGIN = 'auth/evartai/login',
@@ -17,7 +29,7 @@ export enum Resources {
   SET_PASSWORD = 'auth/accept',
   REMIND_PASSWORD = 'auth/remind',
   REQUESTS = 'api/requests',
-  SPORT_BASES = 'api/sportsBases',
+  SPORTS_BASES = 'api/sportsBases',
   SPORTS_PERSONS = 'api/sportsPersons',
   RESULTS = 'api/competitions/results',
   COMPETITIONS = 'api/competitions',
@@ -30,7 +42,8 @@ export enum Resources {
   COMPETITION_TYPES = 'api/types/competitions/types',
   RESULT_TYPES = 'api/types/competitions/resultTypes',
   MATCH_TYPES = 'api/types/sportTypes/matches',
-  SPACE_TYPES = 'api/sportsBases/spaces/types',
+  SPACE_TYPES = 'api/types/sportsBases/spaces/types',
+  SPACE_GROUPS = 'api/types/sportsBases/spaces/groups',
   ENERGY_CLASSES = 'api/sportsBases/spaces/energyClasses',
   FIELDS = 'api/sportsBases/spaces/typesAndFields',
   ADMINS = 'api/admins',
@@ -44,9 +57,26 @@ export enum Resources {
   LEGAL_FORMS = '/api/tenants/legalForms',
   SPORT_ORGANIZATION_TYPES = '/api/tenants/sportOrganizationTypes',
   BUILDING_PURPOSES = '/api/sportsBases/spaces/buildingPurposes',
+  STUDIES_COMPANIES = '/api/types/studies/companies',
+  STUDIES_PROGRAMS = '/api/types/studies/programs',
+  COACHES = '/api/sportsPersons/coaches',
+  ATHLETE = '/api/sportsPersons/athletes',
+  EDUCATIONAL_COMPANIES = 'api/types/educationalCompanies',
+  BONUSES = '/api/bonuses',
+  SCHOLARSHIPS = '/api/scholarships',
+  RENTS = '/api/rents',
+  RENTS_UNITS = '/api/types/rents/units',
+  AGE_GROUPS = 'api/types/nationalTeam/ageGroups',
+  GENDERS = 'api/types/nationalTeam/genders',
 }
 
 export enum Populations {
+  AGE_GROUP = 'ageGroup',
+  ATHLETES = 'athletes',
+  UNIT = 'unit',
+  RESULT_TYPE = 'resultType',
+  COMPETITION = 'competition',
+  RESULT = 'result',
   SPORT_TYPES = 'sportTypes',
   ATHLETE = 'athlete',
   CHILDREN = 'children',
@@ -62,6 +92,7 @@ export enum Populations {
   LEGAL_FORM = 'legalForm',
   TENANT = 'tenant',
   COMPETITION_TYPE = 'competitionType',
+  SPORTS_PERSON = 'sportsPerson',
 }
 
 export enum SortAscFields {
@@ -171,22 +202,24 @@ class Api {
     return res.data;
   };
 
-  getList = async ({ resource, page, pageSize, ...rest }: GetAllProps): Promise<any> => {
+  getList = async ({ resource, page, pageSize, query, ...rest }: GetAllProps): Promise<any> => {
     const config = {
       params: {
         pageSize: pageSize || 10,
         page: page || 1,
         ...rest,
+        query: JSON.stringify(query),
       },
     };
 
     return this.errorWrapper(() => this.axios.get(`/${resource}`, config));
   };
 
-  getAll = async ({ resource, ...rest }: GetAllProps): Promise<any> => {
+  getAll = async ({ resource, query, ...rest }: GetAllProps): Promise<any> => {
     const config = {
       params: {
         ...rest,
+        query: JSON.stringify(query),
       },
     };
 
@@ -323,6 +356,13 @@ class Api {
     });
   };
 
+  updateProfile = async ({ params }: { params: any }) => {
+    return this.patch({
+      resource: Resources.USERS + '/me',
+      params,
+    });
+  };
+
   getAdminUser = async ({ id }: { id: string }) => {
     return this.getOne({
       resource: Resources.ADMINS,
@@ -432,9 +472,9 @@ class Api {
     });
   };
 
-  getSportBases = async ({ page, query }: TableList) =>
+  getSportsBases = async ({ page, query }: TableList) =>
     await this.getList({
-      resource: Resources.SPORT_BASES,
+      resource: Resources.SPORTS_BASES,
       populate: [Populations.TYPE, Populations.LAST_REQUEST],
       sort: [SortDescFields.ID],
       page,
@@ -456,9 +496,37 @@ class Api {
       query,
     });
 
-  getSportsPerson = async (id: string): Promise<SportBase> =>
+  getListSportsPersons = async ({ page, query }: TableList) =>
+    await this.getList({
+      resource: Resources.SPORTS_PERSONS,
+      sort: [SortDescFields.ID],
+      page,
+      query,
+    });
+
+  getNationalTeams = async ({ page, query }: TableList) =>
+    await this.getList({
+      resource: Resources.NATIONAL_TEAMS,
+      populate: [
+        Populations.LAST_REQUEST,
+        Populations.TENANT,
+        Populations.SPORT_TYPES,
+        Populations.AGE_GROUP,
+        Populations.ATHLETES,
+      ],
+      sort: [SortDescFields.ID],
+      page,
+      query,
+    });
+
+  getSportsPerson = async (id: string): Promise<SportsBase> =>
     await this.getOne({
       resource: `${Resources.SPORTS_PERSONS}/${id}/base`,
+    });
+
+  getNationalTeam = async (id: string): Promise<SportsBase> =>
+    await this.getOne({
+      resource: `${Resources.NATIONAL_TEAMS}/${id}/base`,
     });
 
   getCompetitions = async ({ page, query }: TableList) =>
@@ -484,9 +552,9 @@ class Api {
       query,
     });
 
-  getSportBase = async (id: string): Promise<SportBase> =>
+  getSportsBase = async (id: string): Promise<SportsBase> =>
     await this.getOne({
-      resource: `${Resources.SPORT_BASES}/${id}/base`,
+      resource: `${Resources.SPORTS_BASES}/${id}/base`,
       populate: [
         Populations.LAST_REQUEST,
         Populations.CAN_EDIT,
@@ -502,7 +570,21 @@ class Api {
       ],
     });
 
-  getCompetition = async (id: string): Promise<SportBase> =>
+  deleteSportsBase = async ({ id }: { id: string }) => {
+    return this.delete({
+      resource: Resources.SPORTS_BASES,
+      id,
+    });
+  };
+
+  deleteRequest = async ({ id }) => {
+    return this.delete({
+      resource: Resources.REQUESTS,
+      id,
+    });
+  };
+
+  getCompetition = async (id: string): Promise<SportsBase> =>
     await this.getOne({
       resource: `${Resources.COMPETITIONS}/${id}/base`,
     });
@@ -605,6 +687,13 @@ class Api {
       page,
       query,
       sort: [SortAscFields.NAME],
+    });
+
+  getEducationalCompanies = async ({ page, query }: TableList) =>
+    await this.getList({
+      resource: Resources.EDUCATIONAL_COMPANIES,
+      page,
+      query,
     });
 
   getInstitutions = async ({ page, query }: TableList) =>
@@ -757,6 +846,38 @@ class Api {
       sort,
     });
 
+  getNationalTeamGenders = async ({ query, page, sort }: TableList) =>
+    await this.getList({
+      query,
+      page,
+      resource: Resources.GENDERS,
+      sort,
+    });
+
+  getNationalTeamAgeGroups = async ({ query, page, sort }: TableList) =>
+    await this.getList({
+      query,
+      page,
+      resource: Resources.AGE_GROUPS,
+      sort,
+    });
+
+  getWorkRelations = async ({ query, page, sort }: TableList) =>
+    await this.getList({
+      query,
+      page,
+      resource: Resources.WORK_RELATIONS,
+      sort,
+    });
+
+  getCoaches = async ({ query, page }: TableList) =>
+    await this.getList({
+      query,
+      page,
+      resource: Resources.COACHES,
+      populate: [Populations.SPORTS_PERSON],
+    });
+
   getCompetitionTypes = async ({ query, page, sort }: TableList) =>
     await this.getList({
       query,
@@ -830,9 +951,17 @@ class Api {
   getSportBaseSpaceTypes = async ({ page, query, sort }: TableList) =>
     await this.getList({
       page,
-      fields: ['id', 'name', 'type'],
+      fields: ['id', 'name', 'needSportType'],
       query,
       resource: Resources.SPACE_TYPES,
+      sort,
+    });
+  getSportBaseSpaceGroups = async ({ page, query, sort }: TableList) =>
+    await this.getList({
+      page,
+      fields: ['id', 'name'],
+      query,
+      resource: Resources.SPACE_GROUPS,
       sort,
     });
 
@@ -864,6 +993,142 @@ class Api {
       resource: `${Resources.REQUESTS}/${id}/${Resources.HISTORY}`,
       page,
       pageSize,
+    });
+
+  getStudyCompanies = async ({ query, page }) =>
+    await this.getList({
+      query,
+      page,
+      resource: Resources.STUDIES_COMPANIES,
+    });
+
+  getStudyPrograms = async ({ query, page }) =>
+    await this.getList({
+      query,
+      page,
+      resource: Resources.STUDIES_PROGRAMS,
+    });
+
+  getBonuses = async ({ page, query }: TableList): Promise<GetAllResponse<Bonus>> =>
+    await this.getList({
+      resource: Resources.BONUSES,
+      page,
+      query,
+      populate: [Populations.SPORTS_PERSON, Populations.RESULT],
+      sort: [SortDescFields.ID],
+    });
+
+  getBonus = async ({ id }: { id: string }): Promise<Bonus> => {
+    return await this.getOne({
+      resource: Resources.BONUSES,
+      populate: [Populations.SPORTS_PERSON, Populations.RESULT],
+      id,
+    });
+  };
+
+  createBonus = async ({ params }: { params: any }): Promise<Bonus> =>
+    await this.post({
+      resource: Resources.BONUSES,
+      params,
+    });
+
+  updateBonus = async ({ params, id }: { params: any; id: string }): Promise<Bonus> =>
+    await this.patch({
+      resource: Resources.BONUSES,
+      params,
+      id,
+    });
+  deleteBonus = async ({ id }) =>
+    await this.getOne({
+      id,
+      resource: Resources.BONUSES,
+    });
+
+  getScholarships = async ({ page, query }: TableList): Promise<GetAllResponse<ScholarShip>> =>
+    await this.getList({
+      resource: Resources.SCHOLARSHIPS,
+      page,
+      query,
+      populate: [Populations.SPORTS_PERSON, Populations.RESULT],
+      sort: [SortDescFields.ID],
+    });
+
+  getScholarship = async ({ id }: { id: string }): Promise<ScholarShip> => {
+    return await this.getOne({
+      resource: Resources.SCHOLARSHIPS,
+      populate: [Populations.SPORTS_PERSON, Populations.RESULT],
+      id,
+    });
+  };
+
+  createScholarship = async ({ params }: { params: any }): Promise<ScholarShip> =>
+    await this.post({
+      resource: Resources.SCHOLARSHIPS,
+      params,
+    });
+
+  updateScholarship = async ({ params, id }: { params: any; id: string }): Promise<ScholarShip> =>
+    await this.patch({
+      resource: Resources.SCHOLARSHIPS,
+      params,
+      id,
+    });
+  deleteScholarship = async ({ id }) =>
+    await this.getOne({
+      id,
+      resource: Resources.SCHOLARSHIPS,
+    });
+
+  getRents = async ({ page, query }: TableList): Promise<GetAllResponse<Rent>> =>
+    await this.getList({
+      resource: Resources.RENTS,
+      page,
+      query,
+      populate: [Populations.SPORTS_PERSON, Populations.RESULT],
+      sort: [SortDescFields.ID],
+    });
+
+  getRent = async ({ id }: { id: string }): Promise<Rent> => {
+    return await this.getOne({
+      resource: Resources.RENTS,
+      populate: [Populations.SPORTS_PERSON, Populations.RESULT, Populations.UNIT],
+      id,
+    });
+  };
+
+  createRent = async ({ params }: { params: any }): Promise<Rent> =>
+    await this.post({
+      resource: Resources.RENTS,
+      params,
+    });
+
+  updateRent = async ({ params, id }: { params: any; id: string }): Promise<Rent> =>
+    await this.patch({
+      resource: Resources.RENTS,
+      params,
+      id,
+    });
+  deleteRent = async ({ id }) =>
+    await this.getOne({
+      id,
+      resource: Resources.RENTS,
+    });
+
+  getResults = async ({ page, query }: TableList) =>
+    await this.getAll({
+      resource: Resources.RESULTS,
+      populate: [Populations.COMPETITION, Populations.RESULT_TYPE],
+      sort: [SortDescFields.ID],
+      page,
+      query,
+    });
+
+  getRentsUnits = async ({ page, query }: TableList) =>
+    await this.getList({
+      resource: Resources.RENTS_UNITS,
+      sort: [SortDescFields.ID],
+      page,
+      query,
     });
 }
 

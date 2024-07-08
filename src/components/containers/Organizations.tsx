@@ -4,7 +4,7 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 import { FormRow } from '../../styles/CommonStyles';
-import { SportBase } from '../../types';
+import { SportsBase } from '../../types';
 import { formatDate, getOrganizationBasisList } from '../../utils/functions';
 import {
   buttonsTitles,
@@ -40,7 +40,7 @@ const organizationsLabels = {
 const OrganizationsContainer = ({ organizations, handleChange, disabled }) => {
   const organizationKeys = Object.keys(organizations);
   const [validateOnChange, setValidateOnChange] = useState(false);
-  const [current, setCurrent] = useState<SportBase['tenants'] | {}>();
+  const [current, setCurrent] = useState<SportsBase['tenants'] | {}>();
 
   const onSubmit = async (values: any) => {
     if (typeof values?.index !== 'undefined') {

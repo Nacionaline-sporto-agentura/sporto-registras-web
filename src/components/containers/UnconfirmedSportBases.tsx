@@ -5,6 +5,7 @@ import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles
 import { NotFoundInfoProps, Request, TableRow } from '../../types';
 import api from '../../utils/api';
 import { AdminRoleType, colorsByStatus, RequestEntityTypes } from '../../utils/constants';
+import { getFormattedAddress } from '../../utils/functions';
 import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, emptyState, inputLabels, requestStatusLabels } from '../../utils/texts';
@@ -39,19 +40,12 @@ const mapRequestList = (requests: Request[]): TableRow[] =>
 
     const address = data?.address;
 
-    const formattedAddress =
-      address?.street && address?.house && address?.city && address?.municipality
-        ? `${address.street} ${address.house} ${
-            address.apartment ? `-${address.apartment}` : ''
-          }, ${address.city} ${address.municipality}`
-        : '-';
-
     const status = request?.status;
     return {
       id: request.id,
       type: data?.type?.name,
       name: data.name,
-      address: formattedAddress,
+      address: getFormattedAddress(address),
       ...(status && {
         status: <StatusTag label={requestStatusLabels[status]} color={colorsByStatus[status]} />,
       }),

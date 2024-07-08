@@ -1,10 +1,10 @@
 import { actions as filterActions } from '../../state/filters/reducer';
 import { useAppSelector } from '../../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
-import { NotFoundInfoProps, SportBase, TableRow } from '../../types';
+import { NotFoundInfoProps, SportsBase, TableRow } from '../../types';
 import api from '../../utils/api';
 import { AdminRoleType, colorsByStatus } from '../../utils/constants';
-import { getIlike, getSportBaseTypeList } from '../../utils/functions';
+import { getFormattedAddress, getIlike, getSportBaseTypeList } from '../../utils/functions';
 import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, emptyState, inputLabels, requestStatusLabels } from '../../utils/texts';
@@ -48,21 +48,16 @@ export const mapSportBaseQuery = (filters: any) => {
   return params;
 };
 
-const mapRequestList = (requests: SportBase[]): TableRow[] =>
-  requests.map((request: SportBase) => {
+const mapRequestList = (requests: SportsBase[]): TableRow[] =>
+  requests.map((request: SportsBase) => {
     const status = request.lastRequest?.status;
     const address = request.address;
-
-    const formattedAddress =
-      address?.street && address?.house && address?.city && address?.municipality
-        ? `${address.street} ${address.house} ${address.apartment}, ${address.city} ${address.municipality}`
-        : '-';
 
     return {
       id: request.id,
       type: request?.type?.name,
       name: request.name,
-      address: formattedAddress,
+      address: getFormattedAddress(address),
       ...(status && {
         status: <StatusTag label={requestStatusLabels[status]} color={colorsByStatus[status]} />,
       }),
@@ -82,7 +77,7 @@ const SportBases = () => {
   const { tableData, loading } = useTableData({
     name: 'sportBases',
     endpoint: () =>
-      api.getSportBases({
+      api.getSportsBases({
         page,
         query: mapSportBaseQuery(filter),
       }),
@@ -118,7 +113,7 @@ const SportBases = () => {
         isFilterApplied={false}
         data={tableData}
         columns={sportBaseLabels}
-        onClick={(id) => navigate(slugs.sportBase(id))}
+        onClick={(id) => navigate(slugs.sportsBase(id))}
       />
     </>
   );

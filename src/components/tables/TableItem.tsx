@@ -9,6 +9,7 @@ export interface TableItemProps {
   rightIcon?: JSX.Element;
   leftIcon?: JSX.Element;
   showLeftIcon?: boolean;
+  bottomLabel?: string;
 }
 
 const TableItem = ({
@@ -17,6 +18,7 @@ const TableItem = ({
   leftIconName = IconName.eye,
   rightIcon,
   leftIcon,
+  bottomLabel,
 }: TableItemProps) => {
   const navigate = useNavigate();
 
@@ -33,7 +35,7 @@ const TableItem = ({
   };
 
   return (
-    <>
+    <Column $twoLine={!!bottomLabel}>
       <Container onClick={handleClick}>
         {(url || leftIcon) && (
           <IconContainer>{leftIcon || <StyledIcons name={leftIconName} />}</IconContainer>
@@ -41,9 +43,17 @@ const TableItem = ({
         <Label>{label}</Label>
         {rightIcon && <IconContainer>{rightIcon}</IconContainer>}
       </Container>
-    </>
+      {bottomLabel && <BottomLabel>{bottomLabel}</BottomLabel>}
+    </Column>
   );
 };
+
+const BottomLabel = styled.div`
+  font-size: 1.4rem;
+  color: #697586;
+  opacity: 1;
+  line-height: 12px;
+`;
 
 const Container = styled.div`
   display: flex;
@@ -57,8 +67,15 @@ const IconContainer = styled.div`
   align-items: center;
 `;
 
+const Column = styled.div<{ $twoLine: boolean }>`
+  margin: ${({ $twoLine }) => ($twoLine ? '12px 0' : '')};
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
 const Label = styled.div`
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   color: #121926;
   opacity: 1;
   white-space: nowrap;

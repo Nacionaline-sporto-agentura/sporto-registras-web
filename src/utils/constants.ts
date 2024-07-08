@@ -90,6 +90,7 @@ export enum RequestEntityTypes {
   SPORTS_PERSONS = 'SPORTS_PERSONS',
   TENANTS = 'TENANTS',
   COMPETITIONS = 'COMPETITIONS',
+  NATIONAL_TEAMS = 'NATIONAL_TEAMS',
 }
 
 export enum ClassifierTypes {
@@ -126,4 +127,26 @@ export enum MatchTypes {
 export enum LegalForms {
   COMPANY = 'COMPANY',
   PERSON = 'PERSON',
+}
+
+export enum StudiesType {
+  LEARNING = 'LEARNING',
+  STUDIES = 'STUDIES',
+}
+
+export enum BonusType {
+  NATIONAL = 'NATIONAL',
+  MUNICIPAL = 'MUNICIPAL',
+}
+
+export enum ScholarshipType {
+  ACTIVE = 'ACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  TERMINATED = 'TERMINATED',
+}
+
+export enum AreaUnits {
+  HA = 'HA',
+  A = 'A',
+  M2 = 'M2',
 }

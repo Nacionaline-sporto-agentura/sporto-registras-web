@@ -61,27 +61,31 @@ const LabelRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
 `;
 
 const BottomLabel = styled.div`
-  margin-top: 6px;
+  margin-top: 0.6rem;
   font-size: 1.2rem;
   color: #697586;
 `;
 
-export const Label = styled.label`
+const Label = styled.label`
   text-align: left;
   font-size: 1.4rem;
   color: ${({ theme }) => theme.colors.label};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const LabelContainer = styled.div`
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   min-height: 2.4rem;
-  max-height: 5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.4rem;
 `;
 
 const SubLabel = styled.div`
@@ -89,7 +93,10 @@ const SubLabel = styled.div`
   font-size: 1.2rem;
   font-weight: 600;
   color: #0b1f518f;
-  max-width: 130px;
+  max-width: 13rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   height: 2rem;
 `;
 

@@ -38,35 +38,32 @@ const getLabel = (diff: Diff, titles, oldData) => {
 
   let label: any[] = [];
   let tempTitles = { ...titles };
-  let labelField = '';
+  let getValueLabel;
   let key = '';
+  let oldDataItem = oldData;
 
   for (let i = 0; i < arr.length; i++) {
     const item = arr[i];
     key += arr[i] + '.';
+    oldDataItem = oldDataItem?.[item];
 
     const currentTitlesObject = tempTitles?.[item];
 
     if (!currentTitlesObject) {
-      label = [...label, get(oldData, key + labelField), ' '];
+      if (getValueLabel && !!oldDataItem) {
+        label = [...label, getValueLabel(oldDataItem), ' '];
+      }
       continue;
     }
 
-    label = [...label, <BoldText key={key}>{`${currentTitlesObject?.name} `}</BoldText>];
+    label = [...label, <BoldText key={key}>{`${currentTitlesObject?.name || ''} `}</BoldText>];
     tempTitles = currentTitlesObject?.children;
-    labelField = currentTitlesObject?.labelField;
+    getValueLabel = currentTitlesObject?.getValueLabel;
   }
 
-  const extractValue = (obj, labelField = '') => {
-    if (labelField) {
-      const labelFields = labelField.split(' ');
-      const value = get(obj, labelFields[0]);
-
-      if (typeof value === 'object') {
-        return Object.values(value).map((val) => get(val, labelFields[1]));
-      }
-
-      return value;
+  const extractValue = (obj, getValueLabel) => {
+    if (getValueLabel) {
+      return getValueLabel(obj);
     }
 
     if (dateTimeRegex.test(obj) && new Date(obj).toString() !== 'Invalid Date') {
@@ -80,29 +77,29 @@ const getLabel = (diff: Diff, titles, oldData) => {
     return obj.toString();
   };
 
-  const extractValues = (obj = {}, labelField) => {
+  const extractValues = (obj = {}, getValueLabel) => {
     const mapValue = (value, index, arr) =>
-      `${extractValue(value, labelField)}${index < arr.length - 1 ? ', ' : ''}`;
+      `${extractValue(value, getValueLabel)}${index < arr.length - 1 ? ', ' : ''}`;
 
     if (Array.isArray(obj)) {
       return obj.map(mapValue).join('');
     } else if (typeof obj === 'object' && obj !== null) {
       return Object.values(obj).map(mapValue);
     } else {
-      return extractValue(obj, labelField);
+      return extractValue(obj, getValueLabel);
     }
   };
 
   const areAllKeysObjects = (obj = {}) =>
     Object.values(obj).every((val) => typeof val === 'object');
 
-  const extractAndFormat = (diff, labelField) => {
+  const extractAndFormat = (diff, getValueLabel) => {
     const extractFunc = areAllKeysObjects(diff) ? extractValues : extractValue;
-    return extractFunc(diff, labelField);
+    return extractFunc(diff, getValueLabel);
   };
 
-  const oldValue = extractAndFormat(diff?.oldValue || '', labelField);
-  const value = extractAndFormat(diff.value || '', labelField);
+  const oldValue = extractAndFormat(diff?.oldValue || '', getValueLabel);
+  const value = extractAndFormat(diff.value || '', getValueLabel);
 
   if (diff.op == ActionTypes.REPLACE) {
     label = [...label, ` pasikeitė iš ${oldValue} į ${value}`];

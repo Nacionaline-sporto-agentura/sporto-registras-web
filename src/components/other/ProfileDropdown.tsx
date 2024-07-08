@@ -22,7 +22,7 @@ const ProfilesDropdown = () => {
   };
 
   const handleProfileChange = (profileId) => {
-    window.location.href = `/profiliai/${profileId}`;
+    window.location.href = `/app/profiliai/${profileId}`;
     handleSelectProfile(profileId);
   };
 

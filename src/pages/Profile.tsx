@@ -1,3 +1,4 @@
+import { PhoneField, phoneNumberRegexPattern } from '@aplinkosministerija/design-system';
 import { useMutation } from 'react-query';
 import * as Yup from 'yup';
 import PasswordField from '../components/fields/PasswordField';
@@ -9,8 +10,8 @@ import { useAppSelector } from '../state/hooks';
 import { FormColumn, FormRow, TitleColumn } from '../styles/CommonStyles';
 import { ReactQueryError } from '../types';
 import Api from '../utils/api';
-import { AuthStrategy } from '../utils/constants';
-import { getReactQueryErrorMessage, handleSuccessToast } from '../utils/functions';
+import { AdminRoleType, AuthStrategy } from '../utils/constants';
+import { getErrorMessage, getReactQueryErrorMessage, handleSuccessToast } from '../utils/functions';
 import { formLabels, inputLabels, pageTitles, validationTexts } from '../utils/texts';
 
 export interface UserProps {
@@ -73,7 +74,7 @@ export const validateProfileForm = Yup.object().shape(
     phone: Yup.string()
       .required(validationTexts.requireText)
       .trim()
-      .matches(/(86|\+3706)\d{7}/, validationTexts.badPhoneFormat),
+      .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
     email: Yup.string().email(validationTexts.badEmailFormat).required(validationTexts.requireText),
   },
   [
@@ -87,15 +88,12 @@ export const validateProfileForm = Yup.object().shape(
 const Profile = () => {
   const user = useAppSelector((state) => state.user.userData);
 
-  const updateProfile = useMutation(
-    (values: UserProps) => Api.updateAdminUser({ params: values, id: user.id || '' }),
-    {
-      onSuccess: () => {
-        handleSuccessToast(validationTexts.profileUpdated);
-      },
-      retry: false,
+  const updateProfile = useMutation((values: UserProps) => Api.updateProfile({ params: values }), {
+    onSuccess: () => {
+      handleSuccessToast(validationTexts.profileUpdated);
     },
-  );
+    retry: false,
+  });
 
   const handleProfileSubmit = async (values: UserProps, { setErrors }) => {
     const { firstName, lastName, email, phone, oldPassword, newPassword } = values;
@@ -113,12 +111,14 @@ const Profile = () => {
       await updateProfile.mutateAsync(params);
     } catch (e: any) {
       const error = e as ReactQueryError;
-      const errorMessage = getReactQueryErrorMessage(error.response);
+      const errorMessage = getErrorMessage(getReactQueryErrorMessage(error.response));
       setErrors({ oldPassword: errorMessage });
     }
   };
 
-  const canChangePassword = user.authStrategy === AuthStrategy.PASSWORD;
+  const canChangePassword =
+    user?.authStrategy === AuthStrategy.PASSWORD ||
+    (!user?.authStrategy && user.type === AdminRoleType.ADMIN);
 
   const initialProfileValues: UserProps = {
     firstName: user?.firstName || '',
@@ -154,7 +154,7 @@ const Profile = () => {
             />
           </FormRow>
           <FormRow columns={2}>
-            <TextField
+            <PhoneField
               label={inputLabels.phone}
               value={values.phone}
               error={errors.phone}

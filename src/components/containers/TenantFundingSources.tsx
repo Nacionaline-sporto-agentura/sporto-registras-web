@@ -118,7 +118,7 @@ const TenantFundingSourcesContainer = ({
                 <FormRow columns={1}>
                   <AsyncSelectField
                     disabled={disabled}
-                    label={inputLabels.source}
+                    label={inputLabels.investmentSources}
                     value={values?.source}
                     showError={false}
                     error={errors?.source}

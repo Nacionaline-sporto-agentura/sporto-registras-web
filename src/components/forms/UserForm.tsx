@@ -1,3 +1,4 @@
+import { PhoneField, phoneNumberRegexPattern } from '@aplinkosministerija/design-system';
 import { personalCode } from 'lt-codes';
 import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -77,7 +78,7 @@ export const validateCreateUserForm = Yup.object().shape({
   phone: Yup.string()
     .required(validationTexts.requireText)
     .trim()
-    .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
+    .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
   email: Yup.string().email(validationTexts.badEmailFormat).required(validationTexts.requireText),
 });
 
@@ -230,7 +231,7 @@ const UserForm = ({
             />
           </FormRow>
           <FormRow columns={showPersonalCodeField ? 3 : 2}>
-            <TextField
+            <PhoneField
               label={inputLabels.phone}
               value={values.phone}
               error={errors.phone}

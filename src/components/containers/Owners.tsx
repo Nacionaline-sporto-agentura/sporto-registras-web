@@ -42,7 +42,7 @@ const ownersSchema = Yup.object().shape({
         return validation.validate(value).isValid;
       });
     }),
-  website: Yup.string().required(validationTexts.requireText),
+  website: Yup.string(),
 });
 
 const ownersLabels = {

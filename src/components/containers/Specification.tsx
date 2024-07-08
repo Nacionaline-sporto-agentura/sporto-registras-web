@@ -1,9 +1,17 @@
 import { FormRow } from '../../styles/CommonStyles';
-import { SportBase } from '../../types';
-import { descriptions, formLabels, inputLabels, pageTitles } from '../../utils/texts';
+import { SportsBase } from '../../types';
+import { AreaUnits } from '../../utils/constants';
+import {
+  areUnitLabels,
+  descriptions,
+  formLabels,
+  inputLabels,
+  pageTitles,
+} from '../../utils/texts';
 import CheckBox from '../fields/CheckBox';
 import DragAndDropUploadField from '../fields/DragAndDropUploadField';
 import NumericTextField from '../fields/NumericTextField';
+import SelectField from '../fields/SelectField';
 import TextField from '../fields/TextField';
 import { generateUniqueString } from '../fields/utils/function';
 import InnerContainerRow from '../other/InnerContainerRow';
@@ -15,7 +23,7 @@ const SpecificationContainer = ({
   handleChange,
   disabled,
 }: {
-  sportBase: SportBase;
+  sportBase: SportsBase;
   disabled: boolean;
   errors: any;
   handleChange: any;
@@ -30,7 +38,7 @@ const SpecificationContainer = ({
         description={descriptions.sportBaseSpecification}
       />
       <SimpleContainer title={formLabels.technicalSportBaseParameters}>
-        <FormRow columns={2}>
+        <FormRow columns={3}>
           <TextField
             disabled={disabled}
             label={inputLabels.plotNumber}
@@ -45,12 +53,21 @@ const SpecificationContainer = ({
             disabled={disabled}
             label={inputLabels.plotArea}
             value={sportBase?.plotArea}
-            digitsAfterComma={3}
+            digitsAfterComma={4}
             error={errors?.plotArea}
             name="plotArea"
             onChange={(plotArea) => {
               handleChange(`plotArea`, plotArea);
             }}
+          />
+          <SelectField
+            disabled={disabled}
+            label={inputLabels.areaUnits}
+            error={errors?.areaUnits}
+            options={Object.values(AreaUnits)}
+            value={sportBase.areaUnits}
+            onChange={(units) => handleChange(`areaUnits`, units)}
+            getOptionLabel={(option) => areUnitLabels[option]}
           />
         </FormRow>
         <FormRow columns={1}>
