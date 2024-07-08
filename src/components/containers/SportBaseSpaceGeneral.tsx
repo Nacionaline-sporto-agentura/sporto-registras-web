@@ -64,34 +64,36 @@ const SportBaseSpaceGeneralContainer = ({
         getOptionLabel={(option) => option?.name}
         loadOptions={(input, page) => getSportBaseSpaceTypesList(input, page, { group: groupId })}
       />
-      <AsyncMultiSelect
-        disabled={disabled}
-        label={inputLabels.sportTypes}
-        values={sportValues}
-        error={errors?.sportTypes}
-        name="sportTypes"
-        onChange={(types: Types[]) => {
-          const filteredSportTypes = {};
+      {sportBaseSpace.type?.needSportType && (
+        <AsyncMultiSelect
+          disabled={disabled}
+          label={inputLabels.sportTypes}
+          values={sportValues}
+          error={errors?.sportTypes}
+          name="sportTypes"
+          onChange={(types: Types[]) => {
+            const filteredSportTypes = {};
 
-          Object.entries(sportTypes).forEach(([key, type]) => {
-            const found = types.find((c) => c.id === (type as any)?.id);
+            Object.entries(sportTypes).forEach(([key, type]) => {
+              const found = types.find((c) => c.id === (type as any)?.id);
 
-            if (found) {
-              filteredSportTypes[key] = type;
-            }
-          });
+              if (found) {
+                filteredSportTypes[key] = type;
+              }
+            });
 
-          types.forEach((type) => {
-            if (sportValues.every((sportValue: any) => sportValue.id !== type.id)) {
-              filteredSportTypes[generateUniqueString()] = type;
-            }
-          });
+            types.forEach((type) => {
+              if (sportValues.every((sportValue: any) => sportValue.id !== type.id)) {
+                filteredSportTypes[generateUniqueString()] = type;
+              }
+            });
 
-          handleChange(`sportTypes`, filteredSportTypes);
-        }}
-        getOptionLabel={(option) => option?.name}
-        loadOptions={(input, page) => getSportTypesList(input, page)}
-      />
+            handleChange(`sportTypes`, filteredSportTypes);
+          }}
+          getOptionLabel={(option) => option?.name}
+          loadOptions={(input, page) => getSportTypesList(input, page)}
+        />
+      )}
       <AsyncSelectField
         disabled={disabled}
         label={inputLabels.technicalSpaceCondition}

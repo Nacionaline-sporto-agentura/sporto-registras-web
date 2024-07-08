@@ -24,7 +24,7 @@ interface HandlePaginationProps {
 
 export const getErrorMessage = (error: string) => validationTexts[error] || validationTexts.error;
 
-export const getReactQueryErrorMessage = (response: any) => response?.data?.message;
+export const getReactQueryErrorMessage = (response: any) => response?.data?.type;
 
 export const handleErrorToast = (message: string) => {
   toast.error(message, {

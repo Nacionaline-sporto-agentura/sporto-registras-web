@@ -25,11 +25,19 @@ const generalSchema = Yup.object().shape({
   name: Yup.string().required(validationTexts.requireText),
   group: Yup.object().required(validationTexts.requireText),
   type: Yup.object().required(validationTexts.requireText),
-  sportTypes: Yup.object().test(
-    'at-least-one-property',
-    validationTexts.requireSelect,
-    (obj) => !isEmpty(obj),
-  ),
+
+  sportTypes: Yup.object().when(['type'], (items, schema) => {
+    if (!items[0]?.needSportType) {
+      return schema.test(
+        'at-least-one-property',
+        validationTexts.requireSelect,
+        (obj) => !isEmpty(obj),
+      );
+    }
+
+    return schema.nullable();
+  }),
+
   technicalCondition: Yup.object().required(validationTexts.requireText),
 });
 
@@ -38,7 +46,9 @@ const buildingParametersSchema = Yup.object().shape({
   buildingPurpose: Yup.object().required(validationTexts.requireText),
   buildingArea: Yup.string().required(validationTexts.requireText),
   energyClass: Yup.object().required(validationTexts.requireText),
-  constructionDate: Yup.date().required(validationTexts.requireText),
+  constructionDate: Yup.string()
+    .length(4, 'Neteisingi metai')
+    .required(validationTexts.requireText),
 });
 
 const photosSchema = Yup.object().shape({
@@ -135,6 +145,8 @@ const SportBaseSpaceContainer = ({
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
 
   const onSubmit = async (values: any) => {
+    values.constructionDate = new Date(`${values.constructionDate}-01-01`);
+
     if (typeof values?.index !== 'undefined') {
       const { index, ...rest } = values;
 
@@ -154,7 +166,6 @@ const SportBaseSpaceContainer = ({
     setCurrentTabs(tabsWithoutAdditionalFields);
     setCurrentTabIndex(0);
   };
-
   const initialValues: any = current || {};
 
   const validationSchema =
@@ -176,7 +187,11 @@ const SportBaseSpaceContainer = ({
               disabled={disabled}
               sportBaseSpace={space}
               onEdit={() => {
-                setCurrent({ ...space, index: key } as any);
+                setCurrent({
+                  ...space,
+                  constructionDate: space.constructionDate.getFullYear(),
+                  index: key,
+                } as any);
               }}
               onDelete={() => {
                 handleChange('spaces', omit(spaces, key));

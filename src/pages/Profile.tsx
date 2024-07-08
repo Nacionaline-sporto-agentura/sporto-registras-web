@@ -11,7 +11,7 @@ import { FormColumn, FormRow, TitleColumn } from '../styles/CommonStyles';
 import { ReactQueryError } from '../types';
 import Api from '../utils/api';
 import { AuthStrategy } from '../utils/constants';
-import { getReactQueryErrorMessage, handleSuccessToast } from '../utils/functions';
+import { getErrorMessage, getReactQueryErrorMessage, handleSuccessToast } from '../utils/functions';
 import { formLabels, inputLabels, pageTitles, validationTexts } from '../utils/texts';
 
 export interface UserProps {
@@ -72,9 +72,9 @@ export const validateProfileForm = Yup.object().shape(
         return true;
       }),
     phone: Yup.string()
-    .required(validationTexts.requireText)
-    .trim()
-    .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
+      .required(validationTexts.requireText)
+      .trim()
+      .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
     email: Yup.string().email(validationTexts.badEmailFormat).required(validationTexts.requireText),
   },
   [
@@ -114,7 +114,7 @@ const Profile = () => {
       await updateProfile.mutateAsync(params);
     } catch (e: any) {
       const error = e as ReactQueryError;
-      const errorMessage = getReactQueryErrorMessage(error.response);
+      const errorMessage = getErrorMessage(getReactQueryErrorMessage(error.response));
       setErrors({ oldPassword: errorMessage });
     }
   };

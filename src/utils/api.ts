@@ -944,7 +944,7 @@ class Api {
   getSportBaseSpaceTypes = async ({ page, query, sort }: TableList) =>
     await this.getList({
       page,
-      fields: ['id', 'name'],
+      fields: ['id', 'name', 'needSportType'],
       query,
       resource: Resources.SPACE_TYPES,
       sort,

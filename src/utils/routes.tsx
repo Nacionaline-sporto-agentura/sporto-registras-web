@@ -239,13 +239,13 @@ export const routes = [
     slug: slugs.unConfirmedSportBases,
     component: <SportBaseList />,
   },
-  {
-    name: pageTitles.sportsPersons,
-    sidebar: true,
-    slug: slugs.sportsPersons,
-    component: <SportsPersonsList />,
-    role: AdminRoleType.ADMIN,
-  },
+  // {
+  //   name: pageTitles.sportsPersons,
+  //   sidebar: true,
+  //   slug: slugs.sportsPersons,
+  //   component: <SportsPersonsList />,
+  //   role: AdminRoleType.ADMIN,
+  // },
   {
     slug: slugs.unConfirmedSportsPersons,
     component: <SportsPersonsList />,
@@ -261,13 +261,13 @@ export const routes = [
     component: <SportsPersonPage />,
     role: AdminRoleType.ADMIN,
   },
-  {
-    name: pageTitles.nationalTeams,
-    sidebar: true,
-    slug: slugs.nationalTeams,
-    component: <NationalTeamsList />,
-    role: AdminRoleType.ADMIN,
-  },
+  // {
+  //   name: pageTitles.nationalTeams,
+  //   sidebar: true,
+  //   slug: slugs.nationalTeams,
+  //   component: <NationalTeamsList />,
+  //   role: AdminRoleType.ADMIN,
+  // },
   {
     slug: slugs.unConfirmedNationalTeams,
     component: <NationalTeamsList />,
@@ -279,13 +279,13 @@ export const routes = [
     role: AdminRoleType.ADMIN,
   },
 
-  {
-    name: pageTitles.results,
-    sidebar: true,
-    slug: slugs.results,
-    component: <CompetitionList />,
-    role: AdminRoleType.ADMIN,
-  },
+  // {
+  //   name: pageTitles.results,
+  //   sidebar: true,
+  //   slug: slugs.results,
+  //   component: <CompetitionList />,
+  //   role: AdminRoleType.ADMIN,
+  // },
   {
     slug: slugs.unconfirmedResults,
     component: <CompetitionList />,
@@ -322,39 +322,39 @@ export const routes = [
     component: <UpdateInstitutionForm />,
   },
 
-  {
-    name: pageTitles.bonuses,
-    slug: slugs.bonuses,
-    sidebar: true,
-    component: <BonusesList />,
-    role: AdminRoleType.ADMIN,
-  },
+  // {
+  //   name: pageTitles.bonuses,
+  //   slug: slugs.bonuses,
+  //   sidebar: true,
+  //   component: <BonusesList />,
+  //   role: AdminRoleType.ADMIN,
+  // },
 
   {
     slug: slugs.bonus(':id'),
     component: <BonusForm />,
     role: AdminRoleType.ADMIN,
   },
-  {
-    name: pageTitles.scholarships,
-    sidebar: true,
-    slug: slugs.scholarships,
-    component: <ScholarshipsList />,
-    role: AdminRoleType.ADMIN,
-  },
+  // {
+  //   name: pageTitles.scholarships,
+  //   sidebar: true,
+  //   slug: slugs.scholarships,
+  //   component: <ScholarshipsList />,
+  //   role: AdminRoleType.ADMIN,
+  // },
   {
     slug: slugs.scholarship(':id'),
     component: <ScholarshipForm />,
     role: AdminRoleType.ADMIN,
   },
 
-  {
-    name: pageTitles.rents,
-    sidebar: true,
-    slug: slugs.rents,
-    component: <RentsList />,
-    role: AdminRoleType.ADMIN,
-  },
+  // {
+  //   name: pageTitles.rents,
+  //   sidebar: true,
+  //   slug: slugs.rents,
+  //   component: <RentsList />,
+  //   role: AdminRoleType.ADMIN,
+  // },
   {
     slug: slugs.rent(':id'),
     component: <RentForm />,

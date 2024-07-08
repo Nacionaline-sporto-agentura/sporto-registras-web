@@ -54,6 +54,12 @@ export interface Types {
   name: string;
 }
 
+export interface SportBaseSpaceType {
+  id: any;
+  name: string;
+  needSportType: boolean;
+}
+
 export interface SportsBasesCondition {
   id: any;
   name: string;
@@ -99,7 +105,7 @@ export interface SportBaseSpace {
   id?: number;
   name: string;
   group?: Types;
-  type?: Types;
+  type?: SportBaseSpaceType;
   sportTypes?: SportType[];
   sportBase?: SportsBase;
   technicalCondition?: SportsBasesCondition;
