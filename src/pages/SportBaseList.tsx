@@ -11,7 +11,7 @@ const SportBaseList = () => {
   const tabs = [
     {
       label: 'Sporto infrastruktūra',
-      slug: slugs.sportBases,
+      slug: slugs.sportsBases,
     },
     {
       label: 'Nepatvirtinta sporto infrastruktūra',
@@ -20,7 +20,7 @@ const SportBaseList = () => {
   ];
 
   const containers = {
-    [slugs.sportBases]: <SportBases />,
+    [slugs.sportsBases]: <SportBases />,
     [slugs.unConfirmedSportBases]: <UnconfirmedSportBases />,
   };
 

@@ -1,3 +1,4 @@
+import { PhoneField, phoneNumberRegexPattern } from '@aplinkosministerija/design-system';
 import { useMutation } from 'react-query';
 import * as Yup from 'yup';
 import PasswordField from '../components/fields/PasswordField';
@@ -71,9 +72,9 @@ export const validateProfileForm = Yup.object().shape(
         return true;
       }),
     phone: Yup.string()
-      .required(validationTexts.requireText)
-      .trim()
-      .matches(/(86|\+3706)\d{7}/, validationTexts.badPhoneFormat),
+    .required(validationTexts.requireText)
+    .trim()
+    .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
     email: Yup.string().email(validationTexts.badEmailFormat).required(validationTexts.requireText),
   },
   [
@@ -154,7 +155,7 @@ const Profile = () => {
             />
           </FormRow>
           <FormRow columns={2}>
-            <TextField
+            <PhoneField
               label={inputLabels.phone}
               value={values.phone}
               error={errors.phone}

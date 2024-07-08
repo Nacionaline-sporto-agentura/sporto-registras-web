@@ -21,7 +21,13 @@ import api from '../utils/api';
 import { AdminRoleType, RequestEntityTypes, StatusTypes } from '../utils/constants';
 import { formatDate, handleErrorToastFromServer, isNew } from '../utils/functions';
 import { slugs } from '../utils/routes';
-import { buttonsTitles, descriptions, inputLabels, validationTexts } from '../utils/texts';
+import {
+  buttonsTitles,
+  descriptions,
+  inputLabels,
+  matchTypeLabels,
+  validationTexts,
+} from '../utils/texts';
 
 const generalSchema = Yup.object().shape({
   name: Yup.string().required(validationTexts.requireText),
@@ -49,6 +55,39 @@ export const tabs = [
     label: resultTabTitles.results,
   },
 ];
+
+const titles = {
+  name: { name: inputLabels.competitionName },
+  year: { name: inputLabels.year },
+  competitionType: { name: inputLabels.competitionType, getValueLabel: (val) => val?.name },
+  results: {
+    name: inputLabels.result,
+    getValueLabel: (val) => val?.sportType?.name,
+    children: {
+      name: { name: inputLabels.name },
+      participantsNumber: { name: inputLabels.teamCount },
+      stages: { name: inputLabels.stagesCount },
+      countriesCount: { name: inputLabels.statesCount },
+      selection: { name: inputLabels.isInternationalSelection },
+      matchType: { name: inputLabels.matchType, getValueLabel: (val) => matchTypeLabels[val] },
+      otherMatch: { name: inputLabels.matchName },
+      match: { name: inputLabels.sportMatchType, getValueLabel: (val) => val?.name },
+      sportType: { name: inputLabels.sportType, getValueLabel: (val) => val?.name },
+      resultType: { name: inputLabels.result, getValueLabel: (val) => val?.name },
+      result: {
+        name: inputLabels.place,
+        children: {
+          value: {
+            name: inputLabels.place,
+            children: { from: { name: inputLabels.placeFrom }, to: { name: inputLabels.placeTo } },
+          },
+        },
+      },
+    },
+  },
+  website: { name: inputLabels.websiteToProtocols },
+  protocolDocument: { name: descriptions.protocolDocument, getValueLabel: (val) => val?.name },
+};
 
 const CompetitionPage = () => {
   const navigate = useNavigate();
@@ -97,8 +136,14 @@ const CompetitionPage = () => {
 
   const isNewRequest = isNew(id) && !queryStringRequestId;
 
-  const canEdit = isNewRequest || request?.canEdit || competition?.canCreateRequest;
-  const canCreateRequest = competition?.canCreateRequest || !request?.id;
+  const showDraftButton =
+    user.type === AdminRoleType.USER &&
+    (isNewRequest ||
+      [request?.status].includes(StatusTypes.DRAFT) ||
+      lastRequestApprovalOrRejection);
+
+  const canEdit = isNewRequest || request?.canEdit || showDraftButton;
+  const canCreateRequest = showDraftButton || !request?.id;
 
   const isCreateStatus = canCreateRequest || request.status === StatusTypes.DRAFT;
 
@@ -164,12 +209,6 @@ const CompetitionPage = () => {
   const formValues: any = getFormValues();
   const disabled = !canEdit;
 
-  const showDraftButton =
-    user.type === AdminRoleType.USER &&
-    (isNewRequest ||
-      [request?.status].includes(StatusTypes.DRAFT) ||
-      lastRequestApprovalOrRejection);
-
   const validationSchema =
     tabs.length - 1 == currentTabIndex ? sportBaseSchema : tabs[currentTabIndex]?.validation;
 
@@ -228,15 +267,6 @@ const CompetitionPage = () => {
 
         const hasNext = tabs[currentTabIndex + 1];
         const hasPrevious = tabs[currentTabIndex - 1];
-
-        const titles = {
-          name: { name: inputLabels.competitionName },
-          year: { name: inputLabels.year },
-          competitionType: { name: inputLabels.competitionType, labelField: 'name' },
-          results: { name: inputLabels.result, labelField: 'sportType.name' },
-          website: { name: inputLabels.websiteToProtocols },
-          protocolDocument: { name: descriptions.protocolDocument, labelField: 'name' },
-        };
 
         const onSubmit = async () => {
           let errors = {};

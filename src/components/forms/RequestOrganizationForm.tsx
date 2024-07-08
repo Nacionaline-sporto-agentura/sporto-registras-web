@@ -1,3 +1,4 @@
+import { PhoneField } from '@aplinkosministerija/design-system';
 import { FormRow } from '../../styles/CommonStyles';
 import { getTenantLegalFormList, getTenantSportOrganizationTypeList } from '../../utils/functions';
 import { formLabels, inputLabels } from '../../utils/texts';
@@ -40,7 +41,7 @@ const RequestOrganizationForm = ({
             onChange={(companyCode) => handleChange('code', companyCode)}
           />
 
-          <TextField
+          <PhoneField
             label={inputLabels.companyPhone}
             value={values.phone}
             error={errors.phone}

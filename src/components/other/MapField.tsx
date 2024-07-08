@@ -2,23 +2,20 @@ import { useCallback, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { FeatureCollection } from '../../types';
 
-const mapsHost = import.meta.env.VITE_MAPS_HOST || 'https://maps.biip.lt';
-
-const MapField = ({
-  address,
-  onChange,
-  disabled,
-}: {
-  address: string;
+interface MapFieldProps extends Partial<HTMLIFrameElement> {
   onChange: (value: FeatureCollection) => void;
+  value?: FeatureCollection;
   disabled: boolean;
-}) => {
+}
+const mapHost = import.meta.env.VITE_MAPS_HOST || 'https://maps.biip.lt';
+
+const MapField = ({ value, onChange, disabled }: MapFieldProps) => {
   const iframeRef = useRef<any>(null);
 
   const handleSaveGeom = useCallback(
     (event: any) => {
-      if (event.origin === mapsHost) {
-        onChange(JSON.parse(event?.data?.mapIframeMsg.data));
+      if (event.origin === mapHost) {
+        onChange(JSON.parse(event?.data?.mapIframeMsg?.data));
       }
     },
     [onChange],
@@ -29,21 +26,16 @@ const MapField = ({
     return () => window.removeEventListener('message', handleSaveGeom);
   }, [handleSaveGeom]);
 
-  const handleLoadMap = useCallback(() => {
-    if (!address) return;
-
-    iframeRef?.current?.contentWindow?.postMessage({ address }, '*');
-  }, [address]);
-
-  useEffect(() => {
-    handleLoadMap();
-  }, [address]);
+  const handleLoadMap = () => {
+    if (!value) return;
+    iframeRef?.current?.contentWindow?.postMessage({ geom: value }, '*');
+  };
 
   const mapQueryString = !disabled ? '?types[]=point' : '?preview=true';
 
   return (
     <Iframe
-      src={`${mapsHost}/edit${mapQueryString}`}
+      src={`${mapHost}/edit${mapQueryString}`}
       ref={iframeRef}
       width={'100%'}
       allowFullScreen={true}

@@ -1,8 +1,7 @@
-import { SportBase } from '../../types';
+import { SportsBase } from '../../types';
 import { descriptions, pageTitles } from '../../utils/texts';
 import PhotoUploadField from '../fields/PhotoUploadField';
 import InnerContainerRow from '../other/InnerContainerRow';
-import SimpleContainer from '../other/SimpleContainer';
 
 const SportBasePhotos = ({
   sportBase,
@@ -11,7 +10,7 @@ const SportBasePhotos = ({
   disabled,
 }: {
   disabled: boolean;
-  sportBase: SportBase;
+  sportBase: SportsBase;
   errors: any;
   handleChange: any;
 }) => {

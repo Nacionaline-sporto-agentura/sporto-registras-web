@@ -1,3 +1,4 @@
+import { phoneNumberRegexPattern } from '@aplinkosministerija/design-system';
 import { companyCode, personalCode } from 'lt-codes';
 import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -33,7 +34,7 @@ export const validateCreateUserForm = Yup.object().shape({
   phone: Yup.string()
     .required(validationTexts.requireText)
     .trim()
-    .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
+    .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
   personalCode: Yup.string().when(['ownerWithPassword'], (items: any, schema) => {
     if (!items[0]) {
       return schema
@@ -59,7 +60,7 @@ export const validateCreateUserForm = Yup.object().shape({
   companyPhone: Yup.string()
     .required(validationTexts.requireText)
     .trim()
-    .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
+    .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
   companyEmail: Yup.string()
     .email(validationTexts.badEmailFormat)
     .required(validationTexts.requireText),

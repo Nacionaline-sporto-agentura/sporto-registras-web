@@ -1,3 +1,4 @@
+import { PhoneField, phoneNumberRegexPattern } from '@aplinkosministerija/design-system';
 import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -46,7 +47,7 @@ export const validateCreateUserForm = Yup.object().shape({
   phone: Yup.string()
     .required(validationTexts.requireText)
     .trim()
-    .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
+    .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
   email: Yup.string().email(validationTexts.badEmailFormat).required(validationTexts.requireText),
   groups: Yup.array()
     .of(
@@ -218,7 +219,7 @@ const AdminUserForm = () => {
             />
           </FormRow>
           <FormRow columns={2}>
-            <TextField
+            <PhoneField
               label={inputLabels.phone}
               value={values.phone}
               error={errors.phone}

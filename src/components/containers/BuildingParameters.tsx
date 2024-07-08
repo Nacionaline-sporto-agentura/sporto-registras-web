@@ -64,15 +64,6 @@ const BuildingParametersContainer = ({
           getOptionLabel={(option) => option?.name}
           loadOptions={(input, page) => getSportBaseSpaceEnergyClassList(input, page)}
         />
-
-        <DragAndDropUploadField
-          disabled={disabled}
-          onChange={(files: any) => handleChange('energyClassCertificate', files[0])}
-          multiple={false}
-          files={[sportBaseSpace?.energyClassCertificate]}
-          label={descriptions.energyClassCertificate}
-          error={errors?.energyClassCertificate}
-        />
       </FormRow>
       <FormRow columns={1}>
         <TreeSelectField

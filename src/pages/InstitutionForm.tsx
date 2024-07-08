@@ -10,6 +10,7 @@ import { getReactQueryErrorMessage, handleErrorToastFromServer, isNew } from '..
 import { slugs } from '../utils/routes';
 import { pageTitles, validationTexts } from '../utils/texts';
 
+import { phoneNumberRegexPattern } from '@aplinkosministerija/design-system';
 import { companyCode, personalCode } from 'lt-codes';
 import OwnerForm from '../components/forms/OwnerForm';
 import { TenantTypes } from '../utils/constants';
@@ -32,7 +33,7 @@ export const validateInstitutionForm = Yup.object().shape({
   phone: Yup.string()
     .required(validationTexts.requireText)
     .trim()
-    .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
+    .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
   email: Yup.string().email(validationTexts.badEmailFormat).required(validationTexts.requireText),
   personalCode: Yup.string().when(['ownerWithPassword'], (items: any, schema) => {
     if (!items[0]) {
@@ -57,7 +58,7 @@ export const validateInstitutionForm = Yup.object().shape({
   companyPhone: Yup.string()
     .required(validationTexts.requireText)
     .trim()
-    .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
+    .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
   companyEmail: Yup.string()
     .email(validationTexts.badEmailFormat)
     .required(validationTexts.requireText),

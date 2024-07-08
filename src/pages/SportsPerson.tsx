@@ -1,4 +1,4 @@
-import { applyPatch, compare } from 'fast-json-patch';
+import { applyPatch } from 'fast-json-patch';
 import { Formik, yupToFormErrors } from 'formik';
 import { cloneDeep, isEmpty, omit } from 'lodash';
 import { personalCode } from 'lt-codes';
@@ -8,13 +8,18 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 import Button from '../components/buttons/Button';
+import AmsInstructorPage from '../components/containers/AmsInstructor';
 import Athlete from '../components/containers/Athlete';
+import CoachPage from '../components/containers/Coach';
+import FaInstructorPage from '../components/containers/FaInstructor';
+import FaSpecialistPage from '../components/containers/FaSpecialist';
+import RefereePage from '../components/containers/Referee';
 import SportsPersonGeneral from '../components/containers/SportsPersonGeneral';
 import {
-  extractIdKeys,
   filterSelectedOptions,
   flattenArrays,
-  processDiffs,
+  getSubmitChanges,
+  mergedDiffs,
 } from '../components/fields/utils/function';
 import { FormErrorMessage } from '../components/other/FormErrorMessage';
 import FormPopUp from '../components/other/FormPopup';
@@ -46,11 +51,16 @@ const generalSchema = Yup.object().shape({
   nationality: Yup.string().required(validationTexts.requireText),
 });
 
-const sportBaseSchema = Yup.object().shape({}).concat(generalSchema);
+const sportsPersonSchema = Yup.object().shape({}).concat(generalSchema);
 
 const sportBaseTabTitles = {
   generalInfo: 'Bendra informacija',
   athlete: 'Sportininkas',
+  coach: 'Treneris',
+  referee: 'Teisėjas',
+  faInstructor: 'FA instruktorius',
+  faSpecialist: 'FA specialistas',
+  amsInstructor: 'AMS instruktorius',
 };
 
 export const tabs = [
@@ -66,7 +76,40 @@ export const additionalTabs: any = [
     canDelete: true,
     value: 'athlete',
   },
+  {
+    label: sportBaseTabTitles.coach,
+    canDelete: true,
+    value: 'coach',
+  },
+  {
+    label: sportBaseTabTitles.referee,
+    canDelete: true,
+    value: 'referee',
+  },
+  {
+    label: sportBaseTabTitles.amsInstructor,
+    canDelete: true,
+    value: 'amsInstructor',
+  },
+  {
+    label: sportBaseTabTitles.faInstructor,
+    canDelete: true,
+    value: 'faInstructor',
+  },
+  {
+    label: sportBaseTabTitles.faSpecialist,
+    canDelete: true,
+    value: 'faSpecialist',
+  },
 ];
+
+const titles = {
+  firstName: { name: inputLabels.firstName },
+  lastName: { name: inputLabels.lastName },
+  nationality: { name: inputLabels.citizenship },
+  personalCode: { name: inputLabels.personalCode },
+  sportTypes: { name: inputLabels.sportPersonSportType, getValueLabel: (val) => val?.name },
+};
 
 const SportsPersonPage = () => {
   const navigate = useNavigate();
@@ -189,7 +232,9 @@ const SportsPersonPage = () => {
 
     setCurrentTabs([
       ...tabs,
-      ...additionalTabs.filter((tab) => sportPersonKeys.includes(tab.value)),
+      ...additionalTabs.filter((tab) =>
+        sportPersonKeys.some((key) => key === tab.value && !!formValues[key]),
+      ),
     ]);
   }, [JSON.stringify(formValues)]);
 
@@ -204,7 +249,7 @@ const SportsPersonPage = () => {
       lastRequestApprovalOrRejection);
 
   const validationSchema =
-    tabs.length - 1 == currentTabIndex ? sportBaseSchema : tabs[currentTabIndex]?.validation;
+    tabs.length - 1 == currentTabIndex ? sportsPersonSchema : tabs[currentTabIndex]?.validation;
 
   const oldData = isEmpty(sportsPersonWithoutLastRequest)
     ? formValues
@@ -219,27 +264,14 @@ const SportsPersonPage = () => {
       onSubmit={() => {}}
     >
       {({ values, errors, setFieldValue, setErrors, setValues }) => {
-        const mergedDiffs = () => {
-          const idKeys = {};
+        const changes = mergedDiffs({
+          entity: sportsPersonWithoutLastRequest,
+          lastRequestApprovalOrRejection,
+          formValues,
+          values,
+        });
 
-          const obj = {};
-
-          const sportBaseDif = compare(sportsPersonWithoutLastRequest, values, true);
-          extractIdKeys(sportBaseDif, idKeys);
-          processDiffs(sportBaseDif, idKeys, 0, obj);
-
-          if (sportPerson && !lastRequestApprovalOrRejection) {
-            const requestDif = compare(formValues, values, true);
-            extractIdKeys(requestDif, idKeys);
-            processDiffs(requestDif, idKeys, 1, obj);
-          }
-
-          return Object.values(obj);
-        };
-
-        const changes = mergedDiffs();
-
-        const submitChanges = changes.map((change: any) => change[0]);
+        const submitChanges = getSubmitChanges(changes);
 
         const containers = {
           [sportBaseTabTitles.generalInfo]: (
@@ -258,23 +290,48 @@ const SportsPersonPage = () => {
               disabled={disabled}
             />
           ),
+          [sportBaseTabTitles.coach]: (
+            <CoachPage
+              coach={values?.coach}
+              errors={errors}
+              handleChange={setFieldValue}
+              disabled={disabled}
+            />
+          ),
+          [sportBaseTabTitles.referee]: (
+            <RefereePage
+              referee={values?.referee}
+              errors={errors}
+              handleChange={setFieldValue}
+              disabled={disabled}
+            />
+          ),
+          [sportBaseTabTitles.faInstructor]: (
+            <FaInstructorPage
+              faInstructor={values?.faInstructor}
+              errors={errors}
+              handleChange={setFieldValue}
+              disabled={disabled}
+            />
+          ),
+          [sportBaseTabTitles.amsInstructor]: (
+            <AmsInstructorPage
+              amsInstructor={values?.amsInstructor}
+              errors={errors}
+              handleChange={setFieldValue}
+              disabled={disabled}
+            />
+          ),
+          [sportBaseTabTitles.faSpecialist]: <FaSpecialistPage />,
         };
 
         const hasNext = currentTabs[currentTabIndex + 1];
         const hasPrevious = currentTabs[currentTabIndex - 1];
 
-        const titles = {
-          firstName: { name: inputLabels.firstName },
-          lastName: { name: inputLabels.lastName },
-          nationality: { name: inputLabels.citizenship },
-          personalCode: { name: inputLabels.personalCode },
-          sportTypes: { name: inputLabels.sportPersonSportType, labelField: 'name' },
-        };
-
         const onSubmit = async () => {
           let errors = {};
           try {
-            await validationSchema?.validate(values, { abortEarly: false });
+            await sportsPersonSchema?.validate(values, { abortEarly: false });
           } catch (e) {
             const updatedValidateOnChange = {
               ...validateOnChange,
@@ -360,7 +417,9 @@ const SportsPersonPage = () => {
                   (option) => option.label,
                 )}
                 onAddTab={(tab) => {
-                  setCurrentTabs([...currentTabs, tab]);
+                  const newTabs = [...currentTabs, tab];
+                  setCurrentTabs(newTabs);
+                  setCurrentTabIndex(newTabs.length - 1);
                   setFieldValue(tab.value, {});
                 }}
                 onDeleteTab={(currentTab) => {

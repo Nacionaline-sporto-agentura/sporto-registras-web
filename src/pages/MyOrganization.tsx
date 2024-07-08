@@ -8,6 +8,7 @@ import {
 } from '../utils/functions';
 import { pageTitles, validationTexts } from '../utils/texts';
 
+import { phoneNumberRegexPattern } from '@aplinkosministerija/design-system';
 import { companyCode } from 'lt-codes';
 import Cookies from 'universal-cookie';
 import OrganizationExtendedForm from '../components/forms/OrganizationExtendedForm';
@@ -30,7 +31,7 @@ export const validateOrganizationForm = Yup.object().shape({
   companyPhone: Yup.string()
     .required(validationTexts.requireText)
     .trim()
-    .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
+    .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
   companyEmail: Yup.string()
     .email(validationTexts.badEmailFormat)
     .required(validationTexts.requireText),

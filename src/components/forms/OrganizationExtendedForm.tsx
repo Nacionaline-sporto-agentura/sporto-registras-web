@@ -1,3 +1,4 @@
+import { phoneNumberRegexPattern } from '@aplinkosministerija/design-system';
 import { applyPatch, compare } from 'fast-json-patch';
 import { Formik, yupToFormErrors } from 'formik';
 import { cloneDeep, isEmpty } from 'lodash';
@@ -37,7 +38,7 @@ export const validateOrganizationForm = Yup.object().shape({
   phone: Yup.string()
     .required(validationTexts.requireText)
     .trim()
-    .matches(/^(86|\+3706)\d{7}$/, validationTexts.badPhoneFormat),
+    .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
   email: Yup.string().email(validationTexts.badEmailFormat).required(validationTexts.requireText),
 });
 
@@ -248,18 +249,23 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
           phone: { name: inputLabels.companyPhone },
           email: { name: inputLabels.companyEmail },
           address: { name: inputLabels.locationAddress },
-          type: { name: inputLabels.organizationType, labelField: 'name' },
-          legalForm: { name: inputLabels.legalForm, labelField: 'name' },
+          type: { name: inputLabels.organizationType, getValueLabel: (val) => val?.name },
+          legalForm: { name: inputLabels.legalForm, getValueLabel: (val) => val?.name },
           data: {
-            labelField: 'url',
-            foundedAt: { name: inputLabels.foundedAt },
-            url: { name: inputLabels.url },
-            hasBeneficiaryStatus: { name: inputLabels.hasBeneficiaryStatus },
-            nonGovernmentalOrganization: { name: inputLabels.nonGovernmentalOrganization },
-            nonFormalEducation: { name: inputLabels.nonFormalEducation },
+            name: inputLabels.url,
+            getValueLabel: (val) => {
+              return val?.url;
+            },
+            children: {
+              foundedAt: { name: inputLabels.foundedAt },
+              url: { name: inputLabels.url },
+              hasBeneficiaryStatus: { name: inputLabels.hasBeneficiaryStatus },
+              nonGovernmentalOrganization: { name: inputLabels.nonGovernmentalOrganization },
+              nonFormalEducation: { name: inputLabels.nonFormalEducation },
+            },
           },
           governingBodies: {
-            labelField: 'name',
+            getValueLabel: (val) => val?.name,
             name: organizationTabTitles.governingBodies,
             children: {
               name: { name: inputLabels.name },
@@ -275,17 +281,17 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
             },
           },
           fundingSources: {
-            labelField: 'source.name',
+            getValueLabel: (val) => val?.source?.name,
             name: organizationTabTitles.fundingSources,
             children: {
-              source: { name: inputLabels.source },
+              source: { name: inputLabels.investmentSources },
               fundsAmount: { name: inputLabels.fundsAmount },
               appointedAt: { name: inputLabels.appointedAt },
               description: { name: inputLabels.description },
             },
           },
           memberships: {
-            labelField: 'name',
+            getValueLabel: (val) => val?.name,
             name: organizationTabTitles.memberships,
             children: {
               name: { name: inputLabels.organizationName },

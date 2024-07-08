@@ -1,9 +1,9 @@
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import { ActionTypes } from '../components/other/HistoryContainer';
-import { User } from '../types';
+import { Result, User } from '../types';
 import api, { SortAscFields } from './api';
-import { AdminRoleType } from './constants';
+import { AdminRoleType, ResultTypeTypes } from './constants';
 import { url, validationTexts } from './texts';
 
 export interface Path {
@@ -18,7 +18,7 @@ export interface PathProps {
 
 interface HandlePaginationProps {
   data: any[];
-  page: string;
+  page: any;
   pageSize: number;
 }
 
@@ -118,6 +118,16 @@ export const getSimpleFilter = (input, page, additionalQuery?: any) => {
   };
 };
 
+export const getSportsPersonQuery = (filter: any) => {
+  const query: any = {};
+
+  if (filter.sportsPerson) {
+    query.sportsPerson = filter.sportsPerson.id;
+  }
+
+  return query;
+};
+
 const getInputSimpleFilter = (input, page, additionalQuery?: any) => {
   return { ...getSimpleFilter(input, page, additionalQuery), sort: [SortAscFields.NAME] };
 };
@@ -126,56 +136,95 @@ export const getSportBaseTypeList = async (name: string, page: number) => {
   return await api.getSportBaseTypes(getInputSimpleFilter(name, page));
 };
 
-export const getSportBaseSourcesList = async (input: string, page: string, query: any) => {
+export const getSportBaseSourcesList = async (input: string, page: any, query: any) => {
   return await api.getSportBaseSources(getInputSimpleFilter(input, page, query));
 };
 
-export const getTenantSourcesList = async (input: string, page: string) => {
+export const getTenantSourcesList = async (input: string, page: any) => {
   return await api.getTenantSources(getInputSimpleFilter(input, page));
 };
 
-export const getSportBaseLevelsList = async (input: string, page: string) => {
+export const getSportBaseLevelsList = async (input: string, page: any) => {
   return await api.getSportBaseLevels(getInputSimpleFilter(input, page));
 };
 
-export const getSportBaseTechnicalConditionList = async (input: string, page: string) => {
+export const getSportBaseTechnicalConditionList = async (input: string, page: any) => {
   return await api.getSportBaseTechnicalConditions(getInputSimpleFilter(input, page));
 };
 
-export const getSportBaseTypesList = async (input: string, page: string) => {
+export const getSportBaseTypesList = async (input: string, page: any) => {
   return await api.getSportBaseTypes(getInputSimpleFilter(input, page));
 };
 
-export const getOrganizationBasisList = async (input: string, page: string) => {
+export const getOrganizationBasisList = async (input: string, page: any) => {
   return await api.getOrganizationBasis(getInputSimpleFilter(input, page));
 };
 
-export const getSportBaseSpaceTypesList = async (input: string, page: string) => {
-  return await api.getSportBaseSpaceTypes(getInputSimpleFilter(input, page));
+export const getWorkRelationsList = async (input: string, page: any) => {
+  return await api.getWorkRelations(getInputSimpleFilter(input, page));
 };
 
-export const getSportBaseSpaceEnergyClassList = async (input: string, page: string) => {
+export const getOrganizationsList = async (input: string, page: any) => {
+  return await api.getOrganizations(getInputSimpleFilter(input, page));
+};
+
+export const getEducationalCompaniesList = async (input: string, page: any) => {
+  return await api.getEducationalCompanies(getInputSimpleFilter(input, page));
+};
+
+export const getStudyProgramList = async (input: string, page: any, query: any) => {
+  return await api.getStudyPrograms(getInputSimpleFilter(input, page, query));
+};
+
+export const getStudyCompanyList = async (input: string, page: any) => {
+  return await api.getStudyCompanies(getInputSimpleFilter(input, page));
+};
+
+export const getSportBasesList = async (input: string, page: any, query: any) => {
+  return await api.getSportsBases(getInputSimpleFilter(input, page, query));
+};
+
+export const getSportBaseSpaceTypesList = async (input: string, page: any, query) => {
+  return await api.getSportBaseSpaceTypes(getInputSimpleFilter(input, page, query));
+};
+
+export const getSportBaseSpaceGroupsList = async (input: string, page: any) => {
+  return await api.getSportBaseSpaceGroups(getInputSimpleFilter(input, page));
+};
+export const getSportBaseSpaceEnergyClassList = async (input: string, page: any) => {
   return await api.getSportBaseSpaceEnergyClasses(getInputSimpleFilter(input, page));
 };
 
-export const getTenantSportOrganizationTypeList = async (input: string, page: string) => {
+export const getTenantSportOrganizationTypeList = async (input: string, page: any) => {
   return await api.getTenantSportOrganizationTypes(getInputSimpleFilter(input, page));
 };
 
-export const getTenantLegalFormList = async (input: string, page: string) => {
+export const getTenantLegalFormList = async (input: string, page: any) => {
   return await api.getTenantLegalForms(getInputSimpleFilter(input, page));
 };
 
-export const getSportTypesList = async (input: string, page: string) => {
+export const getSportTypesList = async (input: string, page: any) => {
   return await api.getSportTypes(getInputSimpleFilter(input, page));
 };
 
-export const getSportsPersonList = async (input: string, page: string) => {
-  return await api.getSportsPersons(getInputSimpleFilter(input, page));
+export const getSportsPersonList = async (input: string, page: any, query?: any) => {
+  return await api.getListSportsPersons(getInputSimpleFilter(input, page, query));
 };
 
-export const getCompetitionTypesList = async (input: string, page: string) => {
+export const getRentsUnitList = async (input: string, page: any) => {
+  return await api.getRentsUnits(getInputSimpleFilter(input, page));
+};
+
+export const getCompetitionTypesList = async (input: string, page: any) => {
   return await api.getCompetitionTypes(getInputSimpleFilter(input, page));
+};
+
+export const getNationalTeamAgeGroups = async (input: string, page: any) => {
+  return await api.getNationalTeamAgeGroups(getInputSimpleFilter(input, page));
+};
+
+export const getNationalTeamGenders = async (input: string, page: any) => {
+  return await api.getNationalTeamGenders(getInputSimpleFilter(input, page));
 };
 
 export const formatDate = (date?: string | Date) =>
@@ -277,4 +326,48 @@ export const filterAndUpdateTypes = (existingTypes, newTypes, currentValues, upd
 
   // Invoke the update callback with the filtered types
   updateCallback(filteredTypes);
+};
+
+export const getFullName = (user) => `${user?.firstName} ${user?.lastName}`;
+
+export const getResultLabel = (competitionResult?: Result) => {
+  const resultType = competitionResult?.resultType?.type;
+
+  const label =
+    resultType === ResultTypeTypes.RANGE
+      ? `${competitionResult?.result?.value?.from} - ${competitionResult?.result?.value?.to}`
+      : resultType === ResultTypeTypes.NUMBER
+      ? competitionResult?.result?.value
+      : '-';
+
+  return label;
+};
+
+export const getBonusResultLabel = (competitionResult?: Result) => {
+  const resultType = competitionResult?.resultType?.type;
+  const competition = competitionResult?.competition;
+
+  const resultLabel =
+    resultType === ResultTypeTypes.RANGE
+      ? `${competitionResult?.result?.value?.from} - ${competitionResult?.result?.value?.to} vt.`
+      : resultType === ResultTypeTypes.NUMBER
+      ? `${competitionResult?.result?.value} vt.`
+      : '-';
+
+  return `${competition?.name}, ${competition?.year}, ${resultLabel}`;
+};
+
+export const getFormattedAddress = (address) =>
+  address?.street && address?.house && address?.city && address?.municipality
+    ? `${address.street} ${address.house} ${address.apartment || ''}, ${address.city} ${
+        address.municipality
+      }`
+    : '-';
+
+export const getResult = (result) => {
+  return result.resultType === ResultTypeTypes.RANGE
+    ? `${result?.value?.from} - ${result?.value?.to}`
+    : result.resultType === ResultTypeTypes.NUMBER
+    ? result?.value
+    : '-';
 };

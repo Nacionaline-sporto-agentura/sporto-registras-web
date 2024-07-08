@@ -20,9 +20,13 @@ interface UsersFiltersState {
   unconfirmedCompetitionFilters: UnconfirmedRequestFilters;
   unconfirmedSportsPersonFilters: UnconfirmedRequestFilters;
   classifierFilters: ClassifierFilters;
+  bonusFilters: any;
+  rentFilters: any;
+  scholarShipFilters: any;
 }
 
 const initialState: UsersFiltersState = {
+  bonusFilters: {},
   userFilters: {},
   groupFilters: {},
   institutionFilters: {},
@@ -44,12 +48,23 @@ const initialState: UsersFiltersState = {
   competitionFilters: {},
   unconfirmedCompetitionFilters: {},
   unconfirmedSportsPersonFilters: {},
+  rentFilters: {},
+  scholarShipFilters: {},
 };
 
 export const filtersReducer = createSlice({
   name: 'userFilters',
   initialState,
   reducers: {
+    setScholarShipFilters: (state, action) => {
+      return { ...state, scholarShipFilters: action.payload };
+    },
+    setRentFilters: (state, action) => {
+      return { ...state, rentFilters: action.payload };
+    },
+    setBonusFilters: (state, action) => {
+      return { ...state, bonusFilters: action.payload };
+    },
     setUserFilters: (state, action) => {
       return { ...state, userFilters: action.payload };
     },

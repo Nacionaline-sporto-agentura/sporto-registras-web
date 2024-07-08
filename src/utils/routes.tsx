@@ -1,5 +1,7 @@
 import AdminUserForm from '../pages/AdminUserForm';
 import AdminUserList from '../pages/AdminUserList';
+import BonusesList from '../pages/BonusesList';
+import BonusForm from '../pages/BonusForm';
 import Classifier from '../pages/Classifier';
 import ClassifierList from '../pages/ClassifierList';
 import CompetitionPage from '../pages/Competition';
@@ -11,13 +13,19 @@ import InstitutionPage from '../pages/Institution';
 import { default as InstitutionForm } from '../pages/InstitutionForm';
 import InstitutionList from '../pages/InstitutionList';
 import MyOrganization from '../pages/MyOrganization';
+import NationalTeamPage from '../pages/NationalTeam';
+import NationalTeamsList from '../pages/NationalTeamsList';
 import Organization from '../pages/Organization';
 import OrganizationForm from '../pages/OrganizationForm';
 import OrganizationList from '../pages/OrganizationList';
 import OrganizationUser from '../pages/OrganizationUser';
 import Profile from '../pages/Profile';
-import SportBase from '../pages/SportBase';
+import RentForm from '../pages/RentForm';
+import RentsList from '../pages/RentsList';
+import ScholarshipForm from '../pages/ScholarshipForm';
+import ScholarshipsList from '../pages/ScholarshipsList';
 import SportBaseList from '../pages/SportBaseList';
+import SportBase from '../pages/SportsBase';
 import SportsPersonPage from '../pages/SportsPerson';
 import SportsPersonsList from '../pages/SportsPersonsList';
 import SportTypePage from '../pages/SportType';
@@ -65,10 +73,10 @@ export const slugs = {
   newOrganizationUser: (tenantId: string) => `/organizacijos/${tenantId}/nariai/naujas`,
   organizationUser: (tenantId: string, id: string) => `/organizacijos/${tenantId}/nariai/${id}`,
   user: (id: string) => `/naudotojai/${id}`,
-  sportBases: '/sporto-infrastruktura',
+  sportsBases: '/sporto-infrastruktura',
   unConfirmedSportBases: '/nepatvirtinta-sporto-infrastruktura',
   newSportBase: '/sporto-bazes/naujas',
-  sportBase: (id: string) => `/sporto-bazes/${id}`,
+  sportsBase: (id: string) => `/sporto-bazes/${id}`,
   sportsPersons: '/sporto-asmenys',
   unConfirmedSportsPersons: '/nepatvirtinti-sporto-asmenys',
   newSportsPerson: '/sporto-asmenys/naujas',
@@ -84,6 +92,20 @@ export const slugs = {
   newResult: `/rezultatai/${url.new}`,
   sportPerson: '/sporto-asmenys/naujas',
   unconfirmedResults: '/nepatvirtinti-rezultatai',
+  bonuses: '/premijos',
+  newBonus: `/premijos/naujas`,
+  bonus: (id: string) => `/premijos/${id}`,
+  scholarships: '/stipendijos',
+  newScholarships: `/stipendijos/naujas`,
+  scholarship: (id: string) => `/stipendijos/${id}`,
+  rents: '/rentos',
+  newRent: `/rentos/naujas`,
+  rent: (id: string) => `/rentos/${id}`,
+
+  nationalTeams: '/nacionalines-rinktines',
+  unConfirmedNationalTeams: '/nepatvirtintos-nacionalines-rinktines',
+  newNationalTeam: '/nacionalines-rinktines/naujas',
+  nationalTeam: (id: string) => `/nacionalines-rinktines/${id}`,
 };
 
 export const routes = [
@@ -204,13 +226,13 @@ export const routes = [
     component: <Profile />,
   },
   {
-    slug: slugs.sportBase(':id'),
+    slug: slugs.sportsBase(':id'),
     component: <SportBase />,
   },
   {
     name: pageTitles.sportBases,
     sidebar: true,
-    slug: slugs.sportBases,
+    slug: slugs.sportsBases,
     component: <SportBaseList />,
   },
   {
@@ -222,33 +244,58 @@ export const routes = [
     sidebar: true,
     slug: slugs.sportsPersons,
     component: <SportsPersonsList />,
+    role: AdminRoleType.ADMIN,
   },
   {
     slug: slugs.unConfirmedSportsPersons,
     component: <SportsPersonsList />,
+    role: AdminRoleType.ADMIN,
   },
   {
     slug: slugs.newSportsPerson,
     component: <SportsPersonPage />,
+    role: AdminRoleType.ADMIN,
   },
   {
     slug: slugs.sportsPerson(':id'),
     component: <SportsPersonPage />,
+    role: AdminRoleType.ADMIN,
   },
+  {
+    name: pageTitles.nationalTeams,
+    sidebar: true,
+    slug: slugs.nationalTeams,
+    component: <NationalTeamsList />,
+    role: AdminRoleType.ADMIN,
+  },
+  {
+    slug: slugs.unConfirmedNationalTeams,
+    component: <NationalTeamsList />,
+    role: AdminRoleType.ADMIN,
+  },
+  {
+    slug: slugs.nationalTeam(':id'),
+    component: <NationalTeamPage />,
+    role: AdminRoleType.ADMIN,
+  },
+
   {
     name: pageTitles.results,
     sidebar: true,
     slug: slugs.results,
     component: <CompetitionList />,
+    role: AdminRoleType.ADMIN,
   },
   {
     slug: slugs.unconfirmedResults,
     component: <CompetitionList />,
+    role: AdminRoleType.ADMIN,
   },
 
   {
     slug: slugs.result(':id'),
     component: <CompetitionPage />,
+    role: AdminRoleType.ADMIN,
   },
 
   {
@@ -273,6 +320,45 @@ export const routes = [
     slug: slugs.updateInstitution(':id'),
     role: AdminRoleType.ADMIN,
     component: <UpdateInstitutionForm />,
+  },
+
+  {
+    name: pageTitles.bonuses,
+    slug: slugs.bonuses,
+    sidebar: true,
+    component: <BonusesList />,
+    role: AdminRoleType.ADMIN,
+  },
+
+  {
+    slug: slugs.bonus(':id'),
+    component: <BonusForm />,
+    role: AdminRoleType.ADMIN,
+  },
+  {
+    name: pageTitles.scholarships,
+    sidebar: true,
+    slug: slugs.scholarships,
+    component: <ScholarshipsList />,
+    role: AdminRoleType.ADMIN,
+  },
+  {
+    slug: slugs.scholarship(':id'),
+    component: <ScholarshipForm />,
+    role: AdminRoleType.ADMIN,
+  },
+
+  {
+    name: pageTitles.rents,
+    sidebar: true,
+    slug: slugs.rents,
+    component: <RentsList />,
+    role: AdminRoleType.ADMIN,
+  },
+  {
+    slug: slugs.rent(':id'),
+    component: <RentForm />,
+    role: AdminRoleType.ADMIN,
   },
 
   {

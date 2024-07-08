@@ -107,7 +107,6 @@ const ResultsInfo = ({ results = {}, handleChange, disabled }) => {
     api.getAllResultTypes({}),
   );
 
-
   return (
     <>
       <InnerContainerRow
@@ -175,7 +174,7 @@ const ResultsInfo = ({ results = {}, handleChange, disabled }) => {
                         error={errors?.result?.value}
                         name="value"
                         onChange={(value) => {
-                          setFieldValue(`result.value`, Number(value));
+                          setFieldValue(`result.value`, value);
                         }}
                       />
                     )}
@@ -189,7 +188,7 @@ const ResultsInfo = ({ results = {}, handleChange, disabled }) => {
                           maxValue={values?.result?.value?.to}
                           name="placeFrom"
                           onChange={(placeFrom) => {
-                            setFieldValue(`result.value.from`, Number(placeFrom));
+                            setFieldValue(`result.value.from`, placeFrom);
                           }}
                         />
                         <NumericTextField
@@ -200,7 +199,7 @@ const ResultsInfo = ({ results = {}, handleChange, disabled }) => {
                           error={errors?.result?.value?.to}
                           name="placeTo"
                           onChange={(placeTo) => {
-                            setFieldValue(`result.value.to`, Number(placeTo));
+                            setFieldValue(`result.value.to`, placeTo);
                           }}
                         />
                       </>
@@ -313,7 +312,9 @@ const ResultsInfo = ({ results = {}, handleChange, disabled }) => {
                         error={errors?.sportsPersons}
                         name="sportsPersons"
                         getOptionLabel={(option) => `${option?.firstName}  ${option?.lastName}`}
-                        loadOptions={(input, page) => getSportsPersonList(input, page)}
+                        loadOptions={(input, page) =>
+                          getSportsPersonList(input, page, { athlete: { $exists: true } })
+                        }
                         onChange={(types) => {
                           filterAndUpdateTypes(
                             sportsPersons,
@@ -368,7 +369,9 @@ const ResultsInfo = ({ results = {}, handleChange, disabled }) => {
                           error={errors?.sportsPersons}
                           name="sportsPersons"
                           getOptionLabel={(option) => `${option?.firstName}  ${option?.lastName}`}
-                          loadOptions={(input, page) => getSportsPersonList(input, page)}
+                          loadOptions={(input, page) =>
+                            getSportsPersonList(input, page, { athlete: { $exists: true } })
+                          }
                           onChange={(types) => {
                             filterAndUpdateTypes(
                               sportsPersons,

@@ -6,6 +6,7 @@ import AdditionalButtons from '../buttons/AdditionalButtons';
 import BackButton from '../buttons/BackButton';
 import Button from '../buttons/Button';
 import TabBar from '../Tabs/TabBar';
+import { DeleteComponent } from './DeleteComponent';
 import InfoRow from './InfoRow';
 import StatusTag from './StatusTag';
 
@@ -28,6 +29,7 @@ const RequestFormHeader = ({
   onDeleteTab,
   loading,
   addTabLabel,
+  deleteInfo,
 }: any) => (
   <TitleColumn>
     {!!back ? <BackButton /> : <Line />}
@@ -53,6 +55,7 @@ const RequestFormHeader = ({
           </Button>
         )}
         {canValidate && <AdditionalButtons disabled={loading} handleChange={onSetStatus} />}
+        <DeleteComponent deleteInfo={deleteInfo} />
       </InnerRow>
     </Row>
     {request && <InfoRow info={info} />}

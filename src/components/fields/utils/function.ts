@@ -1,3 +1,4 @@
+import { compare } from 'fast-json-patch';
 import { isEmpty, map } from 'lodash';
 import { UnconfirmedRequestFilters, UnconfirmedRequestFiltersProps } from '../../../types';
 import api from '../../../utils/api';
@@ -101,6 +102,26 @@ export const flattenArrays = (data: any): any => {
   }
   return data;
 };
+
+export const mergedDiffs = ({ entity, lastRequestApprovalOrRejection, formValues, values }) => {
+  const idKeys = {};
+
+  const obj = {};
+
+  const dif = compare(entity, values, true);
+  extractIdKeys(dif, idKeys);
+  processDiffs(dif, idKeys, 0, obj);
+
+  if (!isEmpty(entity) && !lastRequestApprovalOrRejection) {
+    const requestDif = compare(formValues, values, true);
+    extractIdKeys(requestDif, idKeys);
+    processDiffs(requestDif, idKeys, 1, obj);
+  }
+
+  return Object.values(obj);
+};
+
+export const getSubmitChanges = (changes) => changes.map((change: any) => change[0]);
 
 export const mapRequestFormFilters = (
   filters: UnconfirmedRequestFilters,

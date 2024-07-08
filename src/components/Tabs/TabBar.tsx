@@ -144,6 +144,10 @@ const RelativeContainer = styled.div`
 
 const StyledOptionsContainer = styled(OptionsContainer)`
   top: 30px;
+  width: auto;
+  div {
+    white-space: nowrap;
+  }
 `;
 
 export default TabBar;

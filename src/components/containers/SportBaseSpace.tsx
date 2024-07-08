@@ -23,6 +23,7 @@ import SportBaseSpaceGeneral from './SportBaseSpaceGeneral';
 
 const generalSchema = Yup.object().shape({
   name: Yup.string().required(validationTexts.requireText),
+  group: Yup.object().required(validationTexts.requireText),
   type: Yup.object().required(validationTexts.requireText),
   sportTypes: Yup.object().test(
     'at-least-one-property',
@@ -38,7 +39,6 @@ const buildingParametersSchema = Yup.object().shape({
   buildingArea: Yup.string().required(validationTexts.requireText),
   energyClass: Yup.object().required(validationTexts.requireText),
   constructionDate: Yup.date().required(validationTexts.requireText),
-  energyClassCertificate: Yup.object().required(validationTexts.requireText),
 });
 
 const photosSchema = Yup.object().shape({
@@ -51,7 +51,9 @@ const photosSchema = Yup.object().shape({
 
 const getValidationSchema = (additionalFields: TypesAndFields[]) => {
   const fieldValidations = (additionalFields || []).reduce((validations, item) => {
-    validations[item?.id] = Yup.string().required(validationTexts.requireText);
+    if (item?.field?.required) {
+      validations[item?.id] = Yup.string().required(validationTexts.requireText);
+    }
     return validations;
   }, {});
   return Yup.object().shape({ additionalValues: Yup.object().shape(fieldValidations) });

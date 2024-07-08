@@ -1,14 +1,18 @@
 import { ButtonColors } from '../components/buttons/Button';
 import {
   AdminRoleType,
+  AreaUnits,
+  BonusType,
   ClassifierTypes,
   HistoryTypes,
   LegalForms,
   MatchTypes,
   MembershipTypes,
+  ScholarshipType,
   ServerErrorTypes,
   SportTypeButtonKeys,
   StatusTypes,
+  StudiesType,
   TenantTypes,
 } from './constants';
 
@@ -39,6 +43,18 @@ export const validationTexts = {
 };
 
 export const descriptions = {
+  rents: 'Duomenys apie skirtą rentą buvusiems sportininkams',
+  scholarships: 'Duomenys apie skirtą valstybės stipendiją',
+  nationalTeams: 'Duomenys apie priklausymą nacionalinei rinktinei',
+  bonuses: 'Informacija apie sporto asmens gautas premijas',
+  nationalTeamCoaches: 'Treneriai treniruojantys rinktinę',
+  athletes: 'Sportininkai priklausantys rinktinei',
+  amsCoaches: 'Trenerio duomenys, kuriam talkina',
+  faSpecialist: 'FA specialisto duomenys, kuriam talkina',
+  categories: 'Kategoriją patvirtinančio dokumento duomenys',
+  careerEnd: 'Sporto asmens karjeros pabaigos fiksavimas',
+  sportBase: 'Sporto bazės, kurioje reguliariai sportuoja arba dirba sporto asmuo',
+  studies: 'Duomenys apie mokymąsi ar studijas',
   protocolDocument: 'Protokolo dokumentas',
   resultInfo: 'Sporto varžybose pasiekti rezultatai',
   sportMatches: 'Sporto šakoje esančios sporto rungtys',
@@ -52,7 +68,6 @@ export const descriptions = {
   blindAccessible: 'Sporto bazė pritaikyta žmonėms su regėjimo negalia',
   publicWifi: 'Yra Public WiFi internetas',
   plans: 'Pridėti sporto bazės planus geoerdviniais formatais (2D ir 3D)',
-  energyClassCertificate: 'Energetinės klasės pažymėjimas',
   sportBaseGeneral: 'Sporto bazės pagrindinė informacija',
   sportsPersonGeneral: 'Sporto asmens asmeninė informacija',
   sportBaseSpecification: 'Nurodykite sporto bazės parametrus',
@@ -63,9 +78,17 @@ export const descriptions = {
   owners: 'Pridėkite sporto bazės savininkus',
   governingBodies: 'Pridėkite sporto bazės savininkus',
   memberships: 'Pridėkite narystes',
+  workRelations: 'Duomenys apie vykdomą sportininko veiklą, darbo santykius sporto organizacijoje',
+  coaches: 'Duomenys apie sportininko trenerį (-ius)',
+  qualificationCategory: 'Duomenys apie treneriui suteiktas kvalifikacines kategorijas',
+  teamInfo: 'Sporto rinktinės informacija',
+  membershipInfo:
+    'Dokumento, patvirtinančio sportininko narystę ir (ar) registraciją Sporto organizacijoje, duomenys',
 };
 
 export const formLabels = {
+  addFaSpecialist: 'Pridėti fizinio aktyvumo specialistas',
+  addCoach: 'Pridėti trenerį',
   teamResult: 'Komandos rezultatai ir sportininkai',
   addMatch: 'Pridėti rungtį',
   history: 'Istorija',
@@ -91,34 +114,71 @@ export const formLabels = {
   addFundingSource: 'Pridėti finansavimo šaltinį',
   sportBaseInfo: 'Sporto bazės informacija',
   technicalSportBaseParameters: 'Techniniai sporto bazės parametrai',
+  addStudies: 'Pridėti mokymąsi ar studijas',
+  addWorkRelations: 'Pridėti darbo santykius',
+  addCategory: 'Pridėti kategoriją',
 };
 
 export const deleteTitles = {
   group: 'Ištrinti grupę',
+  sportsBase: 'Ištrinti sporto bazę',
+  request: 'Ištrinti prašymą',
   user: 'Ištrinti naudotoją',
   classifier: 'Ištrinti klasifikatorių',
 };
 
 export const deleteDescriptionFirstPart = {
-  group: 'Ar esate tikri, kad norite ištrinti',
+  delete: 'Ar esate tikri, kad norite ištrinti',
   user: 'Ar esate tikri, kad norite ištrinti',
   classifier: 'Ar esate tikri, kad norite ištrinti',
 };
 
 export const deleteDescriptionSecondPart = {
+  sportsBase: 'sporto bazę?',
+  request: 'prašymą?',
   group: 'grupę?',
-  user: ' paskyrą?',
+  user: 'paskyrą?',
   classifier: {
-    [ClassifierTypes.LEVEL]: ' sporto bazės lygio klasifikatorių?',
-    [ClassifierTypes.TECHNICAL_CONDITION]: ' techninės būklės klasifikatorių?',
-    [ClassifierTypes.SPACE_TYPE]: ' sporto erdvės tipo klasifikatorių?',
-    [ClassifierTypes.SOURCE]: ' investicijos šaltinio klasifikatorių?',
-    [ClassifierTypes.SPORTS_BASE_TYPE]: ' sporto bazės rūšies klasifikatorių?',
-    [ClassifierTypes.SPORT_TYPE]: ' sporto šakos klasifikatorių?',
+    [ClassifierTypes.LEVEL]: 'sporto bazės lygio klasifikatorių?',
+    [ClassifierTypes.TECHNICAL_CONDITION]: 'techninės būklės klasifikatorių?',
+    [ClassifierTypes.SPACE_TYPE]: 'sporto erdvės tipo klasifikatorių?',
+    [ClassifierTypes.SOURCE]: 'investicijos šaltinio klasifikatorių?',
+    [ClassifierTypes.SPORTS_BASE_TYPE]: 'sporto bazės rūšies klasifikatorių?',
+    [ClassifierTypes.SPORT_TYPE]: 'sporto šakos klasifikatorių?',
   },
 };
 
 export const inputLabels = {
+  issuedAt: 'Galioja nuo',
+  sportsCompetitionType: 'Sporto varžybų rūšis',
+  athletes: 'Sportininkai',
+  coaches: 'Treneriai',
+  suspendedFrom: 'Sustabdyta nuo',
+  suspendedReason: 'Sustabdymo priežastis',
+  updated: 'Atnaujinta',
+  terminatedFrom: 'Nutraukta nuo',
+  terminatedReason: 'Nutraukimo priežastis',
+  appointmentDate: 'Skyrimo data',
+  appointmentDateFrom: 'Skiriama nuo',
+  appointmentDateTo: 'Skiriama iki',
+  bonusAmount: 'Premijos dydis, EUR',
+  scholarshipAmount: 'Stipendijos dydis, bazinių socialinių išmokų dydžiais',
+  scholarshipAmountShort: 'Stipendijos dydis, BSI',
+  rentAmount: 'Rentos dydis',
+  rentUnit: 'Rentos mato vienetas',
+  document: 'Dokumento (įsakymo) Nr.',
+  bonusType: 'Premijos tipas',
+  sportsPerson: 'Sporto asmuo',
+  amsInstructorCoach: 'Trenerio vardas, vardas, pavardė, kodas',
+  grantedQualificationCategory: 'Suteikta kvalifikacinė kategorija',
+  careerEndDate: 'Karjeros pabaigos data',
+  coach: 'Treneris',
+  qualificationCategory: 'Kvalifikacijos kategorija',
+  sportsCoach: 'Sporto treneris',
+  companyNameCode: 'Įstaigos pavadinimas, juridinio asmens kodas',
+  companyName: 'Įstaigos pavadinimas',
+  learningProgram: 'Mokymosi programa',
+  sportsOrganization: 'Sporto organizacija',
   statesCount: 'Valstybių skaičius tarptautinėse aukšto mesitriškumo sporto varžybose',
   stagesCount: 'Etapų skaičius',
   athlete: 'Sportininkas',
@@ -147,6 +207,8 @@ export const inputLabels = {
   isInternationalSelection:
     'Ar vykdoma atranka į tarptautines aukšto meistriškumo sporto varžybas?',
   matchType: 'Rungties tipas',
+  granted: 'Suteikta',
+  expiresAt: 'Galioja iki',
   date: 'Data',
   users: 'naudotojai',
   basis: 'Pagrindas',
@@ -182,6 +244,7 @@ export const inputLabels = {
   dressingRooms: 'Persirengimo patalpų skaičius',
   plotNumber: 'Unikalus žemės sklypo numeris',
   plotArea: 'Žemės sklypo plotas',
+  areaUnits: 'Ploto vienetai',
   builtPlotArea: 'Žemės sklypo užstatytos teritorijos plotas',
   level: 'Sporto bazės lygmuo',
   technicalBaseCondition: 'Techninė bazės būklė',
@@ -190,6 +253,7 @@ export const inputLabels = {
   sportPersonSportType: 'Sporto šaka/-os',
   sportPersonType: 'Asmens tipas',
   sportBaseSpaceType: 'Sporto erdvės tipas',
+  sportBaseSpaceGroup: 'Sporto erdvės rūšis',
   sportTypes: 'Kultivuojamos sporto šakos',
   address: 'Adresas',
   jarName: 'JAR Pavadinimas',
@@ -198,7 +262,8 @@ export const inputLabels = {
   code: 'JAR/Asmens Kodas',
   website: 'Svetainės adresas',
   websiteToProtocols: 'Nuoroda į interneto svetainę, kurioje pateikiami protokolai',
-  source: 'Investicijų šaltinis',
+  investmentSources: 'Investicijų šaltinis',
+  sources: 'Šaltiniai',
   fundingSource: 'Finansavimo šaltinis',
   governingBodyName: 'Valdymo organo pavadinimas',
   organizationName: 'Organizacijos pavadinimas',
@@ -216,6 +281,7 @@ export const inputLabels = {
   name: 'Pavadinimas',
   companyCode: 'Juridinio asmens kodas',
   firstName: 'Vardas',
+  nationalTeamName: 'Rinktinės pavadinimas',
   lastName: 'Pavardė',
   oldPassword: 'Senas slaptažodis',
   newPassword: 'Naujas slaptažodis',
@@ -225,6 +291,8 @@ export const inputLabels = {
   position: 'Pareigos',
   group: 'Grupė',
   organizationBasis: 'Kokiu pagrindu veikia organizacija',
+  activityBasis: 'Veiklos pagrindas',
+  programNameCode: 'Mokymosi programos pavadinimas, valstybinis kodas',
   organizationType: 'Sporto organizacijos tipas',
   locationAddress: 'Buveinės adresas',
   companyPhone: 'Kontaktinis telefonas',
@@ -253,11 +321,29 @@ export const inputLabels = {
   citizenship: 'Pilietybė (-ės)',
   ownerType: 'Asmens tipas',
   fullName: 'Vardas, Pavardė',
+  documentNo: 'Dokumento Nr.',
+  formCode: 'Blanko kodas',
+  issued: 'Išduota',
+  issuedDate: 'Išdavimo data',
+  series: 'Serija',
+  faSpecialist: 'FA specialistas',
+  ageGroup: 'Amžiaus grupė',
+  nationalTeamGender: 'Rinktinės narių lytis',
+  gender: 'Lytis',
 };
 export const pageTitles = {
+  nationalTeams: 'Nacionalinės rinktinės',
+  rents: 'Rentos',
+  scholarships: 'Stipendijos',
+  bonuses: 'Premijos',
+  coaches: 'Treneriai',
+  faSpecialist: 'FA specialistas',
+  careerEnd: 'Karjeros pabaiga',
   resultInfo: 'Rezultatų informacija',
   competitionInfo: 'Varžybų informacija',
   results: 'Rezultatai',
+  qualificationCategory: 'Kvalifikacinė kategorija',
+  categories: 'Kategorija',
   users: 'Naudotojai',
   sportMatches: 'Sporto rungtys',
   groups: 'Grupės',
@@ -288,9 +374,24 @@ export const pageTitles = {
   memberships: 'Narystės',
   newSportType: 'Nauja sporto šaka',
   updateSportType: 'Atnaujinti sporto šaką',
+  workRelations: 'Darbo santykiai',
+  studies: 'Mokymasis ir studijos',
+  sportBase: 'Sporto bazė',
+  bonusInfo: 'Premijos informacija',
+  scholarshipInfo: 'Stipendijos informacija',
+  rentInfo: 'Rentos informacija',
+  teamInfo: 'Rinktinės informacija',
+  athletes: 'Sportininkai',
 };
 
 export const buttonsTitles = {
+  addAthlete: 'Pridėti sportininką',
+  newBonus: 'Nauja premija',
+  newRent: 'Nauja renta',
+  newScholarship: 'Nauja stipendija',
+  addFaSpecialist: 'Pridėti FA specialistą',
+  addCategory: 'Pridėti kategorijos dokumentą',
+  addCoach: 'Pridėti trenerį',
   addResult: 'Pridėti rezultatą',
   addMatch: 'Pridėti rungtį',
   edit: 'Redaguoti',
@@ -306,9 +407,12 @@ export const buttonsTitles = {
   addBodyMember: '+ Pridėti organo narį',
   addOrganization: 'Pridėti organizaciją',
   addSportBaseSpace: '+ Pridėti erdvę',
+  addSportBase: 'Pridėti sporto bazę',
   addOwner: 'Pridėti savininką',
   goToBack: 'Grįžti atgal',
-  group: 'Ištrinti grupę',
+  deleteSportsBase: 'Ištrinti sporto bazę',
+  deleteRequest: 'Ištrinti prašymą',
+  deleteGroup: 'Ištrinti grupę',
   clearAll: 'Išvalyti visus',
   profile: 'Profilis',
   logout: 'Atsijungti',
@@ -325,14 +429,18 @@ export const buttonsTitles = {
   newInstitution: 'Nauja įstaiga',
   newOrganization: 'Nauja organizacija',
   registerSportBase: 'Įregistruoti sporto bazę',
+  registerNationalTeam: 'Įregistruoti nacionalinę rinktinę',
   registerSportsPerson: 'Įregistruoti sporto asmenį',
   registerResult: 'Naujas prašymas įvesti rezultatą',
   back: 'Atgal',
   next: 'Kitas',
+  addWorkRelations: 'Pridėti darbo santykius',
+  addData: 'Pridėti duomenis',
 };
 
 export const emptyState = {
   sportBases: 'Nėra sukurtų sporto infrastruktūrų',
+  nationalTeams: 'Nėra sukurtų nacionalinių rinktinių',
   sportsPersons: 'Nėra sukurtų sporto asmenų',
   results: 'Nėra sukurtų rezultatų',
   unConfirmedSportBases: 'Nėra sukurtų nepatvirtintų sporto infrastruktūrų',
@@ -342,6 +450,9 @@ export const emptyState = {
   institutions: 'Jūs neturite jokių įstaigų. Sukurkite',
   organizations: 'Jūs neturite jokių sporto organizacijų. Sukurkite',
   groupGroups: 'Grupė neturi grupių. Sukurkite',
+  bonuses: 'Nėra sukurtų premijų',
+  scholarship: 'Nėra sukurtų stipendijų',
+  rents: 'Nėra sukurtų rentų',
 };
 
 export const emptyStateUrl = {
@@ -463,7 +574,29 @@ export const matchTypeLabels = {
   [MatchTypes.TEAM]: 'Komandinė',
 };
 
+export const bonusTypeLabels = {
+  [BonusType.NATIONAL]: 'Valstybinė',
+  [BonusType.MUNICIPAL]: 'Savivaldybės',
+};
+
+export const scholarshipTypeLabel = {
+  [ScholarshipType.ACTIVE]: 'Aktyvi',
+  [ScholarshipType.SUSPENDED]: 'Sustabdyta',
+  [ScholarshipType.TERMINATED]: 'Nutraukta',
+};
+
 export const legalFormLabels = {
   [LegalForms.COMPANY]: 'Juridinis',
   [LegalForms.PERSON]: 'Fizinis',
+};
+
+export const studiesTypeLabels = {
+  [StudiesType.LEARNING]: 'Mokymasis',
+  [StudiesType.STUDIES]: 'Studijos',
+};
+
+export const areUnitLabels = {
+  [AreaUnits.HA]: 'ha',
+  [AreaUnits.A]: 'a',
+  [AreaUnits.M2]: 'm2',
 };

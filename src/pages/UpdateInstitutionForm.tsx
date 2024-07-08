@@ -150,8 +150,8 @@ const UpdateOrganizationForm = () => {
   );
 
   const deleteInfo: DeleteInfoProps = {
-    deleteButtonText: buttonsTitles.group,
-    deleteDescriptionFirstPart: deleteDescriptionFirstPart.group,
+    deleteButtonText: buttonsTitles.deleteGroup,
+    deleteDescriptionFirstPart: deleteDescriptionFirstPart.delete,
     deleteDescriptionSecondPart: deleteDescriptionSecondPart.group,
     deleteTitle: deleteTitles.group,
     deleteName: institution?.name,
