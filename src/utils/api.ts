@@ -356,6 +356,13 @@ class Api {
     });
   };
 
+  updateProfile = async ({ params }: { params: any }) => {
+    return this.patch({
+      resource: Resources.USERS + '/me',
+      params,
+    });
+  };
+
   getAdminUser = async ({ id }: { id: string }) => {
     return this.getOne({
       resource: Resources.ADMINS,

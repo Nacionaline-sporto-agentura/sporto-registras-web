@@ -10,7 +10,7 @@ import { useAppSelector } from '../state/hooks';
 import { FormColumn, FormRow, TitleColumn } from '../styles/CommonStyles';
 import { ReactQueryError } from '../types';
 import Api from '../utils/api';
-import { AuthStrategy } from '../utils/constants';
+import { AdminRoleType, AuthStrategy } from '../utils/constants';
 import { getErrorMessage, getReactQueryErrorMessage, handleSuccessToast } from '../utils/functions';
 import { formLabels, inputLabels, pageTitles, validationTexts } from '../utils/texts';
 
@@ -88,15 +88,12 @@ export const validateProfileForm = Yup.object().shape(
 const Profile = () => {
   const user = useAppSelector((state) => state.user.userData);
 
-  const updateProfile = useMutation(
-    (values: UserProps) => Api.updateAdminUser({ params: values, id: user.id || '' }),
-    {
-      onSuccess: () => {
-        handleSuccessToast(validationTexts.profileUpdated);
-      },
-      retry: false,
+  const updateProfile = useMutation((values: UserProps) => Api.updateProfile({ params: values }), {
+    onSuccess: () => {
+      handleSuccessToast(validationTexts.profileUpdated);
     },
-  );
+    retry: false,
+  });
 
   const handleProfileSubmit = async (values: UserProps, { setErrors }) => {
     const { firstName, lastName, email, phone, oldPassword, newPassword } = values;
@@ -119,7 +116,9 @@ const Profile = () => {
     }
   };
 
-  const canChangePassword = user.authStrategy === AuthStrategy.PASSWORD;
+  const canChangePassword =
+    user?.authStrategy === AuthStrategy.PASSWORD ||
+    (!user?.authStrategy && user.type === AdminRoleType.ADMIN);
 
   const initialProfileValues: UserProps = {
     firstName: user?.firstName || '',
