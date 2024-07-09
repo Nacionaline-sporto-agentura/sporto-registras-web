@@ -38,6 +38,8 @@ import { AdminRoleType, Apps } from './constants';
 import { useGetCurrentProfile } from './hooks';
 import { pageTitles, url } from './texts';
 
+const env = import.meta.env;
+
 export const slugs = {
   cantLogin: '/negalima_jungtis',
   login: '/login',
@@ -390,10 +392,9 @@ export const routes = [
 export const useFilteredRoutes = () => {
   const user = useAppSelector((state) => state.user.userData);
   const currentProfile = useGetCurrentProfile();
+  const VITE_NODE_ENV = env?.VITE_NODE_ENV;
 
-  const VITE_NODE_ENV = import.meta?.env?.VITE_NODE_ENV;
-
-  console.log(import.meta?.env, 'meta.env');
+  console.log('node env', VITE_NODE_ENV);
 
   const isAdmin =
     user?.type && [AdminRoleType.ADMIN, AdminRoleType.SUPER_ADMIN].includes(user?.type);
