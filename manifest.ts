@@ -1,6 +1,6 @@
 export const manifestForPlugIn = (baseUrl) => {
   return {
-    registerType: 'prompt',
+    registerType: 'autoUpdate',
     includeAssests: ['favicon.ico', 'apple-touc-icon.png', 'masked-icon.svg'],
     workbox: {
       navigateFallbackDenylist: [/^\/(api|auth)\/.*/],
