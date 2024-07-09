@@ -32,4 +32,6 @@ jobs:
           repository: ${{ secrets.SPORTO_REGISTRAS_TRIGGER_DEPLOY_REPOSITORY }}
           workflow-file-name: ${{ secrets.SPORTO_REGISTRAS_TRIGGER_DEPLOY_WORKFLOW_FILE_NAME }}
           workflow-payload: '{"environment": "development"}'
-
+          build-args: |
+           VITE_NODE_ENV=development
+    
