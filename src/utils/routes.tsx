@@ -394,8 +394,6 @@ export const useFilteredRoutes = () => {
   const currentProfile = useGetCurrentProfile();
   const VITE_NODE_ENV = env?.VITE_NODE_ENV;
 
-  console.log('node env', VITE_NODE_ENV, env);
-
   const isAdmin =
     user?.type && [AdminRoleType.ADMIN, AdminRoleType.SUPER_ADMIN].includes(user?.type);
 
