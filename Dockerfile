@@ -17,6 +17,7 @@ ARG VITE_VERSION=${VERSION}
 
 # Set env variables
 ARG VITE_BASE_URL=/app
+ARG VITE_NODE_ENV=
 ARG NODE_ENV=production
 
 # Build and cleanup

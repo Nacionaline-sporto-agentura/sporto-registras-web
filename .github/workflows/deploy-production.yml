@@ -23,6 +23,8 @@ jobs:
         with:
           environment: production
           push: true
+          build-args: |
+            VITE_NODE_ENV=production
 
       - name: Trigger deploy
         uses: AplinkosMinisterija/reusable-workflows/.github/actions/trigger-workflow-and-wait@main
@@ -32,3 +34,4 @@ jobs:
           repository: ${{ secrets.SPORTO_REGISTRAS_TRIGGER_DEPLOY_REPOSITORY }}
           workflow-file-name: ${{ secrets.SPORTO_REGISTRAS_TRIGGER_DEPLOY_WORKFLOW_FILE_NAME }}
           workflow-payload: '{"environment": "production"}'
+          
