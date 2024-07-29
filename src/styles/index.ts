@@ -1,45 +1,4 @@
 import { createGlobalStyle } from 'styled-components';
-export interface Theme {
-  colors: {
-    primary: string;
-    secondary: string;
-    tertiary: string;
-    transparent: string;
-    danger: string;
-    success: string;
-    login: string;
-    hover: {
-      primary: string;
-      secondary: string;
-      tertiary: string;
-      danger: string;
-      success: string;
-      transparent: string;
-      [key: string]: string;
-    };
-    text: {
-      primary: string;
-      secondary: string;
-      tertiary: string;
-      labels: string;
-      accent: string;
-      active: string;
-      error: string;
-      [key: string]: string;
-    };
-    tertiaryMedium: string;
-    tertiaryLight: string;
-    input: string;
-    border: string;
-    label: string;
-    error: string;
-    light: string;
-    white: string;
-    grey: string;
-    background: string;
-    [key: string]: any;
-  };
-}
 
 export const palette = {
   primary: '#003D2B',
@@ -47,7 +6,10 @@ export const palette = {
 
 export const theme: any = {
   colors: {
-    primary: palette.primary,
+    map: {
+      primary: '#003D2B',
+    },
+    primary: '#003D2B',
     secondary: '#ADE6B9',
     tertiary: '#7A7E9F',
     background: '#F8FAFC',

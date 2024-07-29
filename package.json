@@ -4,22 +4,25 @@
   "private": true,
   "prettier": "@aplinkosministerija/biip-prettier-config",
   "dependencies": {
-    "openapi-fetch": "^0.10.2",
-    "@aplinkosministerija/design-system": "^0.0.39",
+    "@aplinkosministerija/design-system": "^0.0.63",
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@reduxjs/toolkit": "^1.8.1",
+    "@turf/turf": "^7.0.0",
     "@types/lodash": "^4.14.202",
     "@types/react": "^18.0.3",
     "@types/react-dom": "^18.0.0",
     "@vitejs/plugin-react": "^4.2.1",
     "@vitejs/plugin-react-swc": "^3.5.0",
-    "fast-json-patch": "^3.1.1",
     "@vitejs/plugin-vue": "^4.5.0",
     "antd": "^5.12.5",
     "axios": "^1.6.2",
+    "buffer": "^6.0.3",
     "date-fns": "^3.0.6",
+    "fast-json-patch": "^3.1.1",
     "formik": "^2.4.5",
     "lodash": "^4.17.21",
     "lt-codes": "^1.0.3",
+    "openapi-fetch": "^0.10.2",
     "react": "^18.0.0",
     "react-datepicker": "^4.25.0",
     "react-div-100vh": "^0.7.0",
@@ -36,10 +39,12 @@
     "styled-components": "^5.3.5",
     "typescript": "^4.6.3",
     "universal-cookie": "^6.1.1",
+    "util": "^0.12.5",
     "vite": "^5.2.6",
     "vite-plugin-pwa": "^0.17.4",
     "vite-tsconfig-paths": "^4.2.1",
     "vitest": "^0.34.6",
+    "wkx": "^0.5.0",
     "yup": "^1.3.3"
   },
   "scripts": {
@@ -49,7 +54,8 @@
     "serve": "vite preview",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:sarif": "set SARIF_ESLINT_EMBED=true && yarn run lint --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "openapi-ts:boundaries": "openapi-ts -f openapi-ts.boundaries.config.ts"
   },
   "eslintConfig": {
     "extends": "@aplinkosministerija/eslint-config-biip-react"
@@ -70,6 +76,7 @@
     "@aplinkosministerija/biip-prettier-config": "^1.1.0",
     "@aplinkosministerija/eslint-config-biip-react": "^1.0.0",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@hey-api/openapi-ts": "^0.50.0",
     "@microsoft/eslint-formatter-sarif": "^3.0.0",
     "@types/styled-components": "^5.1.25",
     "eslint-config-prettier": "^8.5.0",
@@ -77,7 +84,8 @@
     "eslint-plugin-react-refresh": "^0.4.4",
     "husky": "^8.0.3",
     "lint-staged": "^15.0.2",
-    "prettier": "^2.6.2"
+    "prettier": "^2.6.2",
+    "rollup-plugin-node-polyfills": "^0.2.1"
   },
   "engines": {
     "node": ">=20.0.0 <21.0.0"

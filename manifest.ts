@@ -4,6 +4,7 @@ export const manifestForPlugIn = (baseUrl) => {
     includeAssests: ['favicon.ico', 'apple-touc-icon.png', 'masked-icon.svg'],
     workbox: {
       navigateFallbackDenylist: [/^\/(api|auth)\/.*/],
+      maximumFileSizeToCacheInBytes: 10000000, // 10 mb
     },
     manifest: {
       name: 'Sporto Registras',

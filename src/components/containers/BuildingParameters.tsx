@@ -25,6 +25,8 @@ const BuildingParametersContainer = ({
     api.getSportBaseSpaceBuildingPurposesTree(),
   );
 
+  const currentYearPlaceholder = new Date().getFullYear().toString();
+
   return (
     <>
       <FormRow columns={2}>
@@ -94,6 +96,8 @@ const BuildingParametersContainer = ({
 
         <DateField
           disabled={disabled}
+          showYearPicker={true}
+          placeHolder={currentYearPlaceholder}
           name={'latestRenovationDate'}
           label={inputLabels.latestRenovationDate}
           value={sportBaseSpace?.latestRenovationDate}
