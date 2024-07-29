@@ -129,11 +129,26 @@ export interface SportsBase extends CommonFields {
   level?: SportsBasesLevel;
   technicalCondition?: SportsBasesCondition;
   address: {
-    municipality: string;
-    city: string;
-    street: string;
-    house: string;
-    apartment?: string;
+    municipality: {
+      code: number;
+      name: string;
+    };
+    city: {
+      code: number;
+      name: string;
+    };
+    street: {
+      code: number;
+      name: string;
+    };
+    house: {
+      code: number;
+      plot_or_building_number: string;
+    };
+    apartment?: {
+      code: number;
+      room_number: string;
+    };
   };
   geom: FeatureCollection;
   webPage: string;
@@ -388,13 +403,13 @@ type GenericObject = {
   [key: string]: any;
 };
 
-type Feature = {
+export type Feature = {
   type: 'Feature';
   geometry: Geometry;
   properties?: GenericObject;
 };
 
-type Geometry = {
+export type Geometry = {
   type: string;
   coordinates: CoordinatesTypes;
 };

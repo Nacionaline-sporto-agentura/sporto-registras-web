@@ -5,6 +5,7 @@ import { Result, User } from '../types';
 import api, { SortAscFields } from './api';
 import { AdminRoleType, ResultTypeTypes } from './constants';
 import { url, validationTexts } from './texts';
+import wkx from 'wkx';
 
 export interface Path {
   id: string;
@@ -363,6 +364,19 @@ export const getFormattedAddress = (address) =>
         address.municipality
       }`
     : '-';
+
+export const wkbToGeoJSON = (wkbString: string) => {
+  const geometry = wkx.Geometry.parse(wkbString).toGeoJSON();
+  return {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        geometry: geometry
+      },
+    ],
+  };
+};
 
 export const getResult = (result) => {
   return result.resultType === ResultTypeTypes.RANGE

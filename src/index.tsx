@@ -8,6 +8,11 @@ import { ThemeProvider } from 'styled-components';
 import App from './App';
 import redux from './state/store';
 import { theme } from './styles/index';
+import '@aplinkosministerija/design-system/dist/style.css';
+
+import { Buffer } from 'buffer';
+window.Buffer = Buffer;
+window.global = window;
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 

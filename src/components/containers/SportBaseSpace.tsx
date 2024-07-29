@@ -42,7 +42,7 @@ const generalSchema = Yup.object().shape({
 });
 
 const buildingParametersSchema = Yup.object().shape({
-  buildingNumber: Yup.string().required(validationTexts.requireText),
+  buildingNumber: Yup.string(),
   buildingPurpose: Yup.object().required(validationTexts.requireText),
   buildingArea: Yup.string().required(validationTexts.requireText),
   energyClass: Yup.object().required(validationTexts.requireText),
@@ -80,7 +80,7 @@ const sportBaseSpaceSchema = (additionalFields: TypesAndFields[]) => {
 
 export const sportBaseSpaceTabTitles = {
   generalInfo: 'Bendra informacija',
-  buildingParameters: 'Statinio parametrai',
+  buildingParameters: 'Erdvės parametrai',
   additionalFields: 'Papildomi laukai',
   photos: 'Nuotraukos',
 };

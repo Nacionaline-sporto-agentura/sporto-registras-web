@@ -25,6 +25,7 @@ export interface DateFieldProps {
   maxDate?: Date | string;
   minDate?: Date | string;
   placeHolder?: string;
+  showYearPicker?: boolean;
 }
 
 const DateField = ({
@@ -38,13 +39,15 @@ const DateField = ({
   className,
   maxDate,
   minDate,
+  showYearPicker = false,
 }: DateFieldProps) => {
-  const daterRegex = /^\d{4}-\d{2}-\d{2}$/;
+  const daterRegex = showYearPicker ? /^\d{4}$/ : /^\d{4}-\d{2}-\d{2}$/;
   const isMobile = useWindowSize(device.mobileL);
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [isVisible, setIsVisible] = useState(true);
   const invisibleDivRef = useRef(null);
+  const dateFormat = showYearPicker ? 'yyyy' : 'yyyy-MM-dd';
 
   useEffect(() => {
     const checkVisibility = (entries) => {
@@ -89,7 +92,7 @@ const DateField = ({
     if (!value) {
       setInputValue('');
     } else {
-      setInputValue(format(new Date(value), 'yyyy-MM-dd'));
+      setInputValue(format(new Date(value), dateFormat));
     }
   }, [value]);
 
@@ -120,12 +123,12 @@ const DateField = ({
     }
   };
 
-  const textValue = validDate(inputValue) ? format(new Date(inputValue), 'yyyy-MM-dd') : inputValue;
+  const textValue = validDate(inputValue) ? format(new Date(inputValue), dateFormat) : inputValue;
 
   return (
     <Container
       className={className}
-      $bottom={!isVisible}
+      $bottom={!isVisible ? (showYearPicker ? '-225px' : '-370px') : '5px'}
       tabIndex={1}
       onBlur={handleBlur}
       $disabled={disabled}
@@ -167,6 +170,7 @@ const DateField = ({
           )}
           <DatePicker
             locale="lt"
+            showYearPicker={showYearPicker}
             open={open}
             {...(maxDate ? { maxDate: new Date(maxDate) } : {})}
             {...(minDate ? { minDate: new Date(minDate) } : {})}
@@ -245,7 +249,7 @@ const InvisibleContainer = styled.div`
   z-index: 9999999;
 `;
 
-const Container = styled.div<{ $disabled: boolean; $bottom: boolean }>`
+const Container = styled.div<{ $disabled: boolean; $bottom: string }>`
   position: relative;
   &:focus {
     outline: none;
@@ -254,6 +258,7 @@ const Container = styled.div<{ $disabled: boolean; $bottom: boolean }>`
     color: #121a55;
     background-color: #ffffff !important;
     border: none;
+    font-size: 1.5rem;
   }
   .react-datepicker__month {
     margin: 0;
@@ -303,13 +308,37 @@ const Container = styled.div<{ $disabled: boolean; $bottom: boolean }>`
       }
     }
   }
+  .react-datepicker__year {
+    &:focus {
+      outline: none;
+    }
+    margin: 16px 70px;
+    position: relative;
+    font-size: 1.5rem;
+    }
+  }  
+    .react-datepicker__year-text {
+      display: inline-block;
+      width: 5rem;
+      margin: 2px;
+      padding: 5px;
+      &:hover {
+        background-color:  ${({ theme }) => theme.colors.primary};
+        color: white;
+        border-radius: 25px;
+      }
+    }
+    .react-datepicker__year-text--selected {
+      background-color:  ${({ theme }) => theme.colors.primary};
+      border-radius: 25px;
+    }
   .react-datepicker__input-time-container {
     margin: 0;
   }
   .react-datepicker {
     width: 364px;
     position: absolute;
-    top: ${({ $bottom }) => ($bottom ? '-370px' : '5px')};
+    top: ${({ $bottom }) => $bottom};
     z-index: 8;
     background-color: #ffffff;
     box-shadow: 0px 2px 16px #121a5529;
@@ -364,7 +393,6 @@ const Container = styled.div<{ $disabled: boolean; $bottom: boolean }>`
     height: 50px;
     border-radius: 25px;
   }
-
   @media ${device.mobileS} {
     .react-datepicker__day--selected::before {
       content: '';
