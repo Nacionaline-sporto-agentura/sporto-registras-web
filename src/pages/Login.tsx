@@ -1,4 +1,6 @@
+import { CheckBox } from '@aplinkosministerija/design-system';
 import { useFormik } from 'formik';
+import { useState } from 'react';
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -9,11 +11,12 @@ import PasswordField from '../components/fields/PasswordField';
 import TextField from '../components/fields/TextField';
 import Icon, { IconName } from '../components/other/Icons';
 import { device } from '../styles';
+import { Url } from '../styles/CommonStyles';
 import api from '../utils/api';
 import { useCheckUserInfo, useEGatesSign } from '../utils/hooks';
 import { handleUpdateTokens } from '../utils/loginFunctions';
 import { slugs } from '../utils/routes';
-import { validationTexts } from '../utils/texts';
+import { url, validationTexts } from '../utils/texts';
 interface LoginProps {
   email: string;
   password: string;
@@ -27,6 +30,8 @@ export const loginSchema = Yup.object().shape({
 
 export const Login = () => {
   const navigate = useNavigate();
+  const [agreedWithTermsOfService, setAgreedWithTermsOfService] = useState(false);
+
   const handleLogin = async (values: LoginProps) => {
     const { email, password, refresh } = values;
     const params = {
@@ -74,7 +79,7 @@ export const Login = () => {
   };
 
   return (
-    <Container noValidate onSubmit={handleSubmit}>
+    <Container>
       <TextField
         value={values.email}
         type="email"
@@ -90,31 +95,57 @@ export const Login = () => {
         onChange={(value) => handleType('password', value)}
         label={'Slaptažodis'}
         secondLabel={
-          <Url onClick={() => navigate(slugs.forgotPassword)}>{'Pamiršote slaptažodį?'}</Url>
+          <Navigation onClick={() => navigate(slugs.forgotPassword)}>
+            {'Pamiršote slaptažodį?'}
+          </Navigation>
         }
       />
-      <Row>
-        <StyledSingleCheckbox
-          onChange={(value) => handleType('refresh', value!)}
-          value={values.refresh}
-          label={'Likti prisijungus'}
+      <InnerContainer>
+        <CheckBox
+          label={
+            <CheckBoxContainer>
+              Sutinku su sporto registro {''}
+              <Url target="_blank" href={url.privacyPolicy}>
+                Privatumo politika
+              </Url>{' '}
+              ir{' '}
+              <Url target="_blank" href={url.registrySecuritySettings}>
+                Registro saugos nuostatais
+              </Url>
+            </CheckBoxContainer>
+          }
+          value={agreedWithTermsOfService}
+          onChange={(value) => setAgreedWithTermsOfService(value)}
         />
-        <div>
-          <Button loading={loading} disabled={loading} type="submit">
-            {'Prisijungti'}
-          </Button>
-        </div>
-      </Row>
+        <Row>
+          <StyledSingleCheckbox
+            onChange={(value) => handleType('refresh', value!)}
+            value={values.refresh}
+            label={'Likti prisijungus'}
+          />
+          <div>
+            <Button
+              loading={loading}
+              disabled={loading || !agreedWithTermsOfService}
+              onClick={(e) => handleSubmit(e as any)}
+            >
+              {'Prisijungti'}
+            </Button>
+          </div>
+        </Row>
+      </InnerContainer>
+
       <OrRow>
         <Hr />
         <OrLabel>{'Arba'}</OrLabel>
         <Hr />
       </OrRow>
+
       <Button
         type="button"
         onClick={() => eGatesMutation()}
         loading={eGatesSignLoading}
-        disabled={eGatesSignLoading}
+        disabled={eGatesSignLoading || !agreedWithTermsOfService}
         leftIcon={<Icon name={IconName.eGate} />}
       >
         Prisijungti per El. valdžios vartus
@@ -122,6 +153,15 @@ export const Login = () => {
     </Container>
   );
 };
+
+const InnerContainer = styled.form`
+  margin-top: 12px;
+`;
+
+const CheckBoxContainer = styled.div`
+  font-size: 1.4rem;
+  color: #4b5565;
+`;
 
 const OrLabel = styled.div`
   font-weight: normal;
@@ -167,7 +207,7 @@ const Container = styled.form`
   gap: 16px;
 `;
 
-const Url = styled.div`
+const Navigation = styled.div`
   font-size: 1.4rem;
   color: #0862ab;
   cursor: pointer;

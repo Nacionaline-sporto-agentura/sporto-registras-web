@@ -143,3 +143,9 @@ export const AutoFitFormRow = styled.div`
     grid-template-columns: 1fr;
   }
 `;
+
+export const Url = styled.a`
+  text-decoration: underline;
+  font-size: 1.4rem;
+  color: #121926;
+`;

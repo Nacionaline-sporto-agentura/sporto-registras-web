@@ -13,6 +13,7 @@ export interface OptionsContainerProps {
   values?: any[];
   disabled?: boolean;
   getOptionLabel: (option: any) => string;
+  getOptionDescription?: (option: any) => string;
   loading?: boolean;
   showSelect: boolean;
   observerRef?: any;
@@ -24,6 +25,7 @@ const OptionsContainer = ({
   values = [],
   disabled = false,
   getOptionLabel,
+  getOptionDescription,
   handleClick,
   showSelect,
   loading,
@@ -44,14 +46,17 @@ const OptionsContainer = ({
       <>
         {values.map((option) => {
           return (
-            <Option
+            <OptionWrapper
               key={JSON.stringify(option)}
               onClick={() => {
                 handleClick(option);
               }}
             >
-              {getOptionLabel && getOptionLabel(option)}
-            </Option>
+              <Option>{getOptionLabel && getOptionLabel(option)}</Option>
+              {getOptionDescription && (
+                <OptionDescription>{getOptionDescription(option)}</OptionDescription>
+              )}
+            </OptionWrapper>
           );
         })}
         {loading && <FullscreenLoader />}
@@ -93,14 +98,21 @@ const OptionContainer = styled.div<{ $display: boolean }>`
   }
 `;
 
-const Option = styled.div`
+const OptionWrapper = styled.div`
   cursor: pointer;
-  font-size: 1.6rem;
   line-height: 20px;
   padding: 8px 12px;
   &:hover {
     background: #f3f3f7 0% 0% no-repeat padding-box;
   }
+`;
+
+const Option = styled.div`
+  font-size: 1.6rem;
+`;
+const OptionDescription = styled.div`
+  font-size: 1.25rem;
+  color: #3f3f3f;
 `;
 
 const ObserverRef = styled.div<{ $display: boolean }>`

@@ -11,6 +11,7 @@ export interface ToggleButtonProps {
   getOptionLabel?: (option: any) => string;
   error?: any;
   showError?: boolean;
+  bottomLabel?: string;
 }
 
 const ButtonsGroup = ({
@@ -22,10 +23,11 @@ const ButtonsGroup = ({
   label,
   getOptionLabel,
   error,
+  bottomLabel,
   showError = false,
 }: ToggleButtonProps) => {
   return (
-    <FieldWrapper error={error} showError={showError} label={label}>
+    <FieldWrapper error={error} showError={showError} label={label} bottomLabel={bottomLabel}>
       <Container className={className}>
         {options.map((option, index) => (
           <StyledButton

@@ -192,9 +192,6 @@ export const getSportBaseSpaceTypesList = async (input: string, page: any, query
 export const getSportBaseSpaceGroupsList = async (input: string, page: any) => {
   return await api.getSportBaseSpaceGroups(getInputSimpleFilter(input, page));
 };
-export const getSportBaseSpaceEnergyClassList = async (input: string, page: any) => {
-  return await api.getSportBaseSpaceEnergyClasses(getInputSimpleFilter(input, page));
-};
 
 export const getTenantSportOrganizationTypeList = async (input: string, page: any) => {
   return await api.getTenantSportOrganizationTypes(getInputSimpleFilter(input, page));
@@ -210,6 +207,21 @@ export const getSportTypesList = async (input: string, page: any) => {
 
 export const getSportsPersonList = async (input: string, page: any, query?: any) => {
   return await api.getListSportsPersons(getInputSimpleFilter(input, page, query));
+};
+export const getRcObjects = async (
+  input: string,
+  page: any,
+  query?: {
+    streetCode: string | number;
+    plotOrBuildingNumber: string | number;
+    roomNumber?: string | number;
+  },
+) => {
+  return await api.getRcObjects({
+    search: input,
+    page,
+    ...query,
+  });
 };
 
 export const getRentsUnitList = async (input: string, page: any) => {
@@ -372,7 +384,7 @@ export const wkbToGeoJSON = (wkbString: string) => {
     features: [
       {
         type: 'Feature',
-        geometry: geometry
+        geometry: geometry,
       },
     ],
   };

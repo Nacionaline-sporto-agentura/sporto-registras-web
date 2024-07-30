@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
 import { device } from '../../styles';
-import { SportBaseSpace, TypesAndFields } from '../../types';
+import { SportBaseSpace, SportsBase, TypesAndFields } from '../../types';
 import api from '../../utils/api';
 import { buttonsTitles, descriptions, pageTitles, validationTexts } from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
@@ -42,13 +42,11 @@ const generalSchema = Yup.object().shape({
 });
 
 const buildingParametersSchema = Yup.object().shape({
-  buildingNumber: Yup.string(),
-  buildingPurpose: Yup.object().required(validationTexts.requireText),
-  buildingArea: Yup.string().required(validationTexts.requireText),
-  energyClass: Yup.object().required(validationTexts.requireText),
-  constructionDate: Yup.string()
-    .length(4, 'Neteisingi metai')
-    .required(validationTexts.requireText),
+  buildingNumber: Yup.string().required(validationTexts.requireText),
+  buildingPurpose: Yup.string(),
+  buildingArea: Yup.string(),
+  energyClass: Yup.string(),
+  constructionDate: Yup.string(),
 });
 
 const photosSchema = Yup.object().shape({
@@ -105,11 +103,13 @@ export const getTabs = (additionalFields: TypesAndFields[]) => {
 
 const SportBaseSpaceContainer = ({
   spaces,
+  sportBase,
   handleChange,
   errors,
   disabled,
 }: {
   disabled: boolean;
+  sportBase: SportsBase;
   spaces: SportBaseSpace[];
   errors: any;
   handleChange: any;
@@ -249,6 +249,7 @@ const SportBaseSpaceContainer = ({
                 ),
                 [sportBaseSpaceTabTitles.buildingParameters]: (
                   <BuildingParametersContainer
+                    sportBase={sportBase}
                     sportBaseSpace={values}
                     errors={errors}
                     handleChange={setFieldValue}

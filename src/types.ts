@@ -110,7 +110,7 @@ export interface SportBaseSpace {
   sportBase?: SportsBase;
   technicalCondition?: SportsBasesCondition;
   buildingNumber?: string;
-  buildingPurpose?: { id: number; name: string };
+  buildingPurpose?: string;
   buildingArea?: number;
   energyClass?: number;
   constructionDate?: string;
@@ -370,6 +370,7 @@ export interface Field {
   options: any[];
   type: FieldTypes;
   required: boolean;
+  description?: string;
 }
 
 export interface TypesAndFields {
