@@ -346,6 +346,7 @@ const SportsBasePage = () => {
           ),
           [sportsBaseTabTitles.spaces]: (
             <SportBaseSpaceContainer
+              sportBase={values}
               spaces={values.spaces || {}}
               handleChange={setFieldValue}
               errors={errors?.spaces}
@@ -515,11 +516,8 @@ const SportsBasePage = () => {
               },
               buildingNumber: { name: inputLabels.buildingNumber },
               buildingArea: { name: inputLabels.buildingArea },
-              energyClass: { name: inputLabels.energyClass, getValueLabel: (val) => val?.name },
-              buildingPurpose: {
-                name: inputLabels.buildingPurpose,
-                getValueLabel: (val) => val?.name,
-              },
+              energyClass: { name: inputLabels.energyClass },
+              buildingPurpose: { name: inputLabels.buildingPurpose },
               constructionDate: { name: inputLabels.constructionDate },
               latestRenovationDate: { name: inputLabels.latestRenovationDate },
               additionalValues: {

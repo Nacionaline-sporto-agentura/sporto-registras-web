@@ -1,36 +1,59 @@
-import styled from "styled-components";
-import ReturnToLogin from "../components/other/ReturnToLogin";
-import { device } from "../styles";
-import { descriptions, formLabels } from "../utils/texts";
+import styled from 'styled-components';
+import ReturnToLogin from '../components/other/ReturnToLogin';
+import { Url } from '../styles/CommonStyles';
+import { formLabels, url } from '../utils/texts';
 
 export const CantLogin = () => {
   return (
-    <>
-      <H1>{formLabels.inActiveProfile}</H1>
-      <Description>{descriptions.cantLogin} </Description>
+    <Container>
+      <Notification>
+        <H1>{formLabels.notGrantedAccess}</H1>
+        <Description>
+          Kreipkitės į savo organizacijos atstovą, kad jis pridėtų Jus prie organizacijos.{' '}
+          <StyledUrl target="_blank" href={url.readInstruction}>
+            Skaityti instrukciją
+          </StyledUrl>
+        </Description>
+        <Description>
+          Jeigu kuriate naują organizaciją - kreipkitės į{' '}
+          <Url target="_blank" href="mailto:info@ltusportas.lt">
+            info@ltusportas.lt
+          </Url>
+          .
+        </Description>
+      </Notification>
       <ReturnToLogin />
-    </>
+    </Container>
   );
 };
 
-const Description = styled.div`
-  font-size: 1.6rem;
-  letter-spacing: 0px;
-  color: #7a7e9f;
-  margin-bottom: 40px;
-  @media ${device.mobileL} {
-    width: 100%;
-  }
+const StyledUrl = styled(Url)`
+  color: ${({ theme }) => theme.colors.primary};
 `;
 
-const H1 = styled.h1`
-  font-weight: bold;
-  font-size: 3.2rem;
-  line-height: 22px;
-  letter-spacing: 0px;
-  margin-top: 40px;
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
 
-  @media ${device.mobileL} {
-    padding-bottom: 0px;
-  }
+const Description = styled.div`
+  font-size: 1.6rem;
+  color: #666;
+`;
+
+const H1 = styled.h2`
+  font-size: 1.5rem;
+  margin: 0px;
+  color: #333;
+`;
+
+const Notification = styled.div`
+  background-color: #f8fafc;
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 `;

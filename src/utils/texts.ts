@@ -87,6 +87,7 @@ export const descriptions = {
 };
 
 export const formLabels = {
+  notGrantedAccess: 'Nesuteikta prieiga',
   addFaSpecialist: 'Pridėti fizinio aktyvumo specialistas',
   addCoach: 'Pridėti trenerį',
   teamResult: 'Komandos rezultatai ir sportininkai',
@@ -218,7 +219,7 @@ export const inputLabels = {
   owners: 'Savininkai',
   photos: 'Nuotraukos',
   comment: 'Komentaras',
-  buildingNumber: 'Unikalus daikto numeris (neprivalomas)',
+  buildingNumber: 'Unikalus daikto numeris',
   buildingArea: 'Bendrasis pastato plotas',
   energyClass: 'Energetinė klasė',
   buildingType: 'Pastato ar inžinerinio statinio rūšis',
@@ -465,6 +466,9 @@ export const emptyStateUrl = {
 
 export const url = {
   new: 'naujas',
+  privacyPolicy: 'https://registras.ltusportas.lt/privatumo-politika/',
+  registrySecuritySettings: 'https://registras.ltusportas.lt/registro-saugos-nuostatai/',
+  readInstruction: 'https://registras.ltusportas.lt/vartotojo-vadovai/gauti-prieiga',
 };
 export const roleLabels = {
   [AdminRoleType.USER]: 'Naudotojas',

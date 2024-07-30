@@ -19,6 +19,7 @@ export interface TextFieldProps {
   rows?: number;
   placeholder?: string;
   disabled?: boolean;
+  bottomLabel?: string;
 }
 
 const TextAreaField = (props: TextFieldProps) => {
@@ -35,6 +36,7 @@ const TextAreaField = (props: TextFieldProps) => {
     placeholder,
     padding,
     disabled = false,
+    bottomLabel,
   } = props;
 
   const { width, ref } = useResizeDetector();
@@ -48,6 +50,7 @@ const TextAreaField = (props: TextFieldProps) => {
 
   return (
     <FieldWrapper
+      bottomLabel={bottomLabel}
       onClick={onClick}
       padding={padding}
       className={className}

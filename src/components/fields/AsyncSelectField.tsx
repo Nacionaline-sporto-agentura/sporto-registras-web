@@ -20,6 +20,7 @@ export interface AsyncSelectFieldProps {
   onChange: (option: any) => void;
   disabled?: boolean;
   getOptionLabel: (option: any) => string;
+  getOptionDescription?: (option: any) => string;
   getInputLabel?: (option: any) => string;
   className?: string;
   placeholder?: string;
@@ -47,6 +48,8 @@ const AsyncSelectField = ({
   disabled = false,
   backgroundColor,
   getOptionLabel,
+  getInputLabel,
+  getOptionDescription,
   optionsKey = 'rows',
   loadOptions,
   dependsOnTheValue,
@@ -104,7 +107,9 @@ const AsyncSelectField = ({
         }
         onChange={handleInputChange}
         disabled={disabled}
-        placeholder={(value && getOptionLabel(value)) || 'Pasirinkite'}
+        placeholder={
+          (getInputLabel ? getInputLabel(value) : value && getOptionLabel(value)) || 'Pasirinkite'
+        }
         selectedValue={value}
       />
 
@@ -113,6 +118,7 @@ const AsyncSelectField = ({
         observerRef={observerRef}
         values={suggestions}
         getOptionLabel={getOptionLabel}
+        getOptionDescription={getOptionDescription}
         showSelect={showSelect}
         handleClick={handleClick}
       />

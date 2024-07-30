@@ -44,7 +44,6 @@ export enum Resources {
   MATCH_TYPES = 'api/types/sportTypes/matches',
   SPACE_TYPES = 'api/types/sportsBases/spaces/types',
   SPACE_GROUPS = 'api/types/sportsBases/spaces/groups',
-  ENERGY_CLASSES = 'api/sportsBases/spaces/energyClasses',
   FIELDS = 'api/sportsBases/spaces/typesAndFields',
   ADMINS = 'api/admins',
   USERS = 'api/users',
@@ -56,7 +55,7 @@ export enum Resources {
   ORGANIZATION_BASIS = '/api/sportsBases/tenants/basis',
   LEGAL_FORMS = '/api/tenants/legalForms',
   SPORT_ORGANIZATION_TYPES = '/api/tenants/sportOrganizationTypes',
-  BUILDING_PURPOSES = '/api/sportsBases/spaces/buildingPurposes',
+  RC = '/api/rc',
   STUDIES_COMPANIES = '/api/types/studies/companies',
   STUDIES_PROGRAMS = '/api/types/studies/programs',
   COACHES = '/api/sportsPersons/coaches',
@@ -200,6 +199,10 @@ class Api {
   errorWrapper = async (endpoint: () => Promise<AxiosResponse<any, any>>) => {
     const res = await endpoint();
     return res.data;
+  };
+
+  customGet = ({ resource, ...rest }: GetAllProps & { [key: string]: any }): Promise<any> => {
+    return this.errorWrapper(() => this.axios.get(`/${resource}`, { params: rest }));
   };
 
   getList = async ({ resource, page, pageSize, query, ...rest }: GetAllProps): Promise<any> => {
@@ -965,20 +968,31 @@ class Api {
       sort,
     });
 
-  getSportBaseSpaceEnergyClasses = async ({ page, query }: TableList) =>
-    await this.getList({
-      page,
-      fields: ['id', 'name'],
-      query,
-      resource: Resources.ENERGY_CLASSES,
-      sort: [SortAscFields.NAME],
+  getRcPlotByAddress = async (
+    streetCode: string | number,
+    plotOrBuildingNumber: string | number,
+    roomNumber?: string | number,
+  ) =>
+    await this.customGet({
+      resource: `${Resources.RC}/plot`,
+      streetCode,
+      plotOrBuildingNumber,
+      roomNumber,
     });
 
-  getSportBaseSpaceBuildingPurposesTree = async () =>
-    await this.getAll({
-      fields: ['id', 'name', 'children'],
-      populate: [Populations.CHILDREN],
-      resource: Resources.BUILDING_PURPOSES,
+  getRcObjects = async (query: any) =>
+    await this.customGet({
+      resource: `${Resources.RC}/objects`,
+      ...query,
+    });
+
+  getRcObjectInfo = async (
+    registrationNumber: string,
+    registrationServiceNumber: string,
+    uniqueNumber: string,
+  ) =>
+    await this.customGet({
+      resource: `${Resources.RC}/objects/${registrationNumber}/${registrationServiceNumber}/${uniqueNumber}`,
     });
 
   getFields = async ({ query }): Promise<TypesAndFields[]> =>

@@ -36,7 +36,7 @@ const SportBaseSpaceAdditionalFields = ({
   disabled: boolean;
 }) => {
   const renderField = (id, field: Field, onChange) => {
-    const { title, options, type } = field;
+    const { title, options, type, description } = field;
     const fieldValue = additionalValues?.[id];
     const error = errors?.[id];
 
@@ -46,6 +46,7 @@ const SportBaseSpaceAdditionalFields = ({
       value: fieldValue,
       label: title,
       disabled,
+      bottomLabel: description,
     };
     const geSelectProps = {
       ...getCommonProps,

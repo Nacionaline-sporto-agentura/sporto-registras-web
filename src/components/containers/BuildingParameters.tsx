@@ -1,48 +1,66 @@
-import { useQuery } from 'react-query';
 import { FormRow } from '../../styles/CommonStyles';
-import { SportBaseSpace } from '../../types';
+import { SportBaseSpace, SportsBase } from '../../types';
 import api from '../../utils/api';
-import { getSportBaseSpaceEnergyClassList } from '../../utils/functions';
+import { getRcObjects } from '../../utils/functions';
 import { inputLabels } from '../../utils/texts';
 import AsyncSelectField from '../fields/AsyncSelectField';
-import DateField from '../fields/DateField';
 import NumericTextField from '../fields/NumericTextField';
 import TextField from '../fields/TextField';
-import TreeSelectField from '../fields/TreeSelect';
 
 const BuildingParametersContainer = ({
   sportBaseSpace,
+  sportBase,
   errors,
   handleChange,
   disabled,
 }: {
   sportBaseSpace: SportBaseSpace;
+  sportBase: SportsBase;
   errors: any;
   handleChange: any;
   disabled: boolean;
 }) => {
-  const { data: buildingPurposesOptions = [] } = useQuery(['buildingPurposesOptions'], async () =>
-    api.getSportBaseSpaceBuildingPurposesTree(),
-  );
-
   const currentYearPlaceholder = new Date().getFullYear().toString();
 
   return (
     <>
       <FormRow columns={2}>
-        <TextField
+        <AsyncSelectField
+          disabled={disabled || !sportBase.address?.house?.plot_or_building_number}
           label={inputLabels.buildingNumber}
           value={sportBaseSpace?.buildingNumber}
           error={errors?.buildingNumber}
           name="buildingNumber"
-          disabled={disabled}
-          onChange={(buildingNumber) => {
-            handleChange(`buildingNumber`, buildingNumber);
+          onChange={(building) => {
+            handleChange(`buildingNumber`, building.uniqueNumber);
+            handleChange(`buildingPurpose`, building.buildingPurpose);
+            api
+              .getRcObjectInfo(
+                building.registrationNumber,
+                building.registrationServiceNumber,
+                building.uniqueNumber,
+              )
+              .then((data) => {
+                handleChange(`buildingArea`, data?.buildingArea?.value);
+                handleChange(`constructionDate`, data?.constructionDate?.value);
+                handleChange(`latestRenovationDate`, data?.latestRenovationDate?.value);
+                handleChange(`energyClass`, data?.energyClass?.value);
+              });
           }}
+          getInputLabel={(option) => option}
+          getOptionLabel={(option) => option?.uniqueNumber}
+          getOptionDescription={(option) => option?.buildingPurpose}
+          loadOptions={(input, page) =>
+            getRcObjects(input, page, {
+              streetCode: sportBase.address?.street?.code,
+              plotOrBuildingNumber: sportBase.address?.house?.plot_or_building_number,
+              roomNumber: sportBase.address?.apartment?.room_number,
+            })
+          }
         />
         <NumericTextField
           label={inputLabels.buildingArea}
-          disabled={disabled}
+          disabled={true}
           value={sportBaseSpace?.buildingArea}
           digitsAfterComma={3}
           error={errors?.buildingArea}
@@ -53,56 +71,35 @@ const BuildingParametersContainer = ({
         />
       </FormRow>
       <FormRow columns={1}>
-        <AsyncSelectField
-          disabled={disabled}
+        <TextField
           label={inputLabels.energyClass}
           value={sportBaseSpace?.energyClass}
-          error={errors?.energyClass}
           name="energyClass"
-          onChange={(energyClass) => {
-            handleChange(`energyClass`, energyClass);
-          }}
-          getOptionLabel={(option) => option?.name}
-          loadOptions={(input, page) => getSportBaseSpaceEnergyClassList(input, page)}
+          disabled={true}
         />
       </FormRow>
       <FormRow columns={1}>
-        <TreeSelectField
-          disabled={disabled}
+        <TextField
           label={inputLabels.buildingPurpose}
-          name={`buildingPurpose`}
-          error={errors?.buildingPurpose}
-          showError={false}
-          options={buildingPurposesOptions}
-          value={sportBaseSpace?.buildingPurpose?.id}
-          onChange={(value) => {
-            handleChange('buildingPurpose', value);
-          }}
+          value={sportBaseSpace?.buildingPurpose}
+          name="buildingPurpose"
+          disabled={true}
         />
       </FormRow>
       <FormRow columns={2}>
-        <NumericTextField
-          disabled={disabled}
+        <TextField
+          disabled={true}
           label={inputLabels.year}
           value={sportBaseSpace?.constructionDate}
-          error={errors?.constructionDate}
           name="constructionDate"
-          onChange={(year) => {
-            if (year.length > 4) return;
-
-            handleChange(`constructionDate`, year);
-          }}
         />
 
-        <DateField
-          disabled={disabled}
-          showYearPicker={true}
-          placeHolder={currentYearPlaceholder}
-          name={'latestRenovationDate'}
+        <TextField
+          disabled={true}
+          placeholder={currentYearPlaceholder}
+          name="latestRenovationDate"
           label={inputLabels.latestRenovationDate}
           value={sportBaseSpace?.latestRenovationDate}
-          error={errors?.latestRenovationDate}
-          onChange={(endAt) => handleChange(`latestRenovationDate`, endAt)}
         />
       </FormRow>
     </>
