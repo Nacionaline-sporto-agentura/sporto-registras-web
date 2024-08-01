@@ -1,5 +1,5 @@
-import FieldWrapper from "./components/FieldWrapper";
-import TextFieldInput from "./components/TextFieldInput";
+import FieldWrapper from './components/FieldWrapper';
+import TextFieldInput from './components/TextFieldInput';
 export interface TextFieldProps {
   value?: string | number;
   name?: string;
@@ -23,6 +23,7 @@ export interface TextFieldProps {
   secondLabel?: JSX.Element;
   selectedValue?: boolean;
   onBlur?: () => void;
+  loading?: boolean;
 }
 
 const TextField = ({
@@ -45,7 +46,8 @@ const TextField = ({
   disabled,
   height,
   secondLabel,
-  onInputClick
+  loading,
+  onInputClick,
 }: TextFieldProps) => {
   return (
     <FieldWrapper
@@ -72,6 +74,7 @@ const TextField = ({
         onInputClick={onInputClick}
         placeholder={placeholder}
         type={type}
+        loading={loading}
       />
     </FieldWrapper>
   );

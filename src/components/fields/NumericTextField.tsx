@@ -25,6 +25,7 @@ export interface NumericTextFieldProps {
   subLabel?: string;
   minValue?: string;
   maxValue?: string;
+  loading?: boolean;
 }
 
 const NumericTextField = ({
@@ -46,6 +47,7 @@ const NumericTextField = ({
   maxValue,
   minValue,
   onInputClick,
+  loading,
 }: NumericTextFieldProps) => {
   const handleBlur = (event: any) => {
     if (!event.currentTarget.contains(event.relatedTarget)) {
@@ -102,6 +104,7 @@ const NumericTextField = ({
       showError={showError}
     >
       <TextFieldInput
+        loading={loading}
         value={value}
         name={name}
         inputMode="decimal"

@@ -1,4 +1,3 @@
-import { useQuery } from 'react-query';
 import { FormRow } from '../../styles/CommonStyles';
 import { SportsBase } from '../../types';
 import { AreaUnits } from '../../utils/constants';
@@ -17,14 +16,6 @@ import TextField from '../fields/TextField';
 import { generateUniqueString } from '../fields/utils/function';
 import InnerContainerRow from '../other/InnerContainerRow';
 import SimpleContainer from '../other/SimpleContainer';
-import api from '../../utils/api';
-import { useEffect } from 'react';
-
-const unitMap = {
-  ha: AreaUnits.HA,
-  a: AreaUnits.A,
-  'kv. m': AreaUnits.M2,
-};
 
 const SpecificationContainer = ({
   sportBase,
@@ -39,26 +30,6 @@ const SpecificationContainer = ({
 }) => {
   const plans = sportBase?.plans || {};
   const planValues = Object.values(plans);
-
-  const { data: plotData = {}, isLoading: plotDataLoading } = useQuery(
-    ['sportBasePlotData'],
-    async () =>
-      api.getRcPlotByAddress(
-        sportBase.address?.street?.code,
-        sportBase.address?.house?.plot_or_building_number,
-        sportBase.address?.apartment?.room_number,
-      ),
-    { enabled: !!sportBase.address?.house?.plot_or_building_number }, // TODO: maybe manual check
-  );
-
-  useEffect(() => {
-    if (!plotData?.id) return;
-
-    handleChange(`plotNumber`, plotData.uniqueNumber);
-    handleChange(`plotArea`, plotData?.attributes?.plotArea?.value);
-    handleChange(`builtPlotArea`, plotData?.attributes?.builtPlotArea?.value);
-    handleChange(`areaUnits`, unitMap[plotData?.attributes?.plotArea?.unit]);
-  }, [plotData]);
 
   return (
     <>

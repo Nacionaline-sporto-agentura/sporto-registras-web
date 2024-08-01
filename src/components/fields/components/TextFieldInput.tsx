@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import Loader from '../../other/Loader';
 export interface TextFieldProps {
   value?: string | number;
   name?: string;
@@ -17,6 +18,7 @@ export interface TextFieldProps {
   inputMode?: any;
   onBlur?: () => void;
   onFocus?: any;
+  loading?: boolean;
 }
 
 const TextFieldInput = ({
@@ -36,7 +38,7 @@ const TextFieldInput = ({
   selectedValue = false,
   onInputClick,
   onFocus = () => {},
-
+  loading = false,
   ...rest
 }: TextFieldProps) => {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -71,21 +73,26 @@ const TextFieldInput = ({
         disabled={disabled || false}
       >
         {leftIcon}
-        <TextInput
-          inputMode={inputMode}
-          selectedValue={selectedValue}
-          onClick={() => (onInputClick ? onInputClick() : null)}
-          readOnly={readOnly}
-          type={type}
-          name={name}
-          autoComplete="off"
-          value={value}
-          onChange={(e) => onChange && onChange(e?.target?.value || '')}
-          placeholder={placeholder}
-          disabled={disabled}
-          onFocus={onFocus}
-          {...rest}
-        />
+        {loading ? (
+          <Loader />
+        ) : (
+          <TextInput
+            inputMode={inputMode}
+            selectedValue={selectedValue}
+            onClick={() => (onInputClick ? onInputClick() : null)}
+            readOnly={readOnly}
+            type={type}
+            name={name}
+            autoComplete="off"
+            value={value}
+            onChange={(e) => onChange && onChange(e?.target?.value || '')}
+            placeholder={placeholder}
+            disabled={disabled}
+            onFocus={onFocus}
+            {...rest}
+          />
+        )}
+
         {rightIcon}
       </InputContainer>
       {showTooltip && <TooltipBox>{value || placeholder}</TooltipBox>}

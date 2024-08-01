@@ -1,36 +1,46 @@
 import {
-  PhoneField,
-  TextField,
   AsyncSelectField,
   convertGeojsonToProjection,
+  Map,
+  PhoneField,
+  TextField,
 } from '@aplinkosministerija/design-system';
+import { buffer, distance, pointOnFeature } from '@turf/turf';
 import { FormRow } from '../../styles/CommonStyles';
 import { SportsBase, SportsBasesCondition, SportsBasesLevel, Types } from '../../types';
 import {
   getSportBaseLevelsList,
   getSportBaseTechnicalConditionList,
   getSportBaseTypesList,
+  handleErrorToast,
   wkbToGeoJSON,
 } from '../../utils/functions';
 import { descriptions, formLabels, inputLabels, pageTitles } from '../../utils/texts';
 import UrlField from '../fields/UrlField';
 import InnerContainerRow from '../other/InnerContainerRow';
 import SimpleContainer from '../other/SimpleContainer';
-import { Map } from '@aplinkosministerija/design-system';
-import { pointOnFeature, buffer, distance } from '@turf/turf';
 
+import { useMutation } from 'react-query';
+import api from '../../utils/api';
 import {
+  Address,
+  addressesSearch,
   municipalitiesSearch,
   Municipality,
   ResidentialArea,
-  Street,
-  Address,
   residentialAreasSearch,
-  streetsSearch,
-  addressesSearch,
   Room,
   roomsSearch,
+  Street,
+  streetsSearch,
 } from '../../utils/boundaries';
+import { AreaUnits } from '../../utils/constants';
+
+const unitMap = {
+  ha: AreaUnits.HA,
+  a: AreaUnits.A,
+  'kv. m': AreaUnits.M2,
+};
 
 const getOption = (option?: any) => {
   if (!option) return option;
@@ -80,7 +90,27 @@ const SportBaseGeneralContainer = ({
 }) => {
   const address = sportBase?.address;
 
-  function handleAddressChange({
+  const plotDataMutation = useMutation(
+    async (address: any) =>
+      api.getRcPlotByAddress(
+        address?.street?.code,
+        address?.house?.plot_or_building_number,
+        address?.apartment?.room_number,
+      ),
+    {
+      onError: () => {
+        handleErrorToast('Pasirinkta vieta neturi žemės sklypo duomenų');
+      },
+      onSuccess: (plotData) => {
+        handleChange(`plotNumber`, plotData.uniqueNumber);
+        handleChange(`plotArea`, plotData?.attributes?.plotArea?.value);
+        handleChange(`builtPlotArea`, plotData?.attributes?.builtPlotArea?.value);
+        handleChange(`areaUnits`, unitMap[plotData?.attributes?.plotArea?.unit]);
+      },
+    },
+  );
+
+  const handleAddressChange = ({
     municipality,
     city,
     street,
@@ -92,15 +122,12 @@ const SportBaseGeneralContainer = ({
     street?: Street;
     house?: Address;
     apartment?: Room;
-  }) {
-    handleChange('address', {
-      municipality,
-      city,
-      street,
-      house,
-      apartment,
-    });
-  }
+  }) => {
+    const address = { municipality, city, street, house, apartment };
+    handleChange('address', address);
+
+    return address;
+  };
 
   function getCursor(page: number | string) {
     if (typeof page !== 'string') return;
@@ -340,7 +367,7 @@ const SportBaseGeneralContainer = ({
             name="address.house"
             optionsKey="items"
             onChange={(address: Address) => {
-              handleAddressChange({
+              const formattedAddress = handleAddressChange({
                 municipality: getOption(address.municipality),
                 city: getOption(address.residential_area),
                 street: getOption(address.street),
@@ -350,6 +377,8 @@ const SportBaseGeneralContainer = ({
                 ? wkbToGeoJSON(address?.geometry.data)
                 : undefined;
               if (geom) handleChange('geom', geom);
+
+              plotDataMutation.mutateAsync(formattedAddress);
             }}
             getOptionLabel={(option: Address) => option?.plot_or_building_number || '-'}
             loadOptions={(input, page) =>
@@ -377,13 +406,15 @@ const SportBaseGeneralContainer = ({
             name="address.apartment"
             optionsKey="items"
             onChange={(room: Room) => {
-              handleAddressChange({
+              const formattedAddress = handleAddressChange({
                 municipality: getOption(room.address.municipality),
                 city: getOption(room.address.residential_area),
                 street: getOption(room.address.street),
                 house: getOption(room.address),
                 apartment: getOption(room),
               });
+
+              plotDataMutation.mutateAsync(formattedAddress);
             }}
             getOptionLabel={(option: Room) => option?.room_number || '-'}
             loadOptions={(input, page) =>
