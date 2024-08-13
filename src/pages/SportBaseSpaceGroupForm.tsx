@@ -1,16 +1,14 @@
-import React from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
-import ButtonsGroup from '../components/buttons/ButtonsGroup';
 import TextField from '../components/fields/TextField';
 import FormikFormLayout from '../components/layouts/FormikFormLayout';
 import FullscreenLoader from '../components/other/FullscreenLoader';
 import SimpleContainer from '../components/other/SimpleContainer';
 import { FormRow } from '../styles/CommonStyles';
-import { DeleteInfoProps, SportType } from '../types';
+import { DeleteInfoProps, SportsBaseSpaceGroup, SportType } from '../types';
 import api from '../utils/api';
-import { ClassifierTypes, SportTypeButtonKeys } from '../utils/constants';
+import { ClassifierTypes } from '../utils/constants';
 
 import { handleErrorToastFromServer, isNew } from '../utils/functions';
 import { slugs } from '../utils/routes';
@@ -19,10 +17,8 @@ import {
   deleteDescriptionFirstPart,
   deleteDescriptionSecondPart,
   deleteTitles,
-  falseLabels,
   inputLabels,
   pageTitles,
-  trueLabels,
   validationTexts,
 } from '../utils/texts';
 
@@ -30,45 +26,21 @@ export const validateGroupForm = Yup.object().shape({
   name: Yup.string().required(validationTexts.requireText),
 });
 
-const ButtonsInfo = [
-  {
-    key: SportTypeButtonKeys.olympic,
-    label: inputLabels.isOlympic,
-  },
-  {
-    key: SportTypeButtonKeys.paralympic,
-    label: inputLabels.isParalympic,
-  },
-  {
-    key: SportTypeButtonKeys.strategic,
-    label: inputLabels.isStrategic,
-  },
-  {
-    key: SportTypeButtonKeys.technical,
-    label: inputLabels.isTechnical,
-  },
-  {
-    key: SportTypeButtonKeys.deaf,
-    label: inputLabels.isDeafs,
-  },
-  {
-    key: SportTypeButtonKeys.specialOlympics,
-    label: inputLabels.isSpecialOlympic,
-  },
-];
-
-const SportTypeForm = () => {
+const SportBaseSpaceGroupForm = () => {
   const navigate = useNavigate();
   const { id = '' } = useParams();
+  const queryKey = ['sportBaseSpaceGroup', id];
 
-  const title = !isNew(id) ? pageTitles.updateSportType : pageTitles.newSportType;
+  const title = !isNew(id)
+    ? pageTitles.newSportsSpaceBaseGroup
+    : pageTitles.updateSportsSpaceBaseGroup;
 
   const { isLoading, data: sportType } = useQuery(
-    ['sportType', id],
-    () => api.getSportType({ id }),
+    queryKey,
+    () => api.getSportBaseSpaceGroup({ id }),
     {
       onError: () => {
-        navigate(slugs.classifiers(ClassifierTypes.SPORT_TYPE));
+        navigate(slugs.classifiers(ClassifierTypes.SPORTS_BASE_SPACE_GROUP));
       },
       enabled: !isNew(id),
     },
@@ -76,24 +48,26 @@ const SportTypeForm = () => {
 
   const createOrUpdateSportType = useMutation(
     (params: any) =>
-      isNew(id) ? api.createSportType({ params }) : api.updateSportType({ params, id }),
+      isNew(id)
+        ? api.createSportBaseSpaceGroup({ params })
+        : api.updateSportBaseSpaceGroup({ params, id }),
     {
       onError: ({ response }) => {
         handleErrorToastFromServer(response);
       },
       onSuccess: () => {
-        navigate(slugs.classifiers(ClassifierTypes.SPORT_TYPE));
+        navigate(slugs.classifiers(ClassifierTypes.SPORTS_BASE_SPACE_GROUP));
       },
       retry: false,
     },
   );
 
-  const deleteClassifier = useMutation(() => api.deleteSportType({ id }), {
+  const deleteClassifier = useMutation(() => api.deleteSportBaseSpaceGroup({ id }), {
     onError: ({ response }) => {
       handleErrorToastFromServer(response);
     },
     onSuccess: () => {
-      navigate(slugs.classifiers(ClassifierTypes.SPORT_TYPE));
+      navigate(slugs.classifiers(ClassifierTypes.SPORTS_BASE_SPACE_GROUP));
     },
     retry: false,
   });
@@ -101,54 +75,27 @@ const SportTypeForm = () => {
   const deleteInfo: DeleteInfoProps = {
     deleteButtonText: buttonsTitles.delete,
     deleteDescriptionFirstPart: deleteDescriptionFirstPart.classifier,
-    deleteDescriptionSecondPart: deleteDescriptionSecondPart.classifier.sporto_saka,
+    deleteDescriptionSecondPart: deleteDescriptionSecondPart.classifier.sporto_bazes_erdves_rusis,
     deleteTitle: deleteTitles.classifier,
     deleteName: sportType?.name || '',
     handleDelete: !isNew(id) ? deleteClassifier.mutateAsync : undefined,
   };
 
-  const initialValues: SportType = {
+  const initialValues: SportsBaseSpaceGroup = {
     name: sportType?.name || '',
-    olympic: sportType?.olympic || false,
-    paralympic: sportType?.paralympic || false,
-    strategic: sportType?.strategic || false,
-    technical: sportType?.technical || false,
-    deaf: sportType?.deaf || false,
-    specialOlympics: sportType?.specialOlympics || false,
   };
 
   const renderForm = (values: SportType, errors: any, handleChange) => {
-    const renderButtonsGroup = ({ label, key }) => {
-      return (
-        <ButtonsGroup
-          onChange={(value) => handleChange(key, value)}
-          label={label}
-          options={[true, false]}
-          getOptionLabel={(option) => (option ? trueLabels[key] : falseLabels[key])}
-          isSelected={(options) => options === values[key]}
-        />
-      );
-    };
-
     return (
       <SimpleContainer>
         <FormRow columns={1}>
           <TextField
-            label={inputLabels.sportTypeName}
+            label={inputLabels.sportBaseSpaceGroup}
             value={values.name}
             name="name"
             error={errors.name}
             onChange={(e) => handleChange('name', e)}
           />
-        </FormRow>
-        <FormRow columns={2}>
-          {ButtonsInfo.map((buttonInfo) => {
-            return (
-              <React.Fragment key={JSON.stringify(buttonInfo)}>
-                {renderButtonsGroup({ ...buttonInfo })}
-              </React.Fragment>
-            );
-          })}
         </FormRow>
       </SimpleContainer>
     );
@@ -170,4 +117,4 @@ const SportTypeForm = () => {
   );
 };
 
-export default SportTypeForm;
+export default SportBaseSpaceGroupForm;

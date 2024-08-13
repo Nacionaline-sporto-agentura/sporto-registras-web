@@ -9,7 +9,9 @@ import {
   Request,
   ResultType,
   ScholarShip,
+  SportBaseSpaceType,
   SportsBase,
+  SportsBaseSpaceGroup,
   SportType,
   Tenant,
   TypesAndFields,
@@ -43,6 +45,7 @@ export enum Resources {
   RESULT_TYPES = 'api/types/competitions/resultTypes',
   MATCH_TYPES = 'api/types/sportTypes/matches',
   SPACE_TYPES = 'api/types/sportsBases/spaces/types',
+  VIOLATIONS_ANTI_DOPING_TYPES = 'api/types/sportsPersons/violationsAntiDoping',
   SPACE_GROUPS = 'api/types/sportsBases/spaces/groups',
   FIELDS = 'api/sportsBases/spaces/typesAndFields',
   ADMINS = 'api/admins',
@@ -104,6 +107,7 @@ export enum SortDescFields {
   FIRST_NAME = '-firstName',
   LAST_NAME = '-lastName',
   ID = '-id',
+  CREATED_AT = '-createdAt',
 }
 
 interface TableList<T = any> {
@@ -913,6 +917,14 @@ class Api {
       sort,
     });
 
+  getResultTypes = async ({ query, page, sort }: TableList): Promise<ResultType[]> =>
+    await this.getList({
+      query,
+      page,
+      resource: Resources.RESULT_TYPES,
+      sort,
+    });
+
   createMatchType = async ({ params }: { params: SportType }) =>
     await this.post({
       resource: Resources.MATCH_TYPES,
@@ -951,14 +963,50 @@ class Api {
       sort,
     });
 
-  getSportBaseSpaceTypes = async ({ page, query, sort }: TableList) =>
+  getViolationsAntiDopingTypes = async ({ page, query, sort }: TableList) =>
+    await this.getList({
+      page,
+      fields: ['id', 'name'],
+      query,
+      resource: Resources.VIOLATIONS_ANTI_DOPING_TYPES,
+      sort,
+    });
+
+  getSportsBaseSpaceTypes = async ({ page, query }: TableList) =>
     await this.getList({
       page,
       fields: ['id', 'name', 'needSportType'],
       query,
       resource: Resources.SPACE_TYPES,
-      sort,
+      sort: [SortDescFields.CREATED_AT],
     });
+
+  getSportsBaseSpaceType = async ({ id }: { id: string }) =>
+    await this.getOne({
+      resource: Resources.SPACE_TYPES,
+      id,
+    });
+
+  createSportBaseSpaceType = async ({ params }: { params: SportBaseSpaceType }) =>
+    await this.post({
+      resource: Resources.SPACE_TYPES,
+      params,
+    });
+
+  updateSportBaseSpaceType = async ({ params, id }: { params: SportBaseSpaceType; id: string }) =>
+    await this.patch({
+      resource: Resources.SPACE_TYPES,
+      params,
+      id,
+    });
+
+  deleteSportBaseSpaceType = async ({ id }: { id: string }) => {
+    return this.delete({
+      resource: Resources.SPACE_TYPES,
+      id,
+    });
+  };
+
   getSportBaseSpaceGroups = async ({ page, query, sort }: TableList) =>
     await this.getList({
       page,
@@ -967,6 +1015,38 @@ class Api {
       resource: Resources.SPACE_GROUPS,
       sort,
     });
+
+  getSportBaseSpaceGroup = async ({ id }: { id: string }) =>
+    await this.getOne({
+      resource: Resources.SPACE_GROUPS,
+      id,
+    });
+
+  createSportBaseSpaceGroup = async ({ params }: { params: SportsBaseSpaceGroup }) =>
+    await this.post({
+      resource: Resources.SPACE_GROUPS,
+      params,
+    });
+
+  updateSportBaseSpaceGroup = async ({
+    params,
+    id,
+  }: {
+    params: SportsBaseSpaceGroup;
+    id: string;
+  }) =>
+    await this.patch({
+      resource: Resources.SPACE_GROUPS,
+      params,
+      id,
+    });
+
+  deleteSportBaseSpaceGroup = async ({ id }: { id: string }) => {
+    return this.delete({
+      resource: Resources.SPACE_GROUPS,
+      id,
+    });
+  };
 
   getRcPlotByAddress = async (
     streetCode: string | number,

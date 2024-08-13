@@ -54,10 +54,15 @@ export interface Types {
   name: string;
 }
 
+export interface SportsBaseSpaceGroup extends CommonFields {
+  name: string;
+}
+
 export interface SportBaseSpaceType {
   id: any;
   name: string;
   needSportType: boolean;
+  group: SportsBaseSpaceGroup;
 }
 
 export interface SportsBasesCondition {
@@ -154,17 +159,12 @@ export interface SportsBase extends CommonFields {
   webPage: string;
   photos: Photo[];
   plotNumber: string;
-  disabledAccessible: boolean;
-  blindAccessible: boolean;
   plotArea?: number;
   areaUnits?: number;
   builtPlotArea?: number;
   parkingPlaces?: number;
-  dressingRooms?: number;
   methodicalClasses?: number;
   saunas?: number;
-  diningPlaces?: number;
-  accommodationPlaces?: number;
   publicWifi: boolean;
   lastRequest: Request;
   spaces: SportBaseSpace[];
@@ -269,12 +269,19 @@ export interface UnconfirmedRequestFilters {
 export interface ClassifierFilters {
   [ClassifierTypes.LEVEL]: SimpleFilters;
   [ClassifierTypes.TECHNICAL_CONDITION]: SimpleFilters;
-  [ClassifierTypes.SPACE_TYPE]: SimpleFilters;
   [ClassifierTypes.SOURCE]: SimpleFilters;
   [ClassifierTypes.SPORTS_BASE_TYPE]: SimpleFilters;
   [ClassifierTypes.SPORT_TYPE]: SimpleFilters;
   [ClassifierTypes.SPORT_ORGANIZATION_TYPE]: SimpleFilters;
   [ClassifierTypes.LEGAL_FORMS]: SimpleFilters;
+  [ClassifierTypes.NATIONAL_TEAM_AGE_GROUP]: SimpleFilters;
+  [ClassifierTypes.NATIONAL_TEAM_GENDER]: SimpleFilters;
+  [ClassifierTypes.WORK_RELATIONS]: SimpleFilters;
+  [ClassifierTypes.COMPETITION_TYPE]: SimpleFilters;
+  [ClassifierTypes.VIOLATIONS_ANTI_DOPING]: SimpleFilters;
+  [ClassifierTypes.ORGANIZATION_BASIS]: SimpleFilters;
+  [ClassifierTypes.RESULT_TYPE]: SimpleFilters;
+  [ClassifierTypes.SPORTS_BASE_SPACE_GROUP]: SimpleFilters;
 }
 
 export interface UnconfirmedRequestFiltersProps {
@@ -304,7 +311,7 @@ export interface DeleteInfoProps {
   deleteDescriptionSecondPart?: string;
   deleteTitle?: string;
   deleteName?: string;
-  handleDelete: (props?: any) => void;
+  handleDelete?: (props?: any) => void;
 }
 
 export interface Group {

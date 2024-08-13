@@ -25,6 +25,8 @@ import RentsList from '../pages/RentsList';
 import ScholarshipForm from '../pages/ScholarshipForm';
 import ScholarshipsList from '../pages/ScholarshipsList';
 import SportBaseList from '../pages/SportBaseList';
+import SportBaseSpaceGroup from '../pages/SportBaseSpaceGroup';
+import SportBaseSpaceGroupForm from '../pages/SportBaseSpaceGroupForm';
 import SportBase from '../pages/SportsBase';
 import SportsPersonPage from '../pages/SportsPerson';
 import SportsPersonsList from '../pages/SportsPersonsList';
@@ -86,9 +88,9 @@ export const slugs = {
   classifiers: (classifier: string) => `/klasifikatoriai/${classifier}`,
   newClassifier: (classifier: string) => `/klasifikatoriai/${classifier}/${url.new}`,
   classifier: (classifier: string, id: string) => `/klasifikatoriai/${classifier}/${id}`,
-  newSportType: `/klasifikatoriai/sporto-saka/${url.new}`,
-  sportType: (id: string) => `/klasifikatoriai/sporto-saka/${id}`,
-  updateSportType: (id: string) => `/klasifikatoriai/sporto-saka/${id}/atnaujinti`,
+  newSportType: `/klasifikatoriai/sporto_saka/${url.new}`,
+  sportType: (id: string) => `/klasifikatoriai/sporto_saka/${id}`,
+  updateSportType: (id: string) => `/klasifikatoriai/sporto_saka/${id}/atnaujinti`,
   result: (id: string) => `/rezultatai/${id}`,
   results: '/rezultatai',
   newResult: `/rezultatai/${url.new}`,
@@ -103,12 +105,17 @@ export const slugs = {
   rents: '/rentos',
   newRent: `/rentos/naujas`,
   rent: (id: string) => `/rentos/${id}`,
-
   nationalTeams: '/nacionalines-rinktines',
   unConfirmedNationalTeams: '/nepatvirtintos-nacionalines-rinktines',
   newNationalTeam: '/nacionalines-rinktines/naujas',
   nationalTeam: (id: string) => `/nacionalines-rinktines/${id}`,
+  newSportsBaseSpaceGroup: `/klasifikatoriai/sporto_bazes_erdves_rusis/${url.new}`,
+  sportsBaseSpaceGroup: (id: string) => `/klasifikatoriai/sporto_bazes_erdves_rusis/${id}`,
+  updateSportsBaseSpaceGroup: (id: string) =>
+    `/klasifikatoriai/sporto_bazes_erdves_rusis/${id}/atnaujinti`,
 };
+
+//Sporto bazės erdvės rūšių klasifikatorius
 
 export const routes = [
   {
@@ -313,11 +320,25 @@ export const routes = [
     slug: slugs.sportType(':id'),
     component: <SportTypePage />,
   },
-
   {
     slug: slugs.updateSportType(':id'),
     component: <SportTypeForm />,
   },
+  {
+    slug: slugs.sportsBaseSpaceGroup(':id'),
+    component: <SportBaseSpaceGroup />,
+  },
+
+  {
+    slug: slugs.newSportsBaseSpaceGroup,
+    component: <SportBaseSpaceGroupForm />,
+  },
+
+  {
+    slug: slugs.updateSportsBaseSpaceGroup(':id'),
+    component: <SportBaseSpaceGroupForm />,
+  },
+
   {
     slug: slugs.updateInstitution(':id'),
     role: AdminRoleType.ADMIN,

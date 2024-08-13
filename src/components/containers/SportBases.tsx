@@ -1,9 +1,10 @@
+import { applyPatch } from 'fast-json-patch';
 import { actions as filterActions } from '../../state/filters/reducer';
 import { useAppSelector } from '../../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { NotFoundInfoProps, SportsBase, TableRow } from '../../types';
 import api from '../../utils/api';
-import { AdminRoleType, colorsByStatus } from '../../utils/constants';
+import { AdminRoleType, colorsByStatus, StatusTypes } from '../../utils/constants';
 import { getFormattedAddress, getIlike, getSportBaseTypeList } from '../../utils/functions';
 import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
@@ -49,14 +50,22 @@ export const mapSportBaseQuery = (filters: any) => {
 };
 
 const mapRequestList = (requests: SportsBase[]): TableRow[] =>
-  requests.map((request: SportsBase) => {
-    const status = request.lastRequest?.status;
-    const address = request.address;
+  requests.map((sportsBase: SportsBase) => {
+    const status = sportsBase.lastRequest?.status;
+    const address = sportsBase.address;
+
+    const lastRequestApprovalOrRejection =
+      sportsBase?.lastRequest &&
+      ![StatusTypes.APPROVED, StatusTypes.REJECTED].includes(sportsBase?.lastRequest?.status);
+
+    const sportsBaseRequest = lastRequestApprovalOrRejection
+      ? applyPatch(sportsBase, sportsBase.lastRequest?.changes).newDocument
+      : sportsBase;
 
     return {
-      id: request.id,
-      type: request?.type?.name,
-      name: request.name,
+      id: sportsBaseRequest.id,
+      type: sportsBaseRequest?.type?.name,
+      name: sportsBaseRequest.name,
       address: getFormattedAddress(address),
       ...(status && {
         status: <StatusTag label={requestStatusLabels[status]} color={colorsByStatus[status]} />,

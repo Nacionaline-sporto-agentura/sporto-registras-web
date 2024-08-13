@@ -1,3 +1,4 @@
+import { applyPatch } from 'fast-json-patch';
 import { isEmpty } from 'lodash';
 import { actions as filterActions } from '../../state/filters/reducer';
 import { useAppSelector } from '../../state/hooks';
@@ -5,7 +6,7 @@ import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles
 import { NotFoundInfoProps, TableRow, Tenant } from '../../types';
 import api from '../../utils/api';
 import { organizationColumns } from '../../utils/columns';
-import { colorsByStatus, TenantTypes } from '../../utils/constants';
+import { colorsByStatus, StatusTypes, TenantTypes } from '../../utils/constants';
 import { getIlike } from '../../utils/functions';
 import { useGenericTablePageHooks, useIsTenantUser, useTableData } from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
@@ -55,23 +56,32 @@ const rowConfig = [
 export const mapOrganizationList = (tenants: Tenant[]): TableRow[] => {
   return tenants.map((tenant: Tenant) => {
     const status = tenant?.lastRequest?.status;
+
+    const lastRequestApprovalOrRejection =
+      tenant?.lastRequest &&
+      ![StatusTypes.APPROVED, StatusTypes.REJECTED].includes(tenant?.lastRequest?.status);
+
+    const tenantRequest = lastRequestApprovalOrRejection
+      ? applyPatch(tenant, tenant.lastRequest?.changes).newDocument
+      : tenant;
+
     return {
-      id: tenant.id,
-      name: tenant.name,
-      code: tenant.code,
-      phone: tenant.phone,
-      email: tenant.email,
-      parentName: tenant?.parent && (
+      id: tenantRequest.id,
+      name: tenantRequest.name,
+      code: tenantRequest.code,
+      phone: tenantRequest.phone,
+      email: tenantRequest.email,
+      parentName: tenantRequest?.parent && (
         <TableItem
-          label={`${tenant?.parent?.name}${
-            tenant?.parent?.tenantType === TenantTypes.MUNICIPALITY
+          label={`${tenantRequest?.parent?.name}${
+            tenantRequest?.parent?.tenantType === TenantTypes.MUNICIPALITY
               ? ` (${tenantTypeLabels.MUNICIPALITY})`
               : ''
           }`}
           url={
-            tenant?.parent?.tenantType === TenantTypes.ORGANIZATION
-              ? slugs.organizationUsers(tenant?.parent?.id || '')
-              : slugs.institutionUsers(tenant?.parent?.id || '')
+            tenantRequest?.parent?.tenantType === TenantTypes.ORGANIZATION
+              ? slugs.organizationUsers(tenantRequest?.parent?.id || '')
+              : slugs.institutionUsers(tenantRequest?.parent?.id || '')
           }
         />
       ),

@@ -96,16 +96,6 @@ const SpecificationContainer = ({
           />
           <NumericTextField
             disabled={disabled}
-            label={inputLabels.dressingRooms}
-            value={sportBase?.dressingRooms}
-            error={errors?.dressingRooms}
-            name="dressingRooms"
-            onChange={(dressingRooms) => {
-              handleChange(`dressingRooms`, dressingRooms);
-            }}
-          />
-          <NumericTextField
-            disabled={disabled}
             label={inputLabels.methodicalClasses}
             value={sportBase?.methodicalClasses}
             error={errors?.methodicalClasses}
@@ -125,43 +115,7 @@ const SpecificationContainer = ({
             }}
           />
         </FormRow>
-        <FormRow columns={2}>
-          <NumericTextField
-            disabled={disabled}
-            label={inputLabels.diningPlaces}
-            value={sportBase?.diningPlaces}
-            error={errors?.diningPlaces}
-            name="diningPlaces"
-            onChange={(diningPlaces) => {
-              handleChange(`diningPlaces`, diningPlaces);
-            }}
-          />
-          <NumericTextField
-            disabled={disabled}
-            label={inputLabels.accommodationPlaces}
-            value={sportBase?.accommodationPlaces}
-            error={errors?.accommodationPlaces}
-            name="accommodationPlaces"
-            onChange={(accommodationPlaces) => {
-              handleChange(`accommodationPlaces`, accommodationPlaces);
-            }}
-          />
-        </FormRow>
         <FormRow columns={1}>
-          <CheckBox
-            disabled={disabled}
-            label={descriptions.disabledAccessible}
-            value={sportBase?.disabledAccessible}
-            onChange={(disabledAccessible) =>
-              handleChange('disabledAccessible', disabledAccessible)
-            }
-          />
-          <CheckBox
-            disabled={disabled}
-            label={descriptions.blindAccessible}
-            value={sportBase?.blindAccessible}
-            onChange={(blindAccessible) => handleChange('blindAccessible', blindAccessible)}
-          />
           <CheckBox
             disabled={disabled}
             label={descriptions.publicWifi}

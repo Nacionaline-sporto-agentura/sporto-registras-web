@@ -1,11 +1,11 @@
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
+import wkx from 'wkx';
 import { ActionTypes } from '../components/other/HistoryContainer';
 import { Result, User } from '../types';
 import api, { SortAscFields } from './api';
 import { AdminRoleType, ResultTypeTypes } from './constants';
 import { url, validationTexts } from './texts';
-import wkx from 'wkx';
 
 export interface Path {
   id: string;
@@ -186,7 +186,7 @@ export const getSportBasesList = async (input: string, page: any, query: any) =>
 };
 
 export const getSportBaseSpaceTypesList = async (input: string, page: any, query) => {
-  return await api.getSportBaseSpaceTypes(getInputSimpleFilter(input, page, query));
+  return await api.getSportsBaseSpaceTypes(getInputSimpleFilter(input, page, query));
 };
 
 export const getSportBaseSpaceGroupsList = async (input: string, page: any) => {
