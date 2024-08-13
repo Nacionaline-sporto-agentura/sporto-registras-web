@@ -102,6 +102,14 @@ export enum ClassifierTypes {
   SPORT_TYPE = 'sporto_saka',
   SPORT_ORGANIZATION_TYPE = 'sporto_organizacijos_tipas',
   LEGAL_FORMS = 'teisine_forma',
+  NATIONAL_TEAM_AGE_GROUP = 'nacionalines_rinktines_amziaus_grupe',
+  NATIONAL_TEAM_GENDER = 'nacionalines_rinktines_lytis',
+  WORK_RELATIONS = 'darbo_santykiai',
+  COMPETITION_TYPE = 'varzybu_tipas',
+  VIOLATIONS_ANTI_DOPING = 'antidopingo_pazeidimas',
+  ORGANIZATION_BASIS = 'organizacijos_veiklos_tipas',
+  RESULT_TYPE = 'rezultatai',
+  SPORTS_BASE_SPACE_GROUP = 'sporto_bazes_erdves_rusis',
 }
 
 export enum SportTypeButtonKeys {

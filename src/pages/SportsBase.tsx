@@ -83,10 +83,7 @@ const specificationSchema = Yup.object().shape({
   builtPlotArea: Yup.string().required(validationTexts.requireText),
   methodicalClasses: Yup.string().required(validationTexts.requireText),
   parkingPlaces: Yup.string().required(validationTexts.requireText),
-  dressingRooms: Yup.string().required(validationTexts.requireText),
   saunas: Yup.string().required(validationTexts.requireText),
-  accommodationPlaces: Yup.string().required(validationTexts.requireText),
-  diningPlaces: Yup.string().required(validationTexts.requireText),
 });
 
 const spacesSchema = Yup.object().shape({
@@ -443,13 +440,8 @@ const SportsBasePage = () => {
           plotArea: { name: inputLabels.plotArea },
           builtPlotArea: { name: inputLabels.builtPlotArea },
           parkingPlaces: { name: inputLabels.parkingPlaces },
-          dressingRooms: { name: inputLabels.dressingRooms },
           methodicalClasses: { name: inputLabels.methodicalClasses },
           saunas: { name: inputLabels.saunas },
-          diningPlaces: { name: inputLabels.diningPlaces },
-          accommodationPlaces: { name: inputLabels.accommodationPlaces },
-          disabledAccessible: { name: descriptions.disabledAccessible },
-          blindAccessible: { name: descriptions.blindAccessible },
           publicWifi: { name: descriptions.publicWifi },
           plans: { getValueLabel: (val) => val?.name, name: descriptions.plans },
           owners: {

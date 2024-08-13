@@ -29,12 +29,18 @@ export const validationSchema = Yup.object().shape({
 const createClassifierEndpoints = {
   [ClassifierTypes.LEVEL]: Resources.LEVELS,
   [ClassifierTypes.TECHNICAL_CONDITION]: Resources.TECHNICAL_CONDITIONS,
-  [ClassifierTypes.SPACE_TYPE]: Resources.SPACE_TYPES,
   [ClassifierTypes.SOURCE]: Resources.SPORT_BASE_INVESTMENTS_SOURCES,
   [ClassifierTypes.SPORTS_BASE_TYPE]: Resources.TYPES,
   [ClassifierTypes.SPORT_TYPE]: Resources.SPORT_TYPES,
   [ClassifierTypes.SPORT_ORGANIZATION_TYPE]: Resources.SPORT_ORGANIZATION_TYPES,
   [ClassifierTypes.LEGAL_FORMS]: Resources.LEGAL_FORMS,
+  [ClassifierTypes.NATIONAL_TEAM_AGE_GROUP]: Resources.AGE_GROUPS,
+  [ClassifierTypes.NATIONAL_TEAM_GENDER]: Resources.GENDERS,
+  [ClassifierTypes.WORK_RELATIONS]: Resources.WORK_RELATIONS,
+  [ClassifierTypes.COMPETITION_TYPE]: Resources.COMPETITION_TYPES,
+  [ClassifierTypes.VIOLATIONS_ANTI_DOPING]: Resources.VIOLATIONS_ANTI_DOPING_TYPES,
+  [ClassifierTypes.ORGANIZATION_BASIS]: Resources.ORGANIZATION_BASIS,
+  [ClassifierTypes.RESULT_TYPE]: Resources.RESULT_TYPES,
 };
 
 const Classifier = () => {
