@@ -48,10 +48,10 @@ import {
 
 const generalSchema = Yup.object().shape({
   address: Yup.object().shape({
-    city: Yup.string().required(validationTexts.requireText),
-    municipality: Yup.string().required(validationTexts.requireText),
-    street: Yup.string().required(validationTexts.requireText),
-    house: Yup.string().required(validationTexts.requireText),
+    city: Yup.object().required(validationTexts.requireText),
+    municipality: Yup.object().required(validationTexts.requireText),
+    street: Yup.object().required(validationTexts.requireText),
+    house: Yup.object().required(validationTexts.requireText),
   }),
   name: Yup.string().required(validationTexts.requireText),
   type: Yup.object().required(validationTexts.requireText),
@@ -62,10 +62,6 @@ const generalSchema = Yup.object().shape({
   webPage: Yup.string().required(validationTexts.requireText),
   level: Yup.object().required(validationTexts.requireText),
   technicalCondition: Yup.object().required(validationTexts.requireText),
-  coordinates: Yup.object().shape({
-    x: Yup.string().required(validationTexts.requireText),
-    y: Yup.string().required(validationTexts.requireText),
-  }),
 });
 
 const photosSchema = Yup.object().shape({

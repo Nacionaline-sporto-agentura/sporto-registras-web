@@ -26,6 +26,7 @@ const SportBaseSpaceGeneralContainer = ({
   const sportTypes = sportBaseSpace?.sportTypes || {};
   const sportValues = Object.values(sportTypes || {});
   const groupId = sportBaseSpace?.group?.id;
+
   return (
     <FormRow columns={2}>
       <TextField

@@ -136,7 +136,6 @@ const SportBaseGeneralContainer = ({
 
   async function getClosestAddress(geom) {
     if (!geom || !geom?.features?.length) return;
-    console.log(geom);
     geom = convertGeojsonToProjection(geom, '3346', '4326');
     const pointFeature = pointOnFeature(geom);
 
@@ -189,7 +188,6 @@ const SportBaseGeneralContainer = ({
 
     return data.items[itemIndex];
   }
-
   return (
     <>
       <InnerContainerRow title={pageTitles.info} description={descriptions.sportBaseGeneral} />
