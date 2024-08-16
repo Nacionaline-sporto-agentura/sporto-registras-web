@@ -15,6 +15,7 @@ import {
   StudiesType,
   TableItemWidth,
   TenantTypes,
+  UserRoleType,
 } from './utils/constants';
 
 export interface CommonFields {
@@ -133,28 +134,7 @@ export interface SportsBase extends CommonFields {
   type?: Types;
   level?: SportsBasesLevel;
   technicalCondition?: SportsBasesCondition;
-  address: {
-    municipality: {
-      code: number;
-      name: string;
-    };
-    city: {
-      code: number;
-      name: string;
-    };
-    street: {
-      code: number;
-      name: string;
-    };
-    house: {
-      code: number;
-      plot_or_building_number: string;
-    };
-    apartment?: {
-      code: number;
-      room_number: string;
-    };
-  };
+  address: Address;
   geom: FeatureCollection;
   webPage: string;
   photos: Photo[];
@@ -196,7 +176,7 @@ export interface Profile {
   freelancer: boolean;
   email?: string;
   code?: string;
-  role: AdminRoleType;
+  role: UserRoleType;
   tenantType: TenantTypes;
   data: {
     canHaveChildren: boolean;
@@ -647,4 +627,12 @@ export interface NationalTeam extends CommonFields {
   coaches: SportsPerson[];
   canCreateRequest: boolean;
   lastRequest: Request;
+}
+
+export interface Address {
+  municipality: { code: number; name: string };
+  city: { code: number; name: string };
+  street: { code: number; name: string };
+  house: { code: number; plot_or_building_number: string };
+  apartment: { code: number; room_number: string };
 }

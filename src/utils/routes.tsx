@@ -36,7 +36,7 @@ import UpdateInstitutionForm from '../pages/UpdateInstitutionForm';
 import UserFormPage from '../pages/UserForm';
 import UserList from '../pages/UserList';
 import { useAppSelector } from '../state/hooks';
-import { AdminRoleType, Apps } from './constants';
+import { AdminRoleType, Apps, UserRoleType } from './constants';
 import { useGetCurrentProfile } from './hooks';
 import { pageTitles, url } from './texts';
 
@@ -169,6 +169,7 @@ export const routes = [
     sidebar: true,
     slug: slugs.users,
     component: <UserList />,
+    userRole: UserRoleType.ADMIN,
   },
   {
     name: pageTitles.institutions,
@@ -423,6 +424,11 @@ export const useFilteredRoutes = () => {
     if (route.role) {
       select = !!user?.type && user?.type === route?.role;
     }
+
+    if (route.userRole) {
+      select = currentProfile?.role === route?.userRole;
+    }
+
     if (select && route.environment) {
       select = route.environment === VITE_NODE_ENV;
     }

@@ -27,7 +27,7 @@ const generalSchema = Yup.object().shape({
   type: Yup.object().required(validationTexts.requireText),
 
   sportTypes: Yup.object().when(['type'], (items, schema) => {
-    if (!items[0]?.needSportType) {
+    if (items[0]?.needSportType) {
       return schema.test(
         'at-least-one-property',
         validationTexts.requireSelect,
@@ -145,8 +145,6 @@ const SportBaseSpaceContainer = ({
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
 
   const onSubmit = async (values: any) => {
-    values.constructionDate = new Date(`${values.constructionDate}-01-01`);
-
     if (typeof values?.index !== 'undefined') {
       const { index, ...rest } = values;
 
@@ -189,7 +187,6 @@ const SportBaseSpaceContainer = ({
               onEdit={() => {
                 setCurrent({
                   ...space,
-                  constructionDate: space.constructionDate.getFullYear(),
                   index: key,
                 } as any);
               }}

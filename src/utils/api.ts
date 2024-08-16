@@ -205,8 +205,8 @@ class Api {
     return res.data;
   };
 
-  customGet = ({ resource, ...rest }: GetAllProps & { [key: string]: any }): Promise<any> => {
-    return this.errorWrapper(() => this.axios.get(`/${resource}`, { params: rest }));
+  customGet = ({ resource = '', ...rest }: GetAllProps & { [key: string]: any }): Promise<any> => {
+    return this.errorWrapper(() => this.axios.get(resource, { params: rest }));
   };
 
   getList = async ({ resource, page, pageSize, query, ...rest }: GetAllProps): Promise<any> => {

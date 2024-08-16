@@ -1,7 +1,6 @@
 import { compare } from 'fast-json-patch';
 import { isEmpty, map } from 'lodash';
 import { UnconfirmedRequestFilters, UnconfirmedRequestFiltersProps } from '../../../types';
-import api from '../../../utils/api';
 import { StatusTypes } from '../../../utils/constants';
 import { requestStatusLabels } from '../../../utils/texts';
 import { ActionTypes } from '../../other/HistoryContainer';
@@ -96,6 +95,10 @@ export const flattenArrays = (data: any): any => {
     });
     return obj;
   } else if (typeof data === 'object' && data !== null) {
+    if (!!data?.geom) {
+      return data;
+    }
+
     for (let key in data) {
       data[key] = flattenArrays(data[key]);
     }

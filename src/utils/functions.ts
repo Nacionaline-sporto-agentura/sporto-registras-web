@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import wkx from 'wkx';
 import { ActionTypes } from '../components/other/HistoryContainer';
-import { Result, User } from '../types';
+import { Address, Result, User } from '../types';
 import api, { SortAscFields } from './api';
 import { AdminRoleType, ResultTypeTypes } from './constants';
 import { url, validationTexts } from './texts';
@@ -370,12 +370,19 @@ export const getBonusResultLabel = (competitionResult?: Result) => {
   return `${competition?.name}, ${competition?.year}, ${resultLabel}`;
 };
 
-export const getFormattedAddress = (address) =>
-  address?.street && address?.house && address?.city && address?.municipality
-    ? `${address.street} ${address.house} ${address.apartment || ''}, ${address.city} ${
-        address.municipality
-      }`
-    : '-';
+export const getFormattedAddress = (address: Address): string => {
+  if (
+    address?.street?.name &&
+    address?.house?.plot_or_building_number &&
+    address?.city?.name &&
+    address?.municipality?.name
+  ) {
+    const apartment = address?.apartment?.room_number ? ` ${address.apartment.room_number}` : '';
+    return `${address.street.name} ${address.house.plot_or_building_number} ${apartment}, ${address.city.name} ${address.municipality.name}`;
+  }
+
+  return '-';
+};
 
 export const wkbToGeoJSON = (wkbString: string) => {
   const geometry = wkx.Geometry.parse(wkbString).toGeoJSON();

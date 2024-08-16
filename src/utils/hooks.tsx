@@ -9,7 +9,7 @@ import { actions as userAction } from '../state/user/reducer';
 import { TableData, TableDataProp, User } from '../types';
 import api from './api';
 import { intersectionObserverConfig } from './configs';
-import { AdminRoleType } from './constants';
+import { UserRoleType } from './constants';
 import { handleErrorToastFromServer } from './functions';
 import { clearCookies, emptyUser, handleSetProfile } from './loginFunctions';
 import { slugs } from './routes';
@@ -175,16 +175,18 @@ export const useGetCurrentProfile = () => {
   return currentProfile;
 };
 
-export const useIsTenantAdmin = () => {
+export const useHasRole = (role) => {
   const currentProfile = useGetCurrentProfile();
 
-  return currentProfile?.role === AdminRoleType.ADMIN;
+  return currentProfile?.role === role;
+};
+
+export const useIsTenantAdmin = () => {
+  return useHasRole(UserRoleType.ADMIN);
 };
 
 export const useIsTenantUser = () => {
-  const currentProfile = useGetCurrentProfile();
-
-  return currentProfile?.role === AdminRoleType.USER;
+  return useHasRole(UserRoleType.USER);
 };
 
 export const useInfinityLoad = (
