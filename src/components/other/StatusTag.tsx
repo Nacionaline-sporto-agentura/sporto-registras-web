@@ -1,9 +1,11 @@
+import invert from 'invert-color';
 import styled from 'styled-components';
 import { TagColors } from '../../../src/utils/constants';
 
 interface StatusTagProps {
   label: string;
-  color?: TagColors;
+  tagColor?: TagColors;
+  color?: string;
 }
 
 export const statusBackgroundColors = {
@@ -28,11 +30,11 @@ export const statusFontColors = {
   [TagColors.GREY]: '#344054',
 };
 
-const StatusTag = ({ label, color = TagColors.GREY }: StatusTagProps) => {
+const StatusTag = ({ label, tagColor, color = '' }: StatusTagProps) => {
   return (
     <div>
-      <Container backgroundColor={statusBackgroundColors[color]}>
-        <Text color={statusFontColors[color]}>{label}</Text>
+      <Container backgroundColor={tagColor ? statusBackgroundColors[tagColor] : color}>
+        <Text color={tagColor ? statusFontColors[tagColor] : invert(color)}>{label}</Text>
       </Container>
     </div>
   );

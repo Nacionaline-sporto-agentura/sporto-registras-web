@@ -238,7 +238,7 @@ const HistoryContainer = ({
                       <DateContainer>{formatDateAndTime(history.createdAt)}</DateContainer>
                       <StatusTag
                         label={requestStatusLabels[history.type]}
-                        color={colorsByStatus[history.type]}
+                        tagColor={colorsByStatus[history.type]}
                       />
                     </HistoryRow>
                     <Text>

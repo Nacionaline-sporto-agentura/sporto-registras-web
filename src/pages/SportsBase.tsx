@@ -1,8 +1,8 @@
 import { phoneNumberRegexPattern } from '@aplinkosministerija/design-system';
 import { applyPatch, compare } from 'fast-json-patch';
-import { Formik, yupToFormErrors } from 'formik';
+import { Formik, useFormikContext, yupToFormErrors } from 'formik';
 import { cloneDeep, isEmpty } from 'lodash';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -45,6 +45,8 @@ import {
   inputLabels,
   validationTexts,
 } from '../utils/texts';
+import _ from 'lodash';
+import { useAutoSave } from '../utils/hooks';
 
 const generalSchema = Yup.object().shape({
   address: Yup.object().shape({
@@ -195,10 +197,6 @@ const SportsBasePage = () => {
       onError: ({ response }) => {
         handleErrorToastFromServer(response);
       },
-      onSuccess: () => {
-        navigate(backUrl);
-        queryClient.invalidateQueries();
-      },
       retry: false,
     },
   );
@@ -218,12 +216,8 @@ const SportsBasePage = () => {
     },
   );
 
-  const handleDraft = async (changes) => {
-    handleSubmit({ changes, status: StatusTypes.DRAFT });
-  };
-
-  const handleSubmit = async ({ changes, status, comment }: any) => {
-    const params = {
+  const getCreateOrUpdateParams = ({ changes, status, comment }: any) => {
+    return {
       entityType: RequestEntityTypes.SPORTS_BASES,
       ...(!isNew(id) && { entity: id }),
       status,
@@ -235,8 +229,27 @@ const SportsBasePage = () => {
         }),
       }),
     };
+  };
 
-    createOrUpdateRequest.mutateAsync(params);
+  const handleDraft = async (changes) => {
+    const params = getCreateOrUpdateParams({ changes, status: StatusTypes.DRAFT });
+
+    createOrUpdateRequest.mutateAsync(params, {
+      onSuccess: () => {
+        queryClient.invalidateQueries();
+      },
+    });
+  };
+
+  const handleSubmit = async ({ changes, status, comment }: any) => {
+    const params = getCreateOrUpdateParams({ changes, status, comment });
+
+    createOrUpdateRequest.mutateAsync(params, {
+      onSuccess: () => {
+        navigate(backUrl);
+        queryClient.invalidateQueries();
+      },
+    });
   };
 
   const sportBaseWithoutLastRequest = useMemo(() => {
@@ -311,6 +324,12 @@ const SportsBasePage = () => {
         const changes = mergedDiffs();
 
         const submitChanges = changes.map((change: any) => change[0]);
+
+        useAutoSave({
+          canAutoSave: showDraftButton,
+          changes: submitChanges,
+          onSave: handleDraft,
+        });
 
         const containers = {
           [sportsBaseTabTitles.generalInfo]: (

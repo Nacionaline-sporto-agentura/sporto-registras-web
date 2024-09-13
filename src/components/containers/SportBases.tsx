@@ -68,7 +68,7 @@ const mapRequestList = (requests: SportsBase[]): TableRow[] =>
       name: sportsBaseRequest.name,
       address: getFormattedAddress(address),
       ...(status && {
-        status: <StatusTag label={requestStatusLabels[status]} color={colorsByStatus[status]} />,
+        status: <StatusTag label={requestStatusLabels[status]} tagColor={colorsByStatus[status]} />,
       }),
     };
   });

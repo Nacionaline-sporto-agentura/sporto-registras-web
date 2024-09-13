@@ -63,7 +63,7 @@ const mapRequestList = (requests: SportsPerson[]): TableRow[] =>
       lastName: sportsPerson.lastName,
       competitionsCount: sportsPerson?.competitionsCount || 0,
       ...(status && {
-        status: <StatusTag label={requestStatusLabels[status]} color={colorsByStatus[status]} />,
+        status: <StatusTag label={requestStatusLabels[status]} tagColor={colorsByStatus[status]} />,
       }),
 
       tenant: sportsPerson?.tenant?.name,

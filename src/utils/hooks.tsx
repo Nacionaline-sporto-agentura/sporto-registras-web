@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useInfiniteQuery, useMutation, useQuery } from 'react-query';
 import { matchPath, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Cookies from 'universal-cookie';
@@ -13,6 +13,7 @@ import { UserRoleType } from './constants';
 import { handleErrorToastFromServer } from './functions';
 import { clearCookies, emptyUser, handleSetProfile } from './loginFunctions';
 import { slugs } from './routes';
+import _ from 'lodash';
 
 const cookies = new Cookies();
 
@@ -237,4 +238,36 @@ export const useInfinityLoad = (
   }, [hasNextPage, isFetchingNextPage, fetchNextPage, data, observerRef]);
 
   return result;
+};
+
+export const useAutoSave = ({
+  canAutoSave = true,
+  changes,
+  onSave,
+  debounceMs = 20000,
+}: {
+  canAutoSave?: boolean;
+  changes: any;
+  onSave: (changes: any) => void;
+  debounceMs?: number;
+}) => {
+  if (!canAutoSave) {
+    return;
+  }
+
+  const [lastSavedChanges, setLastSavedChanges] = useState(null);
+
+  const debouncedSubmit = useCallback(
+    _.debounce((changes) => {
+      onSave && onSave(changes);
+      setLastSavedChanges(changes);
+    }, debounceMs),
+    [],
+  );
+
+  useEffect(() => {
+    if (!_.isEmpty(changes) && !_.isEqual(changes, lastSavedChanges)) {
+      debouncedSubmit(changes);
+    }
+  }, [changes, debouncedSubmit]);
 };

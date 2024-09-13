@@ -70,7 +70,7 @@ const SideBar = ({ className }: ModuleMenuProps) => {
 
 export default SideBar;
 
-export const Column = styled.div`
+const Column = styled.div`
   display: flex;
   gap: 8px;
   flex-direction: column;

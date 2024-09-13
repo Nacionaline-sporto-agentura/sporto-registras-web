@@ -86,7 +86,7 @@ export const mapOrganizationList = (tenants: Tenant[]): TableRow[] => {
         />
       ),
       ...(status && {
-        status: <StatusTag label={requestStatusLabels[status]} color={colorsByStatus[status]} />,
+        status: <StatusTag label={requestStatusLabels[status]} tagColor={colorsByStatus[status]} />,
       }),
     };
   });

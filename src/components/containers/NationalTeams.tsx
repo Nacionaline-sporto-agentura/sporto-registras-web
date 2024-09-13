@@ -54,7 +54,7 @@ const mapList = (requests: NationalTeam[]): TableRow[] =>
       endAt: formatDate(nationalTeam?.endAt),
       athleteCount: nationalTeam?.athletes?.length,
       ...(status && {
-        status: <StatusTag label={requestStatusLabels[status]} color={colorsByStatus[status]} />,
+        status: <StatusTag label={requestStatusLabels[status]} tagColor={colorsByStatus[status]} />,
       }),
     };
   });

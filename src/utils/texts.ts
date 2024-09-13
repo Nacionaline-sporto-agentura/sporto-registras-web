@@ -37,6 +37,7 @@ export const validationTexts = {
   [ServerErrorTypes.EMAIL_NOT_FOUND]: 'Naudotojo su tokiu el. paštu nėra',
   [ServerErrorTypes.NOT_FOUND]: 'Blogas elektroninis paštas arba slaptažodis',
   personalCode: 'Blogas asmens kodas',
+  colorCode: 'Blogas spalvos kodas',
   companyCode: 'Blogas įmonės kodas',
   minCharacters: 'Privalote įvesti bent 3 simbolius',
 };
@@ -148,6 +149,8 @@ export const deleteDescriptionSecondPart = {
 };
 
 export const inputLabels = {
+  hexColor: 'Spalvos kodas(HEX)',
+  technicalConditionName: 'Techninės būklės pavadinimas',
   needSportType: 'Rodyti sporto erdvėse sporto šakas',
   issuedAt: 'Galioja nuo',
   sportsCompetitionType: 'Sporto varžybų rūšis',
@@ -329,6 +332,8 @@ export const inputLabels = {
   gender: 'Lytis',
 };
 export const pageTitles = {
+  newTechnicalCondition: 'Nauja techninė būklė',
+  technicalCondition: 'Techninė būklė',
   nationalTeams: 'Nacionalinės rinktinės',
   rents: 'Rentos',
   scholarships: 'Stipendijos',

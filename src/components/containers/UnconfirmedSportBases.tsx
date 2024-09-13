@@ -47,7 +47,7 @@ const mapRequestList = (requests: Request[]): TableRow[] =>
       name: data.name,
       address: getFormattedAddress(address),
       ...(status && {
-        status: <StatusTag label={requestStatusLabels[status]} color={colorsByStatus[status]} />,
+        status: <StatusTag label={requestStatusLabels[status]} tagColor={colorsByStatus[status]} />,
       }),
     };
   });

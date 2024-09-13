@@ -11,6 +11,7 @@ import {
   ScholarShip,
   SportBaseSpaceType,
   SportsBase,
+  SportsBasesCondition,
   SportsBaseSpaceGroup,
   SportType,
   Tenant,
@@ -797,10 +798,42 @@ class Api {
     await this.getList({
       query,
       page,
-      fields: ['id', 'name'],
+      fields: ['id', 'name', 'color'],
       resource: Resources.TECHNICAL_CONDITIONS,
       sort,
     });
+
+  getSportBaseTechnicalCondition = async ({ id }: TableList): Promise<SportsBasesCondition> =>
+    await this.getOne({
+      resource: Resources.TECHNICAL_CONDITIONS,
+      id,
+    });
+
+  createSportBaseTechnicalCondition = async ({ params }: { params: SportsBasesCondition }) =>
+    await this.post({
+      resource: Resources.TECHNICAL_CONDITIONS,
+      params,
+    });
+
+  updateSportBaseTechnicalCondition = async ({
+    params,
+    id,
+  }: {
+    params: SportsBasesCondition;
+    id: string;
+  }) =>
+    await this.patch({
+      resource: Resources.TECHNICAL_CONDITIONS,
+      params,
+      id,
+    });
+
+  deleteSportBaseTechnicalCondition = async ({ id }: { id: string }) => {
+    return this.delete({
+      resource: Resources.TECHNICAL_CONDITIONS,
+      id,
+    });
+  };
 
   getSportBaseTypes = async ({ query, page, sort }: TableList) =>
     await this.getList({

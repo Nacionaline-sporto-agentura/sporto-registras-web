@@ -97,6 +97,7 @@ const ClassifierList = () => {
     const urlMap = {
       [ClassifierTypes.SPORT_TYPE]: slugs.newSportType,
       [ClassifierTypes.SPORTS_BASE_SPACE_GROUP]: slugs.newSportsBaseSpaceGroup,
+      [ClassifierTypes.TECHNICAL_CONDITION]: slugs.newTechnicalCondition,
     };
 
     return urlMap[tab.key] || slugs.newClassifier(tab.key);
@@ -106,6 +107,7 @@ const ClassifierList = () => {
     const urlMap = {
       [ClassifierTypes.SPORT_TYPE]: slugs.sportType(id),
       [ClassifierTypes.SPORTS_BASE_SPACE_GROUP]: slugs.sportsBaseSpaceGroup(id),
+      [ClassifierTypes.TECHNICAL_CONDITION]: slugs.technicalCondition(id),
     };
 
     return urlMap[tab.key] || slugs.classifier(tab.key, id);
