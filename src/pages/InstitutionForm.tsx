@@ -135,7 +135,7 @@ const InstitutionForm = () => {
       email: companyEmail?.toLowerCase(),
       ...(!!parent && { parent: parseInt(parent) }),
       tenantType: tenantType,
-      data,
+      data: { ...data, canHaveChildren: true },
     };
 
     if (isNew(id)) {
@@ -191,6 +191,7 @@ const InstitutionForm = () => {
     phone: '',
     personalCode: '',
     parent: parent || '',
+    data: undefined,
   };
 
   const renderForm = (values: InstitutionProps, errors: any, handleChange) => {
