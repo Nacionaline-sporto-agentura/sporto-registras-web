@@ -52,31 +52,6 @@ const getOption = (option?: any) => {
   };
 };
 
-const getAddress = (address: any) => {
-  return {
-    municipality: {
-      code: address.municipality.code,
-      name: address.municipality.name,
-    },
-    city: {
-      code: address.residential_area.code,
-      name: address.residential_area.name,
-    },
-    street: {
-      code: address.street.code,
-      name: address.street.name,
-    },
-    house: {
-      code: address.code,
-      plot_or_building_number: address.plot_or_building_number,
-    },
-    apartment: {
-      code: address.code,
-      room_number: address.room_number,
-    },
-  };
-};
-
 const SportBaseGeneralContainer = ({
   sportBase,
   errors,

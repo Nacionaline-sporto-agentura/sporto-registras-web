@@ -1,8 +1,8 @@
 import { phoneNumberRegexPattern } from '@aplinkosministerija/design-system';
 import { applyPatch, compare } from 'fast-json-patch';
-import { Formik, useFormikContext, yupToFormErrors } from 'formik';
+import { Formik, yupToFormErrors } from 'formik';
 import { cloneDeep, isEmpty } from 'lodash';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -34,6 +34,7 @@ import {
   handleErrorToastFromServer,
   isNew,
 } from '../utils/functions';
+import { useAutoSave } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 import {
   areUnitLabels,
@@ -45,8 +46,6 @@ import {
   inputLabels,
   validationTexts,
 } from '../utils/texts';
-import _ from 'lodash';
-import { useAutoSave } from '../utils/hooks';
 
 const generalSchema = Yup.object().shape({
   address: Yup.object().shape({
@@ -75,10 +74,6 @@ const photosSchema = Yup.object().shape({
 });
 
 const specificationSchema = Yup.object().shape({
-  plotNumber: Yup.string().required(validationTexts.requireText),
-  areaUnits: Yup.string().required(validationTexts.requireText),
-  plotArea: Yup.string().required(validationTexts.requireText),
-  builtPlotArea: Yup.string().required(validationTexts.requireText),
   methodicalClasses: Yup.string().required(validationTexts.requireText),
   parkingPlaces: Yup.string().required(validationTexts.requireText),
   saunas: Yup.string().required(validationTexts.requireText),

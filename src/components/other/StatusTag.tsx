@@ -30,7 +30,7 @@ export const statusFontColors = {
   [TagColors.GREY]: '#344054',
 };
 
-const StatusTag = ({ label, tagColor, color = '' }: StatusTagProps) => {
+const StatusTag = ({ label, tagColor, color = statusBackgroundColors.grey }: StatusTagProps) => {
   return (
     <div>
       <Container backgroundColor={tagColor ? statusBackgroundColors[tagColor] : color}>
