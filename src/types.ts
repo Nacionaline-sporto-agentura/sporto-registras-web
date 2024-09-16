@@ -66,9 +66,9 @@ export interface SportBaseSpaceType {
   group: SportsBaseSpaceGroup;
 }
 
-export interface SportsBasesCondition {
-  id: any;
+export interface SportsBasesCondition extends CommonFields {
   name: string;
+  color: string;
 }
 
 export interface Source {

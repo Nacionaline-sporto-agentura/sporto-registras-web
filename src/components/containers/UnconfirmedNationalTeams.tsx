@@ -48,7 +48,7 @@ const mapRequestList = (requests: Request[]): TableRow[] =>
       endAt: formatDate(data?.endAt),
       athleteCount: Object.values(data?.athletes)?.length,
       ...(status && {
-        status: <StatusTag label={requestStatusLabels[status]} color={colorsByStatus[status]} />,
+        status: <StatusTag label={requestStatusLabels[status]} tagColor={colorsByStatus[status]} />,
       }),
     };
   });

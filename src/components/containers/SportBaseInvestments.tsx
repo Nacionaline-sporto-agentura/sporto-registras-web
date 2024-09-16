@@ -142,9 +142,7 @@ const InvestmentsContainer = ({ investments, handleChange, disabled }) => {
           {({ values, errors, setFieldValue }) => {
             const items = values?.items;
             const itemsKeys = Object.keys(items);
-            const selectedIds = (itemsKeys || [])
-              ?.map((key) => items[key]?.source?.id)
-              .filter((id) => !!id);
+            const selectedIds = (itemsKeys || [])?.map((key) => items[key]?.source?.id);
 
             return (
               <Form>

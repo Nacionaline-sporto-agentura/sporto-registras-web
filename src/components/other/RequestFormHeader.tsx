@@ -39,7 +39,7 @@ const RequestFormHeader = ({
         {request?.status && (
           <StatusTag
             label={requestStatusLabels[request.status]}
-            color={colorsByStatus[request.status]}
+            tagColor={colorsByStatus[request.status]}
           />
         )}
       </InnerRow>

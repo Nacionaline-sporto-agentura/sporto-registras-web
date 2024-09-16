@@ -32,6 +32,7 @@ import SportsPersonPage from '../pages/SportsPerson';
 import SportsPersonsList from '../pages/SportsPersonsList';
 import SportTypePage from '../pages/SportType';
 import SportTypeForm from '../pages/SportTypeForm';
+import TechnicalCondition from '../pages/TechnicalCondition';
 import UpdateInstitutionForm from '../pages/UpdateInstitutionForm';
 import UserFormPage from '../pages/UserForm';
 import UserList from '../pages/UserList';
@@ -91,6 +92,8 @@ export const slugs = {
   newSportType: `/klasifikatoriai/sporto_saka/${url.new}`,
   sportType: (id: string) => `/klasifikatoriai/sporto_saka/${id}`,
   updateSportType: (id: string) => `/klasifikatoriai/sporto_saka/${id}/atnaujinti`,
+  newTechnicalCondition: `/klasifikaroriai/technine_bukle/${url.new}`,
+  technicalCondition: (id: string) => `/klasifikaroriai/technine_bukle/${id}`,
   result: (id: string) => `/rezultatai/${id}`,
   results: '/rezultatai',
   newResult: `/rezultatai/${url.new}`,
@@ -312,6 +315,14 @@ export const routes = [
     role: AdminRoleType.USER,
     slug: slugs.user(':id'),
     component: <UserFormPage />,
+  },
+  {
+    slug: slugs.newTechnicalCondition,
+    component: <TechnicalCondition />,
+  },
+  {
+    slug: slugs.technicalCondition(':id'),
+    component: <TechnicalCondition />,
   },
   {
     slug: slugs.newSportType,

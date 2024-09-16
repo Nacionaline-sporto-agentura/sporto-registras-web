@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { SportBaseSpace } from '../../types';
-import { TagColors } from '../../utils/constants';
 import { buttonsTitles } from '../../utils/texts';
 import StatusTag from './StatusTag';
 
@@ -11,14 +10,6 @@ export interface SimpleContainerProps {
   onEdit: () => void;
   onDelete: () => void;
 }
-
-const nameToColor = {
-  ['Puiki']: TagColors.GREEN,
-  ['Gera']: TagColors.SKYBLUE,
-  ['Vidutinė']: TagColors.ORANGE,
-  ['Bloga']: TagColors.VIOLET,
-  ['Labai bloga']: TagColors.PINK,
-};
 
 const SportBaseSpaceCard = ({
   className,
@@ -31,7 +22,7 @@ const SportBaseSpaceCard = ({
 
   const {
     name = '',
-    technicalCondition = { name: '' },
+    technicalCondition = { name: '', color: '' },
     type = { name: '' },
     sportTypes = [],
   } = sportBaseSpace;
@@ -41,10 +32,7 @@ const SportBaseSpaceCard = ({
       <Row>
         <TitleRow>
           <Title>{name}</Title>
-          <StatusTag
-            label={technicalCondition?.name}
-            color={nameToColor[technicalCondition?.name]}
-          />
+          <StatusTag label={technicalCondition?.name} color={technicalCondition?.color} />
         </TitleRow>
         <TitleRow>
           {!disabled && <Action onClick={onDelete}>{buttonsTitles.delete}</Action>}
