@@ -21,8 +21,6 @@ const BuildingParametersContainer = ({
   handleChange: any;
   disabled: boolean;
 }) => {
-  const currentYearPlaceholder = new Date().getFullYear().toString();
-
   const buildingMutation = useMutation(
     async (building: any) =>
       api.getRcObjectInfo(
@@ -111,7 +109,6 @@ const BuildingParametersContainer = ({
         <TextField
           loading={buildingMutation.isLoading}
           disabled={true}
-          placeholder={currentYearPlaceholder}
           name="latestRenovationDate"
           label={inputLabels.latestRenovationDate}
           value={sportBaseSpace?.latestRenovationDate}
