@@ -1,4 +1,3 @@
-import { applyPatch } from 'fast-json-patch';
 import { actions as filterActions } from '../../state/filters/reducer';
 import { useAppSelector } from '../../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
@@ -58,9 +57,7 @@ const mapRequestList = (requests: SportsBase[]): TableRow[] =>
       sportsBase?.lastRequest &&
       ![StatusTypes.APPROVED, StatusTypes.REJECTED].includes(sportsBase?.lastRequest?.status);
 
-    const sportsBaseRequest = lastRequestApprovalOrRejection
-      ? applyPatch(sportsBase, sportsBase.lastRequest?.changes).newDocument
-      : sportsBase;
+    const sportsBaseRequest = sportsBase;
 
     return {
       id: sportsBaseRequest.id,
