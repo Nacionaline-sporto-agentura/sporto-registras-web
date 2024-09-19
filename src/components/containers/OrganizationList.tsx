@@ -1,4 +1,3 @@
-import { applyPatch } from 'fast-json-patch';
 import { isEmpty } from 'lodash';
 import { actions as filterActions } from '../../state/filters/reducer';
 import { useAppSelector } from '../../state/hooks';
@@ -61,9 +60,7 @@ export const mapOrganizationList = (tenants: Tenant[]): TableRow[] => {
       tenant?.lastRequest &&
       ![StatusTypes.APPROVED, StatusTypes.REJECTED].includes(tenant?.lastRequest?.status);
 
-    const tenantRequest = lastRequestApprovalOrRejection
-      ? applyPatch(tenant, tenant.lastRequest?.changes).newDocument
-      : tenant;
+    const tenantRequest = tenant;
 
     return {
       id: tenantRequest.id,

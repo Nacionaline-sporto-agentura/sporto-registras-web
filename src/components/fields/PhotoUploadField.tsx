@@ -57,7 +57,7 @@ const PhotoUploadField = ({
     const files = await api.uploadFiles(newPhotos);
     const updatedPhotos: any = { ...photos };
     files.forEach(({ name, ...rest }) => {
-      updatedPhotos[generateUniqueString()] = { ...rest, description: name, public: false };
+      updatedPhotos[generateUniqueString()] = { ...rest, description: name, public: true };
     });
 
     Object.keys(updatedPhotos).forEach((key, index) => {
