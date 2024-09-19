@@ -24,7 +24,7 @@ const SportBaseSpaceCard = ({
     name = '',
     technicalCondition = { name: '', color: '' },
     type = { name: '' },
-    sportTypes = [],
+    sportTypes = {},
   } = sportBaseSpace;
 
   return (
@@ -42,9 +42,10 @@ const SportBaseSpaceCard = ({
       <Type>{type?.name}</Type>
       <Line />
       <TitleRow>
-        {Object.values(sportTypes)?.map((type) => (
-          <StatusTag key={type.id + 'sportType'} label={type.name} />
-        ))}
+        {sportTypes &&
+          Object.values(sportTypes)?.map((type: any) => (
+            <StatusTag key={type.id + 'sportType'} label={type.name} />
+          ))}
       </TitleRow>
     </Container>
   );
