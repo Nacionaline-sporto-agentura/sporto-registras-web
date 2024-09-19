@@ -1,3 +1,4 @@
+import { applyPatch } from 'fast-json-patch';
 import { actions as filterActions } from '../../state/filters/reducer';
 import { useAppSelector } from '../../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
@@ -53,11 +54,20 @@ const mapRequestList = (requests: SportsBase[]): TableRow[] =>
     const status = sportsBase.lastRequest?.status;
     const address = sportsBase.address;
 
-    const lastRequestApprovalOrRejection =
+    const lastRequestIsNotApprovalOrRejection =
       sportsBase?.lastRequest &&
       ![StatusTypes.APPROVED, StatusTypes.REJECTED].includes(sportsBase?.lastRequest?.status);
 
-    const sportsBaseRequest = sportsBase;
+    const sportsBaseRequest = lastRequestIsNotApprovalOrRejection
+      ? applyPatch(
+          sportsBase,
+          sportsBase.lastRequest?.changes.filter((change) => {
+            return !['spaces', 'investments', 'owners', 'tenants'].some((item) =>
+              change.path.includes(item),
+            );
+          }),
+        ).newDocument
+      : sportsBase;
 
     return {
       id: sportsBaseRequest.id,

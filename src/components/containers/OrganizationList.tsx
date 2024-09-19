@@ -1,3 +1,4 @@
+import { applyPatch } from 'fast-json-patch';
 import { isEmpty } from 'lodash';
 import { actions as filterActions } from '../../state/filters/reducer';
 import { useAppSelector } from '../../state/hooks';
@@ -56,11 +57,20 @@ export const mapOrganizationList = (tenants: Tenant[]): TableRow[] => {
   return tenants.map((tenant: Tenant) => {
     const status = tenant?.lastRequest?.status;
 
-    const lastRequestApprovalOrRejection =
+    const lastRequestIsNotApprovalOrRejection =
       tenant?.lastRequest &&
       ![StatusTypes.APPROVED, StatusTypes.REJECTED].includes(tenant?.lastRequest?.status);
 
-    const tenantRequest = tenant;
+    const tenantRequest = lastRequestIsNotApprovalOrRejection
+      ? applyPatch(
+          tenant,
+          tenant.lastRequest?.changes.filter((change) => {
+            return !['fundingSources', 'governingBodies', 'memberships'].some((item) =>
+              change.path.includes(item),
+            );
+          }),
+        ).newDocument
+      : tenant;
 
     return {
       id: tenantRequest.id,
