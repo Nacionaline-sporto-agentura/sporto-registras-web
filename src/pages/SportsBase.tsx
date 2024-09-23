@@ -563,7 +563,7 @@ const SportsBasePage = () => {
         };
 
         const handleNext = async () => {
-          if (!validationSchema) return setCurrentTabIndex(currentTabIndex + 1);
+          if (!validationSchema || disabled) return setCurrentTabIndex(currentTabIndex + 1);
 
           try {
             await validationSchema?.validate(values, { abortEarly: false });
