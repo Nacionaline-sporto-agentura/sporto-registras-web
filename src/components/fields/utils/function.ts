@@ -95,11 +95,11 @@ export const flattenArrays = (data: any): any => {
     });
     return obj;
   } else if (typeof data === 'object' && data !== null) {
-    if (!!data?.geom) {
-      return data;
-    }
-
     for (let key in data) {
+      if (key === 'geom') {
+        continue;
+      }
+
       data[key] = flattenArrays(data[key]);
     }
   }
