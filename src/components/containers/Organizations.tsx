@@ -27,7 +27,7 @@ const organizationsSchema = Yup.object().shape({
   companyName: Yup.string().required(validationTexts.requireText),
   basis: Yup.object().required(validationTexts.requireText),
   startAt: Yup.date().required(validationTexts.requireText),
-  endAt: Yup.date().required(validationTexts.requireText),
+  endAt: Yup.date().nullable().notRequired(),
 });
 
 const organizationsLabels = {
@@ -196,14 +196,6 @@ const ButtonRow = styled.div`
   justify-content: flex-end;
   gap: 8px;
   margin: 16px 0;
-`;
-
-const Title = styled.div`
-  font-size: 2rem;
-  line-height: 25px;
-  font-weight: bold;
-  color: #231f20;
-  margin-right: 16px;
 `;
 
 export default OrganizationsContainer;
