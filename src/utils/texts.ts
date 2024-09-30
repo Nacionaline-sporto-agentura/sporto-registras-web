@@ -271,7 +271,7 @@ export const inputLabels = {
   membershipType: 'Narystės tipas',
   endAt: 'Pabaiga',
   membershipStart: 'Narystės pradžia',
-  membershipEnd: 'Narystės pradžia',
+  membershipEnd: 'Narystės pabaiga',
   fundsAmount: 'Lėšų dydis',
   totalFundsAmount: 'Bendras lėšų dydis, Eur',
   membersCount: 'Narių skaičius',

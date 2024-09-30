@@ -54,8 +54,9 @@ const SportBaseSpaceCard = ({
 const Container = styled.div`
   width: 100%;
   border-radius: 4px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #cdd5df;
   padding: 16px;
+  background-color: white;
 `;
 
 const Line = styled.div`
