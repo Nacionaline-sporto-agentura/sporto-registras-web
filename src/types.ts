@@ -160,6 +160,7 @@ export interface SportsBase extends CommonFields {
     name?: string;
     size?: number;
   }>;
+  notes?: string;
 }
 
 export interface Investment {

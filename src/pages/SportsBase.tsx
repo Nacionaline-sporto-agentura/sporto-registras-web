@@ -61,8 +61,12 @@ const generalSchema = Yup.object().shape({
     .trim()
     .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
   webPage: Yup.string().required(validationTexts.requireText),
-  level: Yup.object().required(validationTexts.requireText),
-  technicalCondition: Yup.object().required(validationTexts.requireText),
+  level: Yup.object().shape({
+      id: Yup.number().required(validationTexts.requireText),
+      name: Yup.string().required(validationTexts.requireText),
+    })
+    .required(validationTexts.requireText),
+  notes: Yup.string().nullable().notRequired(),
 });
 
 const photosSchema = Yup.object().shape({

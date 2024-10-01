@@ -3,14 +3,14 @@ import {
   convertGeojsonToProjection,
   Map,
   PhoneField,
+  TextAreaField,
   TextField,
 } from '@aplinkosministerija/design-system';
 import { buffer, distance, pointOnFeature } from '@turf/turf';
 import { FormRow } from '../../styles/CommonStyles';
-import { SportsBase, SportsBasesCondition, SportsBasesLevel, Types } from '../../types';
+import { SportsBase, SportsBasesLevel, Types } from '../../types';
 import {
   getSportBaseLevelsList,
-  getSportBaseTechnicalConditionList,
   getSportBaseTypesList,
   handleErrorToast,
   wkbToGeoJSON,
@@ -167,7 +167,7 @@ const SportBaseGeneralContainer = ({
     <>
       <InnerContainerRow title={pageTitles.info} description={descriptions.sportBaseGeneral} />
       <SimpleContainer title={formLabels.sportBaseInfo}>
-        <FormRow columns={3}>
+        <FormRow columns={2}>
           <TextField
             disabled={disabled}
             label={inputLabels.sportBaseName}
@@ -190,25 +190,13 @@ const SportBaseGeneralContainer = ({
             getOptionLabel={(option) => option?.name}
             loadOptions={(input, page) => getSportBaseTypesList(input, page)}
           />
-          <AsyncSelectField
-            disabled={disabled}
-            label={inputLabels.technicalBaseCondition}
-            value={sportBase?.technicalCondition}
-            error={errors?.technicalCondition}
-            name="technicalCondition"
-            onChange={(source: SportsBasesCondition) => {
-              handleChange(`technicalCondition`, source);
-            }}
-            getOptionLabel={(option) => option?.name}
-            loadOptions={(input, page) => getSportBaseTechnicalConditionList(input, page)}
-          />
         </FormRow>
         <FormRow columns={2}>
           <AsyncSelectField
             disabled={disabled}
             label={inputLabels.level}
             value={sportBase?.level}
-            error={errors?.level}
+            error={errors?.level?.name}
             name="level"
             onChange={(source: SportsBasesLevel) => {
               handleChange(`level`, source);
@@ -404,6 +392,16 @@ const SportBaseGeneralContainer = ({
                 },
               })
             }
+          />
+        </FormRow>
+        <FormRow columns={1}>
+          <TextAreaField
+            disabled={disabled}
+            label={inputLabels.notes}
+            error={errors?.notes}
+            value={sportBase?.notes}
+            name="notes"
+            onChange={(input) => handleChange(`notes`, input)}
           />
         </FormRow>
         <FormRow columns={1}>

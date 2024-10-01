@@ -330,6 +330,7 @@ export const inputLabels = {
   ageGroup: 'Amžiaus grupė',
   nationalTeamGender: 'Rinktinės narių lytis',
   gender: 'Lytis',
+  notes: 'Papildoma informacija / Pastabos',
 };
 export const pageTitles = {
   newTechnicalCondition: 'Nauja techninė būklė',
