@@ -22,6 +22,14 @@ export const validateGroupForm = Yup.object().shape({
   name: Yup.string().required(validationTexts.requireText),
 });
 
+export const validatePermissionForm = Yup.object().shape({
+  group: Yup.string().required(validationTexts.requireText),
+  role: Yup.string().required(validationTexts.requireText),
+  features: Yup.array()
+    .of(Yup.string().required(validationTexts.requireText)) // Ensures each element is a string
+    .min(1, validationTexts.requireText),
+});
+
 const GroupsFormPage = () => {
   const [searchParams] = useSearchParams();
   const { parent } = Object.fromEntries([...Array.from(searchParams)]);

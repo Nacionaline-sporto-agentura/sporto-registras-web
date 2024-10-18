@@ -113,10 +113,11 @@ export const filterOutGroup = (items?: any[], id?: string): any => {
 export const getIlike = (input?: string) => (!!input ? { $ilike: `%${input}%` } : undefined);
 
 export const getSimpleFilter = (input, page, additionalQuery?: any) => {
-  return {
+  const query = {
     query: { name: getIlike(input), ...additionalQuery },
     page,
   };
+  return query;
 };
 
 export const getSportsPersonQuery = (filter: any) => {

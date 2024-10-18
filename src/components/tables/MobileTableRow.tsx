@@ -1,5 +1,5 @@
 import { TableRow } from '../../types';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import Icon from '../other/Icons';
 import styled from 'styled-components';
 import { isEmpty } from 'lodash';
@@ -57,7 +57,7 @@ const MobileTableRow = ({
         )}
       </RowTD>
       {mainLabels?.map((label: any, i: number) => {
-        return <TD key={`tr-td-${i}`}>{row[label] || '-'}</TD>;
+        return <TD key={`tr-td-${i}`}>{row?.[label] || '-'}</TD>;
       })}
 
       {expand &&
@@ -71,20 +71,20 @@ const MobileTableRow = ({
 
           if (i % 2 == 0 && isFirstSmallColumn) {
             return (
-              <>
+              <Fragment key={`fragment-${i}`}>
                 <RowTD />
                 <RowTD />
                 {expandedItem}
-              </>
+              </Fragment>
             );
           }
 
           if (i % 2 == 0) {
             return (
-              <>
+              <Fragment key={`fragment-${i}`}>
                 <RowTD />
                 {expandedItem}
-              </>
+              </Fragment>
             );
           }
           return expandedItem;

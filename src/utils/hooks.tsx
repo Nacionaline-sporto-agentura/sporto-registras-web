@@ -162,11 +162,10 @@ export const useGenericTablePageHooks = () => {
 
 export const useGetCurrentRoute = (tabs: Tab[]) => {
   const currentLocation = useLocation();
-
-  return (
+  const tab =
     tabs.find((tab) => matchPath({ path: tab.slug || '', end: false }, currentLocation.pathname)) ||
-    tabs[0]
-  );
+    tabs[0];
+  return tab;
 };
 
 export const useGetCurrentProfile = () => {

@@ -33,7 +33,6 @@ export const classifierColumns = {
   [ClassifierTypes.TECHNICAL_CONDITION]: {
     name: { label: 'Techninės būklės pavadinimas', show: true },
   },
-
   [ClassifierTypes.SOURCE]: { name: { label: 'Investicijos šaltinio pavadinimas', show: true } },
   [ClassifierTypes.SPORTS_BASE_TYPE]: {
     name: { label: 'Sporto bazės rūšies pavadinimas', show: true },
@@ -59,4 +58,10 @@ export const classifierColumns = {
   [ClassifierTypes.SPORTS_BASE_SPACE_GROUP]: {
     name: { label: 'Sporto bazės erdvės rūšies pavadinimas', show: true },
   },
+};
+
+export const permissionColumns = {
+  group: { label: 'Grupė', show: true },
+  role: { label: 'Rolė', show: true },
+  features: { label: 'Meniu prieiga', show: true },
 };

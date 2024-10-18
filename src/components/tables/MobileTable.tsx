@@ -131,6 +131,7 @@ const MobileTable = ({
     if (!isEmptyData) {
       return map(data, (row: TableRow, index: number) => (
         <MobileTableRow
+          key={`row_${row.id || index}`}
           row={row}
           index={index}
           columns={columns}

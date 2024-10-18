@@ -3,8 +3,10 @@ import { isEmpty, isFinite } from 'lodash';
 import Cookies from 'universal-cookie';
 import { GroupProps } from '../pages/GroupForm';
 import {
+  App,
   Bonus,
   Group,
+  Permission,
   Rent,
   Request,
   ResultType,
@@ -71,6 +73,8 @@ export enum Resources {
   RENTS_UNITS = '/api/types/rents/units',
   AGE_GROUPS = 'api/types/nationalTeam/ageGroups',
   GENDERS = 'api/types/nationalTeam/genders',
+  PERMISSIONS = 'api/permissions',
+  USERS_APP = `api/apps/users`,
 }
 
 export enum Populations {
@@ -1256,6 +1260,51 @@ class Api {
       sort: [SortDescFields.ID],
       page,
       query,
+    });
+
+  getPermissions = async ({ page }): Promise<GetAllResponse<Permission<Group>>> =>
+    await this.getList({
+      resource: Resources.PERMISSIONS,
+      populate: ['group'],
+      page,
+    });
+
+  getPermission = async ({ id }): Promise<Permission<Group>> =>
+    await this.getOne({
+      resource: Resources.PERMISSIONS,
+      populate: ['group'],
+      id,
+    });
+
+  createPermission = async ({ params }: { params: Permission }): Promise<Permission> =>
+    await this.post({
+      resource: Resources.PERMISSIONS,
+      params,
+    });
+
+  updatePermission = async ({
+    id,
+    params,
+  }: {
+    id: string;
+    params: Permission;
+  }): Promise<Permission> =>
+    await this.patch({
+      resource: Resources.PERMISSIONS,
+      params,
+      id,
+    });
+
+  getPermissionGroups = async (): Promise<GetAllResponse<Group<App>>> =>
+    await this.getList({
+      resource: Resources.GROUPS,
+      populate: [Populations.CHILDREN, 'apps'],
+    });
+
+  deletePermission = async ({ id }): Promise<Permission> =>
+    await this.delete({
+      resource: Resources.PERMISSIONS,
+      id,
     });
 }
 
