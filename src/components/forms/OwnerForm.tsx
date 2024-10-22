@@ -20,14 +20,14 @@ const OwnerForm = ({
   return (
     <Container>
       <CheckBox
-        label={inputLabels.addOwner}
+        label={inputLabels.addRepresentative}
         value={values.showOwnerForm}
         onChange={(value) => handleChange('showOwnerForm', value)}
       />
       {values.showOwnerForm && (
         <>
           <TitleRow>
-            <Title>{formLabels.addOwner}</Title>
+            <Title>{formLabels.addRepresentative}</Title>
           </TitleRow>
 
           <FormRow columns={2}>

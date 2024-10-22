@@ -107,6 +107,7 @@ export const formLabels = {
   infoAboutInstitution: 'Informacija apie įstaigą',
   infoAboutOrganization: 'Informacija apie organizaciją',
   addOwner: 'Pridėti savininką',
+  addRepresentative: 'Pridėti atstovą',
   investments: 'Investicijos',
   addInvestment: 'Pridėti investicijas',
   addSportOrganization: 'Pridėti sporto organizaciją',
@@ -337,7 +338,7 @@ export const inputLabels = {
   nationalTeamGender: 'Rinktinės narių lytis',
   gender: 'Lytis',
   notes: 'Papildoma informacija / Pastabos',
-  addOwner: 'Pridėti informaciją apie savininką',
+  addRepresentative: 'Pridėti informaciją apie atstovą',
 };
 export const pageTitles = {
   newTechnicalCondition: 'Nauja techninė būklė',
@@ -647,5 +648,5 @@ export const featureLabels = {
   [Features.SCHOLARSHIPS]: 'Stipendijos',
   [Features.RENTS]: 'Rentos',
   [Features.VIOLATIONS]: 'Pažeidimai',
-  [Features.SPORTS_BASES]: 'Sporto infrastruktųra',
+  [Features.SPORTS_BASES]: 'Sporto infrastruktūra',
 };
