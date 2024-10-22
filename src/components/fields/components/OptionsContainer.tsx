@@ -1,4 +1,3 @@
-import { isEmpty } from 'lodash';
 import styled from 'styled-components';
 import { inputLabels } from '../../../utils/texts';
 import FullscreenLoader from '../../other/FullscreenLoader';
@@ -35,7 +34,7 @@ const OptionsContainer = ({
   const display = showSelect && !disabled;
 
   const renderOptions = () => {
-    if (isEmpty(values))
+    if (!values?.length)
       return loading ? (
         <FullscreenLoader />
       ) : (
@@ -44,7 +43,7 @@ const OptionsContainer = ({
 
     return (
       <>
-        {values.map((option) => {
+        {values?.map((option) => {
           return (
             <OptionWrapper
               key={JSON.stringify(option)}

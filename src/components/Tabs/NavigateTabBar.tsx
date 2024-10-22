@@ -7,7 +7,6 @@ const NavigateTabBar = ({ tabs, className }: { tabs: Tab[]; className?: string }
   const currentTab = useGetCurrentRoute(tabs);
   const handleClick = (tab: Tab) => {
     if (!tab?.slug) return;
-
     navigate(tab.slug);
   };
 

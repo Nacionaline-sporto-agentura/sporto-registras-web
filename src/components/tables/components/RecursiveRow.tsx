@@ -1,5 +1,5 @@
 import { isEmpty, map } from 'lodash';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import styled from 'styled-components';
 import { TableRow } from '../../../types';
 import { TableItemWidth } from '../../../utils/constants';
@@ -49,13 +49,8 @@ export const RecursiveRow = ({
   };
 
   return (
-    <>
-      <TR
-        $pointer={!!onClick}
-        key={`tr-${index}`}
-        onClick={() => handleRowClick(row)}
-        style={tableRowStyle}
-      >
+    <Fragment key={`tr-${index}`}>
+      <TR $pointer={!!onClick} onClick={() => handleRowClick(row)} style={tableRowStyle}>
         {keys.map((key: any, i: number) => {
           const width = columns[key]?.width || TableItemWidth.LARGE;
 
@@ -70,6 +65,7 @@ export const RecursiveRow = ({
         hasChildren &&
         map(row.children, (row: TableRow, index: number) => (
           <RecursiveRow
+            key={`row_${row?.id}`}
             padding={padding + 15}
             row={row}
             index={index}
@@ -80,7 +76,7 @@ export const RecursiveRow = ({
             columns={columns}
           />
         ))}
-    </>
+    </Fragment>
   );
 };
 

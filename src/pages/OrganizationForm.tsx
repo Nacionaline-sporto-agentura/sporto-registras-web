@@ -1,9 +1,6 @@
-import { phoneNumberRegexPattern } from '@aplinkosministerija/design-system';
-import { companyCode, personalCode } from 'lt-codes';
 import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import * as Yup from 'yup';
 import OrganizationForm from '../components/forms/OrganizationForm';
 import OwnerForm from '../components/forms/OwnerForm';
 import FormikFormLayout from '../components/layouts/FormikFormLayout';
@@ -14,57 +11,8 @@ import { TenantTypes } from '../utils/constants';
 import { getReactQueryErrorMessage, handleErrorToastFromServer, isNew } from '../utils/functions';
 import { useIsTenantUser } from '../utils/hooks';
 import { slugs } from '../utils/routes';
-import { pageTitles, validationTexts } from '../utils/texts';
-
-export const validateCreateUserForm = Yup.object().shape({
-  firstName: Yup.string()
-    .required(validationTexts.requireText)
-    .test('validFirstName', validationTexts.validFirstName, (values) => {
-      if (/\d/.test(values || '')) return false;
-
-      return true;
-    }),
-  lastName: Yup.string()
-    .required(validationTexts.requireText)
-    .test('validLastName', validationTexts.validLastName, (values) => {
-      if (/\d/.test(values || '')) return false;
-
-      return true;
-    }),
-  phone: Yup.string()
-    .required(validationTexts.requireText)
-    .trim()
-    .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
-  personalCode: Yup.string().when(['ownerWithPassword'], (items: any, schema) => {
-    if (!items[0]) {
-      return schema
-        .required(validationTexts.requireText)
-        .trim()
-        .test('validatePersonalCode', validationTexts.personalCode, (value) => {
-          return personalCode.validate(value).isValid;
-        });
-    }
-
-    return schema.nullable();
-  }),
-
-  email: Yup.string().email(validationTexts.badEmailFormat).required(validationTexts.requireText),
-
-  companyName: Yup.string().required(validationTexts.requireText).trim(),
-  companyCode: Yup.string()
-    .required(validationTexts.requireText)
-    .trim()
-    .test('validateCompanyCode', validationTexts.companyCode, (value) => {
-      return companyCode.validate(value).isValid;
-    }),
-  companyPhone: Yup.string()
-    .required(validationTexts.requireText)
-    .trim()
-    .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
-  companyEmail: Yup.string()
-    .email(validationTexts.badEmailFormat)
-    .required(validationTexts.requireText),
-});
+import { pageTitles } from '../utils/texts';
+import { combinedInstitutionValidationSchema } from '../utils/validation';
 
 export interface InstitutionProps {
   companyName?: string;
@@ -89,6 +37,7 @@ export interface InstitutionProps {
     nonGovernmentalOrganization: false;
     nonFormalEducation: false;
   };
+  showOwnerForm?: boolean;
 }
 
 const cookies = new Cookies();
@@ -121,16 +70,10 @@ const OrganizationFormPage = () => {
       legalForm,
       type,
       data,
+      showOwnerForm,
     } = values;
 
     const params = {
-      user: {
-        firstName,
-        lastName,
-        email: email?.toLowerCase(),
-        phone,
-        ...(!ownerWithPassword && { personalCode }),
-      },
       address,
       legalForm: legalForm?.id,
       type: type?.id,
@@ -139,6 +82,15 @@ const OrganizationFormPage = () => {
       phone: companyPhone,
       email: companyEmail?.toLowerCase(),
       ...(!!parent && { parent: parseInt(parent) }),
+      ...(!!showOwnerForm && {
+        user: {
+          firstName,
+          lastName,
+          email: email?.toLowerCase(),
+          phone,
+          ...(!ownerWithPassword && { personalCode }),
+        },
+      }),
       tenantType: TenantTypes.ORGANIZATION,
       data,
     };
@@ -213,6 +165,7 @@ const OrganizationFormPage = () => {
     phone: '',
     personalCode: '',
     parent: parent || profileId || '',
+    showOwnerForm: false,
   };
 
   const renderForm = (values: InstitutionProps, errors: any, handleChange) => {
@@ -241,7 +194,7 @@ const OrganizationFormPage = () => {
       initialValues={initialValues}
       onSubmit={handleSubmit}
       renderForm={renderForm}
-      validationSchema={validateCreateUserForm}
+      validationSchema={combinedInstitutionValidationSchema}
       disabled={isTenantUser}
     />
   );

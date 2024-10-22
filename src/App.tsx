@@ -26,7 +26,7 @@ import api from './utils/api';
 import { AdminRoleType } from './utils/constants';
 import { useCheckUserInfo } from './utils/hooks';
 import { handleUpdateTokens } from './utils/loginFunctions';
-import { slugs, useFilteredRoutes } from './utils/routes';
+import { routes, slugs, useFilteredRoutes } from './utils/routes';
 const cookies = new Cookies();
 
 function App() {
@@ -70,7 +70,6 @@ function App() {
   const { isLoading: userInfoLoading } = useCheckUserInfo();
 
   const isLoading = [updateTokensLoading, userInfoLoading, eGateLoading].some((loading) => loading);
-
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
@@ -90,7 +89,6 @@ function App() {
               <Route key={JSON.stringify(route)} path={route.slug} element={route.component} />
             ))}
           </Route>
-
           <Route
             path="*"
             element={<Navigate to={loggedIn ? routes[0].slug : slugs.login} replace />}

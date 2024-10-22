@@ -37,9 +37,11 @@ import UpdateInstitutionForm from '../pages/UpdateInstitutionForm';
 import UserFormPage from '../pages/UserForm';
 import UserList from '../pages/UserList';
 import { useAppSelector } from '../state/hooks';
-import { AdminRoleType, Apps, UserRoleType } from './constants';
+import { AdminRoleType, Apps, Features, UserRoleType } from './constants';
 import { useGetCurrentProfile } from './hooks';
 import { pageTitles, url } from './texts';
+import PermissionsList from '../pages/PermissionsList';
+import PermissionFormPage from '../pages/PermissionForm';
 
 const env = import.meta.env;
 
@@ -60,6 +62,9 @@ export const slugs = {
   newGroup: `/vidiniai-naudotojai/grupes/naujas`,
   editGroup: (id: string) => `/vidiniai-naudotojai/grupes/${id}/redaguoti`,
   groupUsers: (id: string) => `/vidiniai-naudotojai/grupes/${id}/nariai`,
+  permissions: '/vidiniai-naudotojai/teises',
+  permission: (id: string) => `/vidiniai-naudotojai/teises/${id}`,
+  newPermission: `/vidiniai-naudotojai/teises/naujas`,
   institutions: `/istaigos`,
   institution: (id: string) => `/istaigos/${id}`,
   institutionUsers: (id: string) => `/istaigos/${id}/nariai`,
@@ -135,29 +140,26 @@ export const routes = [
     sidebar: true,
     component: <OrganizationList />,
     canHaveChildren: true,
+    feature: Features.INSTITUTIONS,
   },
   {
     slug: slugs.organizationUser(':tenantId', ':id'),
     component: <OrganizationUser />,
     canHaveChildren: true,
+    feature: Features.INSTITUTIONS,
   },
-
   {
     slug: slugs.organizationUsers(':id'),
     component: <Organization />,
     canHaveChildren: true,
+    feature: Features.INSTITUTIONS,
   },
   {
     slug: slugs.newOrganization,
     component: <OrganizationForm />,
     canHaveChildren: true,
+    feature: Features.INSTITUTIONS,
   },
-  // {
-  //   slug: slugs.updateOrganization(':id'),
-  //   component: <UpdateOrganizationForm />,
-  //   canHaveChildren: true,
-  // },
-
   {
     name: pageTitles.myOrganization,
     slug: slugs.myOrganization,
@@ -165,7 +167,6 @@ export const routes = [
     role: AdminRoleType.USER,
     component: <MyOrganization />,
   },
-
   {
     name: pageTitles.users,
     role: AdminRoleType.USER,
@@ -180,30 +181,32 @@ export const routes = [
     sidebar: true,
     component: <InstitutionList />,
     role: AdminRoleType.ADMIN,
+    feature: Features.INSTITUTIONS,
   },
   {
     slug: slugs.newInstitutions,
     component: <InstitutionForm />,
     role: AdminRoleType.ADMIN,
+    feature: Features.INSTITUTIONS,
   },
-
   {
     slug: slugs.institutionUsers(':id'),
     component: <InstitutionPage />,
     role: AdminRoleType.ADMIN,
+    feature: Features.INSTITUTIONS,
   },
   {
     slug: slugs.institutionUser(':tenantId', ':id'),
     component: <OrganizationUser />,
     role: AdminRoleType.ADMIN,
+    feature: Features.INSTITUTIONS,
   },
-
   {
     slug: slugs.adminUsers,
     component: <AdminUserList />,
     role: AdminRoleType.ADMIN,
+    appType: Apps.USERS,
   },
-
   {
     slug: slugs.editGroup(':id'),
     component: <GroupsFormPage />,
@@ -229,6 +232,25 @@ export const routes = [
     appType: Apps.USERS,
   },
   {
+    name: pageTitles.permissions,
+    slug: slugs.permissions,
+    component: <PermissionsList />,
+    role: AdminRoleType.ADMIN,
+    appType: Apps.USERS,
+  },
+  {
+    slug: slugs.permission(':id'),
+    component: <PermissionFormPage />,
+    role: AdminRoleType.ADMIN,
+    appType: Apps.USERS,
+  },
+  {
+    slug: slugs.newPermission,
+    component: <PermissionFormPage />,
+    role: AdminRoleType.ADMIN,
+    appType: Apps.USERS,
+  },
+  {
     slug: slugs.adminUser(':id'),
     component: <AdminUserForm />,
     role: AdminRoleType.ADMIN,
@@ -247,6 +269,7 @@ export const routes = [
     sidebar: true,
     slug: slugs.sportsBases,
     component: <SportBaseList />,
+    feature: Features.SPORTS_BASES,
   },
   {
     slug: slugs.unConfirmedSportBases,
@@ -258,6 +281,7 @@ export const routes = [
     slug: slugs.sportsPersons,
     component: <SportsPersonsList />,
     environment: 'development',
+    feature: Features.SPORTS_PERSONS,
   },
   {
     slug: slugs.unConfirmedSportsPersons,
@@ -291,7 +315,6 @@ export const routes = [
     component: <NationalTeamPage />,
     environment: 'development',
   },
-
   {
     name: pageTitles.results,
     sidebar: true,
@@ -304,13 +327,11 @@ export const routes = [
     component: <CompetitionList />,
     role: AdminRoleType.ADMIN,
   },
-
   {
     slug: slugs.result(':id'),
     component: <CompetitionPage />,
     role: AdminRoleType.ADMIN,
   },
-
   {
     role: AdminRoleType.USER,
     slug: slugs.user(':id'),
@@ -340,23 +361,20 @@ export const routes = [
     slug: slugs.sportsBaseSpaceGroup(':id'),
     component: <SportBaseSpaceGroup />,
   },
-
   {
     slug: slugs.newSportsBaseSpaceGroup,
     component: <SportBaseSpaceGroupForm />,
   },
-
   {
     slug: slugs.updateSportsBaseSpaceGroup(':id'),
     component: <SportBaseSpaceGroupForm />,
   },
-
   {
     slug: slugs.updateInstitution(':id'),
     role: AdminRoleType.ADMIN,
     component: <UpdateInstitutionForm />,
+    feature: Features.INSTITUTIONS,
   },
-
   {
     name: pageTitles.bonuses,
     slug: slugs.bonuses,
@@ -364,13 +382,14 @@ export const routes = [
     component: <BonusesList />,
     role: AdminRoleType.ADMIN,
     environment: 'development',
+    feature: Features.BONUSES,
   },
-
   {
     slug: slugs.bonus(':id'),
     component: <BonusForm />,
     role: AdminRoleType.ADMIN,
     environment: 'development',
+    feature: Features.BONUSES,
   },
   {
     name: pageTitles.scholarships,
@@ -379,14 +398,15 @@ export const routes = [
     component: <ScholarshipsList />,
     role: AdminRoleType.ADMIN,
     environment: 'development',
+    feature: Features.SCHOLARSHIPS,
   },
   {
     slug: slugs.scholarship(':id'),
     component: <ScholarshipForm />,
     role: AdminRoleType.ADMIN,
     environment: 'development',
+    feature: Features.SCHOLARSHIPS,
   },
-
   {
     name: pageTitles.rents,
     sidebar: true,
@@ -394,14 +414,15 @@ export const routes = [
     component: <RentsList />,
     role: AdminRoleType.ADMIN,
     environment: 'development',
+    feature: Features.RENTS,
   },
   {
     slug: slugs.rent(':id'),
     component: <RentForm />,
     role: AdminRoleType.ADMIN,
     environment: 'development',
+    feature: Features.RENTS,
   },
-
   {
     name: 'Klasifikatoriai',
     slug: slugs.classifiers(':dynamic'),
@@ -426,12 +447,13 @@ export const useFilteredRoutes = () => {
   const user = useAppSelector((state) => state.user.userData);
   const currentProfile = useGetCurrentProfile();
   const VITE_NODE_ENV = env?.VITE_NODE_ENV;
-
+  const userFeatures = user.permissions?.[Apps.REGISTRAS]?.features;
   const isAdmin =
     user?.type && [AdminRoleType.ADMIN, AdminRoleType.SUPER_ADMIN].includes(user?.type);
 
   return routes.filter((route) => {
     let select = true;
+
     if (route.role) {
       select = !!user?.type && user?.type === route?.role;
     }
@@ -446,6 +468,9 @@ export const useFilteredRoutes = () => {
 
     if (select && route.appType) {
       select = !!user?.permissions?.[route.appType];
+    }
+    if (route.feature && userFeatures) {
+      select = userFeatures.includes(route.feature) || userFeatures.includes('*');
     }
 
     if (select && !isAdmin && route.canHaveChildren) {

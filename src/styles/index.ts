@@ -45,7 +45,6 @@ export const theme: any = {
     light: '#f3f3f7',
     white: '#ffffff',
     grey: '#B3B5C4',
-
     fields: {
       borderFocus: palette.primary,
     },
@@ -53,6 +52,10 @@ export const theme: any = {
   height: {
     fields: 4,
     buttons: 4,
+  },
+  radius: {
+    multiSelectFieldTag: 0.2,
+    fields: 0.4,
   },
 };
 

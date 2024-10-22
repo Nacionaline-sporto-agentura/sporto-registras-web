@@ -53,10 +53,11 @@ export const columns = {
 
 export const mapUsersList = (users: User[]): TableRow[] =>
   users.map((user: User) => {
-    const groups = user.groups?.map((group) => ({
-      label: `${group.name} (${roleLabels[group.role]})`,
-      url: slugs.groupUsers(group.id),
-    }));
+    const groups =
+      user.groups?.map((group) => ({
+        label: `${group?.name} (${roleLabels[group?.role]})`,
+        url: slugs.groupUsers(group?.id),
+      })) || [];
     return {
       id: user.id,
       name: user.fullName,
@@ -67,6 +68,8 @@ export const mapUsersList = (users: User[]): TableRow[] =>
   });
 
 const AdminUserList = () => {
+  const currentUser: User = useAppSelector((state) => state.user.userData);
+
   const { page, navigate, dispatch } = useGenericTablePageHooks();
 
   const filters = useAppSelector((state) => state.filters.userFilters);
@@ -90,7 +93,7 @@ const AdminUserList = () => {
     dispatch(filterActions.setUserFilters(filters));
   };
 
-  const tabs = getInternalTabs();
+  const tabs = getInternalTabs(currentUser.authType);
 
   const notFoundInfo: NotFoundInfoProps = {
     text: emptyState.users,

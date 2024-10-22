@@ -10,7 +10,7 @@ import NavigateTabBar from '../components/Tabs/NavigateTabBar';
 import { actions as filterActions } from '../state/filters/reducer';
 import { useAppSelector } from '../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../styles/CommonStyles';
-import { NotFoundInfoProps } from '../types';
+import { NotFoundInfoProps, User } from '../types';
 import Api from '../utils/api';
 import { groupColumns } from '../utils/columns';
 import { getSimpleFilter, isSuperAdmin } from '../utils/functions';
@@ -33,9 +33,9 @@ const rowConfig = [['name']];
 const GroupsList = () => {
   const { dispatch, navigate, page } = useGenericTablePageHooks();
   const { id } = useParams();
-  const currentUser = useAppSelector((state) => state.user.userData);
+  const currentUser: User = useAppSelector((state) => state.user.userData);
 
-  const tabs = getInternalTabs();
+  const tabs = getInternalTabs(currentUser.authType);
 
   const showButton = isSuperAdmin(currentUser.type);
 

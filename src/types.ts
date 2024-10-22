@@ -1,6 +1,7 @@
 import { Operation } from 'fast-json-patch';
 import {
   AdminRoleType,
+  Apps,
   AuthStrategy,
   BonusType,
   ClassifierTypes,
@@ -41,7 +42,8 @@ export interface User {
   profiles?: Profile[];
   groups?: Group[];
   authStrategy?: AuthStrategy;
-  permissions?: { [key: string]: { accesses: string[]; features: string[] } };
+  authType?: AdminRoleType;
+  permissions?: { [key: string]: { features: string[] } };
   position?: string;
 }
 
@@ -275,10 +277,11 @@ export interface NotFoundInfoProps {
   urlText?: string;
 }
 
-export interface Group {
+export interface Group<T = number> {
   id: string;
   name?: string;
   parent?: Group;
+  apps: T[];
   usersCount?: number;
   children?: Group[];
   role: string;
@@ -636,4 +639,26 @@ export interface Address {
   street: { code: number; name: string };
   house: { code: number; plot_or_building_number: string };
   apartment: { code: number; room_number: string };
+}
+
+export interface Permission<T = string> {
+  id?: string;
+  role?: string;
+  app?: number | string;
+  group?: T;
+  features?: string[];
+}
+
+export interface App {
+  id: number;
+  name: string;
+  type: Apps;
+  url?: string;
+  settings?: {
+    isApp: boolean;
+    canInviteSelf: boolean;
+    productNameTo: string;
+    createUserOnEvartaiLogin: boolean;
+    createCompanyOnEvartaiLogin: boolean;
+  };
 }

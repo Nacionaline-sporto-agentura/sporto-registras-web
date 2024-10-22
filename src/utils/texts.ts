@@ -4,6 +4,7 @@ import {
   AreaUnits,
   BonusType,
   ClassifierTypes,
+  Features,
   HistoryTypes,
   LegalForms,
   MatchTypes,
@@ -13,6 +14,7 @@ import {
   SportTypeButtonKeys,
   StatusTypes,
   StudiesType,
+  TableItemWidth,
   TenantTypes,
 } from './constants';
 
@@ -125,12 +127,14 @@ export const deleteTitles = {
   request: 'Ištrinti prašymą',
   user: 'Ištrinti naudotoją',
   classifier: 'Ištrinti klasifikatorių',
+  permission: 'Ištrinti teisę',
 };
 
 export const deleteDescriptionFirstPart = {
   delete: 'Ar esate tikri, kad norite ištrinti',
   user: 'Ar esate tikri, kad norite ištrinti',
   classifier: 'Ar esate tikri, kad norite ištrinti',
+  permission: 'Ar esate tikri, kad norite ištrinti',
 };
 
 export const deleteDescriptionSecondPart = {
@@ -146,6 +150,7 @@ export const deleteDescriptionSecondPart = {
     [ClassifierTypes.SPORT_TYPE]: 'sporto šakos klasifikatorių?',
     [ClassifierTypes.SPORTS_BASE_SPACE_GROUP]: 'sporto bazės erdvės rūšies klasifikatorių?',
   },
+  permission: 'šią teisę?',
 };
 
 export const inputLabels = {
@@ -300,6 +305,7 @@ export const inputLabels = {
   foundedAt: 'Steigimo dokumentų sudarymo data',
   url: 'Internetinės svetainės adresas',
   role: 'Rolė',
+  features: 'Meniu prieiga',
   choose: 'Pasirinkite',
   noOptions: 'Nėra pasirinkimų',
   hasBeneficiaryStatus: 'Turi paramos gavėjo statusą',
@@ -331,6 +337,7 @@ export const inputLabels = {
   nationalTeamGender: 'Rinktinės narių lytis',
   gender: 'Lytis',
   notes: 'Papildoma informacija / Pastabos',
+  addOwner: 'Pridėti informaciją apie savininką',
 };
 export const pageTitles = {
   newTechnicalCondition: 'Nauja techninė būklė',
@@ -359,6 +366,7 @@ export const pageTitles = {
   changePassword: 'Pakeisti slaptažodį',
   institutions: 'Įstaigos',
   organizations: 'Sporto organizacijos',
+  permissions: 'Teisės',
   newOrganization: 'Nauja organizacija',
   newInstitution: 'Nauja įstaiga',
   updateOrganization: 'Atnaujinti organizaciją',
@@ -388,6 +396,8 @@ export const pageTitles = {
   rentInfo: 'Rentos informacija',
   teamInfo: 'Rinktinės informacija',
   athletes: 'Sportininkai',
+  newPermission: 'Nauja teisė',
+  updatePermission: 'Redaguoti teisę',
 };
 
 export const buttonsTitles = {
@@ -443,6 +453,7 @@ export const buttonsTitles = {
   next: 'Kitas',
   addWorkRelations: 'Pridėti darbo santykius',
   addData: 'Pridėti duomenis',
+  newPermission: 'Nauja teisė',
 };
 
 export const emptyState = {
@@ -460,6 +471,7 @@ export const emptyState = {
   bonuses: 'Nėra sukurtų premijų',
   scholarship: 'Nėra sukurtų stipendijų',
   rents: 'Nėra sukurtų rentų',
+  permissions: 'Jūs neturite jokių teisių. Sukurkite ',
 };
 
 export const emptyStateUrl = {
@@ -468,6 +480,7 @@ export const emptyStateUrl = {
   group: 'naują grupę.',
   institution: 'naują įstaigą.',
   organization: 'naują sporto organizaciją',
+  permission: 'naują teisę',
 };
 
 export const url = {
@@ -623,4 +636,16 @@ export const areUnitLabels = {
   [AreaUnits.HA]: 'ha',
   [AreaUnits.A]: 'a',
   [AreaUnits.M2]: 'm2',
+};
+
+export const featureLabels = {
+  [Features.INSTITUTIONS]: 'Įstaigos',
+  [Features.SPORTS_PERSONS]: 'Sporto asmenys',
+  [Features.TEAMS]: 'Rinktinės',
+  [Features.RESULTS]: 'Rezultatai',
+  [Features.BONUSES]: 'Premijos',
+  [Features.SCHOLARSHIPS]: 'Stipendijos',
+  [Features.RENTS]: 'Rentos',
+  [Features.VIOLATIONS]: 'Pažeidimai',
+  [Features.SPORTS_BASES]: 'Sporto infrastruktųra',
 };
