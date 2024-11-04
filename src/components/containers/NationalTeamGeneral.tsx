@@ -55,7 +55,7 @@ const NationalTeamGeneral = ({
             disabled={disabled}
             label={inputLabels.sportPersonSportType}
             value={nationalTeam.sportType}
-            error={errors?.sportTypes}
+            error={errors?.sportType}
             name="sportTypes"
             onChange={(sportType) => {
               handleChange('sportType', sportType);

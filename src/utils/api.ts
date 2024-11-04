@@ -18,6 +18,7 @@ import {
   SportType,
   Tenant,
   TypesAndFields,
+  Violation,
 } from '../types';
 const cookies = new Cookies();
 
@@ -70,15 +71,18 @@ export enum Resources {
   QUALIFICATION_CATEGORIES = 'api/types/qualificationCategories',
   BONUSES = '/api/bonuses',
   SCHOLARSHIPS = '/api/scholarships',
+  VIOLATIONS = '/api/violations',
   RENTS = '/api/rents',
   RENTS_UNITS = '/api/types/rents/units',
   AGE_GROUPS = 'api/types/nationalTeam/ageGroups',
   GENDERS = 'api/types/nationalTeam/genders',
   PERMISSIONS = 'api/permissions',
   USERS_APP = `api/apps/users`,
+  SCHOLARSHIPS_REASONS = '/api/types/scholarships/reasons',
+  VIOLATIONS_DISQUALIFICATION_REASONS = '/api/types/violations/disqualificationReasons',
 }
-
 export enum Populations {
+  DATA = 'data',
   AGE_GROUP = 'ageGroup',
   ATHLETES = 'athletes',
   UNIT = 'unit',
@@ -101,6 +105,9 @@ export enum Populations {
   TENANT = 'tenant',
   COMPETITION_TYPE = 'competitionType',
   SPORTS_PERSON = 'sportsPerson',
+  SPORT_TYPE = 'sportType',
+  DISQUALIFICATION_REASON = 'disqualificationReason',
+  COMPETITION_RESULT = 'competitionResult',
 }
 
 export enum SortAscFields {
@@ -806,6 +813,16 @@ class Api {
       resource: Resources.LEVELS,
       sort,
     });
+
+  getScholarshipReasons = async ({ page, query }: TableList) =>
+    await this.getList({
+      resource: Resources.SCHOLARSHIPS_REASONS,
+      sort: [SortDescFields.ID],
+      fields: ['id', 'name'],
+      page,
+      query,
+    });
+
   getSportBaseTechnicalConditions = async ({ query, page, sort }: TableList) =>
     await this.getList({
       query,
@@ -999,6 +1016,15 @@ class Api {
       sort,
     });
 
+  getDisqualificationReasons = async ({ query, page, sort }: TableList) =>
+    await this.getList({
+      query,
+      page,
+      fields: ['id', 'name'],
+      resource: Resources.VIOLATIONS_DISQUALIFICATION_REASONS,
+      sort,
+    });
+
   getTenantLegalForms = async ({ query, page, sort }: TableList) =>
     await this.getList({
       query,
@@ -1183,6 +1209,46 @@ class Api {
       resource: Resources.BONUSES,
     });
 
+  getViolations = async ({ page, query }: TableList): Promise<GetAllResponse<Violation>> =>
+    await this.getList({
+      resource: Resources.VIOLATIONS,
+      page,
+      query,
+      populate: [Populations.SPORTS_PERSON, Populations.SPORT_TYPE],
+      sort: [SortDescFields.ID],
+    });
+
+  getViolation = async ({ id }: { id: string }): Promise<Violation> => {
+    return await this.getOne({
+      resource: Resources.VIOLATIONS,
+      populate: [
+        Populations.SPORTS_PERSON,
+        Populations.SPORT_TYPE,
+        Populations.DISQUALIFICATION_REASON,
+        Populations.COMPETITION_RESULT,
+      ],
+      id,
+    });
+  };
+
+  createViolation = async ({ params }: { params: any }): Promise<Violation> =>
+    await this.post({
+      resource: Resources.VIOLATIONS,
+      params,
+    });
+
+  updateViolation = async ({ params, id }: { params: any; id: string }): Promise<Violation> =>
+    await this.patch({
+      resource: Resources.VIOLATIONS,
+      params,
+      id,
+    });
+  deleteViolation = async ({ id }) =>
+    await this.getOne({
+      id,
+      resource: Resources.VIOLATIONS,
+    });
+
   getScholarships = async ({ page, query }: TableList): Promise<GetAllResponse<ScholarShip>> =>
     await this.getList({
       resource: Resources.SCHOLARSHIPS,
@@ -1195,7 +1261,7 @@ class Api {
   getScholarship = async ({ id }: { id: string }): Promise<ScholarShip> => {
     return await this.getOne({
       resource: Resources.SCHOLARSHIPS,
-      populate: [Populations.SPORTS_PERSON, Populations.RESULT],
+      populate: [Populations.SPORTS_PERSON, Populations.RESULT, Populations.DATA],
       id,
     });
   };

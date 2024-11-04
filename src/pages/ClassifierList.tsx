@@ -82,6 +82,8 @@ const ClassifierList = () => {
     getTab(ClassifierTypes.VIOLATIONS_ANTI_DOPING, api.getViolationsAntiDopingTypes),
     getTab(ClassifierTypes.ORGANIZATION_BASIS, api.getOrganizationBasis),
     getTab(ClassifierTypes.RESULT_TYPE, api.getResultTypes),
+    getTab(ClassifierTypes.SCHOLARSHIP_REASON, api.getScholarshipReasons),
+    getTab(ClassifierTypes.DISQUALIFICATION_VIOLATION, api.getDisqualificationReasons),
   ];
 
   const tab = tabs.find((_) => _.key === classifierType) || tabs[0];

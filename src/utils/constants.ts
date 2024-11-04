@@ -110,6 +110,8 @@ export enum ClassifierTypes {
   ORGANIZATION_BASIS = 'organizacijos_veiklos_tipas',
   RESULT_TYPE = 'rezultatai',
   SPORTS_BASE_SPACE_GROUP = 'sporto_bazes_erdves_rusis',
+  SCHOLARSHIP_REASON = 'premijos_priezastis',
+  DISQUALIFICATION_VIOLATION = 'diskvalifikacijos_priezastis',
 }
 
 export enum SportTypeButtonKeys {
@@ -169,4 +171,14 @@ export enum Features {
   RENTS = 'RENTS',
   VIOLATIONS = 'VIOLATIONS',
   SPORTS_BASES = 'SPORTS_BASES',
+}
+
+export enum ViolationType {
+  DOPING = 'DOPING',
+  MANIPULATION = 'MANIPULATION',
+}
+
+export enum PenaltyType {
+  SUSPENSION = 'SUSPENSION',
+  DISQUALIFICATION = 'DISQUALIFICATION',
 }

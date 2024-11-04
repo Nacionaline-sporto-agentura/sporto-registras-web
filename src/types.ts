@@ -10,6 +10,7 @@ import {
   LegalForms,
   MatchTypes,
   MembershipTypes,
+  PenaltyType,
   ResultTypeTypes,
   ScholarshipType,
   StatusTypes,
@@ -17,6 +18,7 @@ import {
   TableItemWidth,
   TenantTypes,
   UserRoleType,
+  ViolationType,
 } from './utils/constants';
 
 export interface CommonFields {
@@ -250,6 +252,7 @@ export interface UnconfirmedRequestFilters {
 }
 
 export interface ClassifierFilters {
+  [ClassifierTypes.DISQUALIFICATION_VIOLATION]: SimpleFilters;
   [ClassifierTypes.LEVEL]: SimpleFilters;
   [ClassifierTypes.TECHNICAL_CONDITION]: SimpleFilters;
   [ClassifierTypes.SOURCE]: SimpleFilters;
@@ -265,6 +268,7 @@ export interface ClassifierFilters {
   [ClassifierTypes.ORGANIZATION_BASIS]: SimpleFilters;
   [ClassifierTypes.RESULT_TYPE]: SimpleFilters;
   [ClassifierTypes.SPORTS_BASE_SPACE_GROUP]: SimpleFilters;
+  [ClassifierTypes.SCHOLARSHIP_REASON]: SimpleFilters;
 }
 
 export interface UnconfirmedRequestFiltersProps {
@@ -661,4 +665,22 @@ export interface App {
     createUserOnEvartaiLogin: boolean;
     createCompanyOnEvartaiLogin: boolean;
   };
+}
+
+export interface Violation extends CommonFields {
+  type: ViolationType;
+  sportsPerson?: SportsPerson;
+  sportType?: SportType;
+  penaltyType?: PenaltyType;
+  disqualificationReason?: DisqualificationReason;
+  dateFrom?: Date;
+  dateTo?: Date;
+  description: string;
+  competitionResult?: Result;
+  invalidateResult?: boolean;
+}
+
+export interface DisqualificationReason {
+  id: any;
+  name: string;
 }

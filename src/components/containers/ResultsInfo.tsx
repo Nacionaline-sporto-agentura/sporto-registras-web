@@ -212,7 +212,7 @@ const ResultsInfo = ({ results = {}, handleChange, disabled }) => {
               const { data: matches = [] } = useQuery(
                 ['matches', sportTypeId],
                 async () => api.getAllMatchTypes({ query: { sportType: sportTypeId } }),
-                { enabled: !sportTypeId },
+                { enabled: !!sportTypeId },
               );
 
               const sportsPersons = values?.sportsPersons || {};

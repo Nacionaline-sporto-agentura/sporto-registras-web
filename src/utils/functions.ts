@@ -210,6 +210,10 @@ export const getSportTypesList = async (input: string, page: any) => {
   return await api.getSportTypes(getInputSimpleFilter(input, page));
 };
 
+export const getDisqualificationReasons = async (input: string, page: any) => {
+  return await api.getDisqualificationReasons(getInputSimpleFilter(input, page));
+};
+
 export const getSportsPersonList = async (input: string, page: any, query?: any) => {
   return await api.getListSportsPersons(getInputSimpleFilter(input, page, query));
 };
@@ -231,6 +235,10 @@ export const getRcObjects = async (
 
 export const getRentsUnitList = async (input: string, page: any) => {
   return await api.getRentsUnits(getInputSimpleFilter(input, page));
+};
+
+export const getScholarshipReasonList = async (input: string, page: any) => {
+  return await api.getScholarshipReasons(getInputSimpleFilter(input, page));
 };
 
 export const getCompetitionTypesList = async (input: string, page: any) => {
@@ -346,7 +354,7 @@ export const filterAndUpdateTypes = (existingTypes, newTypes, currentValues, upd
   updateCallback(filteredTypes);
 };
 
-export const getFullName = (user) => `${user?.firstName} ${user?.lastName}`;
+export const getFullName = (user) => `${user?.firstName || '-'} ${user?.lastName || '-'}`;
 
 export const getResultLabel = (competitionResult?: Result) => {
   const resultType = competitionResult?.resultType?.type;

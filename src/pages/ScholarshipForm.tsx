@@ -25,6 +25,7 @@ import {
   formatDate,
   getBonusResultLabel,
   getFullName,
+  getScholarshipReasonList,
   getSportsPersonList,
   handleErrorToastFromServer,
   isNew,
@@ -54,11 +55,11 @@ const schema = Yup.object().shape({
 
     const obj: any = {
       from: Yup.date().required(validationTexts.requireText),
-      reason: Yup.string().required(validationTexts.requireText),
+      reason: Yup.object().required(validationTexts.requireText),
     };
 
     if (isEqual(status, ScholarshipType.SUSPENDED)) {
-      obj.renewFrom = Yup.date().required(validationTexts.requireText);
+      obj.renewFrom = Yup.mixed().required(validationTexts.requireText);
     }
 
     if (!isEmpty(obj)) return Yup.object().shape(obj);
@@ -269,7 +270,7 @@ const ScholarshipForm = () => {
                         error={(errors as any)?.data?.from}
                         onChange={(date) => setFieldValue(`data.from`, date)}
                       />
-                      <TextField
+                      <AsyncSelectField
                         label={
                           isSuspended ? inputLabels.suspendedReason : inputLabels.terminatedReason
                         }
@@ -277,6 +278,8 @@ const ScholarshipForm = () => {
                         value={values?.data?.reason}
                         name="reason"
                         onChange={(input) => setFieldValue(`data.reason`, input)}
+                        getOptionLabel={(option) => option?.name}
+                        loadOptions={(input, page) => getScholarshipReasonList(input, page)}
                       />
                       {isSuspended && (
                         <DateField

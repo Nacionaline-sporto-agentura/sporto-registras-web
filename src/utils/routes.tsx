@@ -19,6 +19,8 @@ import Organization from '../pages/Organization';
 import OrganizationForm from '../pages/OrganizationForm';
 import OrganizationList from '../pages/OrganizationList';
 import OrganizationUser from '../pages/OrganizationUser';
+import PermissionFormPage from '../pages/PermissionForm';
+import PermissionsList from '../pages/PermissionsList';
 import Profile from '../pages/Profile';
 import RentForm from '../pages/RentForm';
 import RentsList from '../pages/RentsList';
@@ -36,12 +38,12 @@ import TechnicalCondition from '../pages/TechnicalCondition';
 import UpdateInstitutionForm from '../pages/UpdateInstitutionForm';
 import UserFormPage from '../pages/UserForm';
 import UserList from '../pages/UserList';
+import ViolationForm from '../pages/ViolationForm';
+import ViolationList from '../pages/ViolationList';
 import { useAppSelector } from '../state/hooks';
 import { AdminRoleType, Apps, Features, UserRoleType } from './constants';
 import { useGetCurrentProfile } from './hooks';
 import { pageTitles, url } from './texts';
-import PermissionsList from '../pages/PermissionsList';
-import PermissionFormPage from '../pages/PermissionForm';
 
 const env = import.meta.env;
 
@@ -113,6 +115,9 @@ export const slugs = {
   rents: '/rentos',
   newRent: `/rentos/naujas`,
   rent: (id: string) => `/rentos/${id}`,
+  violations: '/pazeidimai',
+  newViolation: `/pazeidimai/naujas`,
+  violation: (id: string) => `/pazeidimai/${id}`,
   nationalTeams: '/nacionalines-rinktines',
   unConfirmedNationalTeams: '/nepatvirtintos-nacionalines-rinktines',
   newNationalTeam: '/nacionalines-rinktines/naujas',
@@ -122,8 +127,6 @@ export const slugs = {
   updateSportsBaseSpaceGroup: (id: string) =>
     `/klasifikatoriai/sporto_bazes_erdves_rusis/${id}/atnaujinti`,
 };
-
-//Sporto bazės erdvės rūšių klasifikatorius
 
 export const routes = [
   {
@@ -424,6 +427,23 @@ export const routes = [
   {
     slug: slugs.rent(':id'),
     component: <RentForm />,
+    role: AdminRoleType.ADMIN,
+    environment: 'development',
+    feature: Features.RENTS,
+  },
+
+  {
+    name: pageTitles.violations,
+    sidebar: true,
+    slug: slugs.violations,
+    component: <ViolationList />,
+    role: AdminRoleType.ADMIN,
+    environment: 'development',
+    feature: Features.VIOLATIONS,
+  },
+  {
+    slug: slugs.violation(':id'),
+    component: <ViolationForm />,
     role: AdminRoleType.ADMIN,
     environment: 'development',
     feature: Features.RENTS,
