@@ -120,7 +120,7 @@ export const getSimpleFilter = (input, page, additionalQuery?: any) => {
   return query;
 };
 
-export const getSportsPersonQuery = (filter: any) => {
+export const getSportsPersonQuery = (filter: any = {}) => {
   const query: any = {};
 
   if (filter.sportsPerson) {
@@ -172,6 +172,10 @@ export const getOrganizationsList = async (input: string, page: any) => {
 
 export const getEducationalCompaniesList = async (input: string, page: any) => {
   return await api.getEducationalCompanies(getInputSimpleFilter(input, page));
+};
+
+export const getQualificationCategoriesList = async (input: string, page: any) => {
+  return await api.getQualificationCategories(getInputSimpleFilter(input, page));
 };
 
 export const getStudyProgramList = async (input: string, page: any, query: any) => {

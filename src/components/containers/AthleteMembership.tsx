@@ -35,7 +35,7 @@ const membershipSchema = Yup.object().shape({
 
 const membershipTableLabels = {
   documentNumber: { label: inputLabels.documentNo, show: true },
-  date: { label: inputLabels.issued, show: true },
+  date: { label: inputLabels.issuedDate, show: true },
   series: { label: inputLabels.series, show: true },
 };
 
@@ -140,7 +140,7 @@ const AthleteMembershipContainer = ({
                     <DateField
                       disabled={disabled}
                       name={'issued'}
-                      label={inputLabels.issued}
+                      label={inputLabels.issuedDate}
                       value={values?.date}
                       error={errors?.date}
                       onChange={(date) => setFieldValue(`date`, date)}

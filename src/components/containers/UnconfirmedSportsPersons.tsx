@@ -46,7 +46,7 @@ const mapRequestList = (requests: Request[]): TableRow[] =>
 
     return {
       id: request.id,
-      sportTypes: Object.values(sportsPerson?.sportTypes)
+      sportTypes: Object.values(sportsPerson?.sportTypes || {})
         ?.map((sportType) => (sportType as any)?.name)
         .join(', '),
       firstName: sportsPerson.firstName,

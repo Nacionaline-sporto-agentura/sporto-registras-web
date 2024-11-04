@@ -325,12 +325,17 @@ export const routes = [
   {
     slug: slugs.unconfirmedResults,
     component: <CompetitionList />,
-    role: AdminRoleType.ADMIN,
+    environment: 'development',
+  },
+  {
+    slug: slugs.newResult,
+    component: <CompetitionPage />,
+    environment: 'development',
   },
   {
     slug: slugs.result(':id'),
     component: <CompetitionPage />,
-    role: AdminRoleType.ADMIN,
+    environment: 'development',
   },
   {
     role: AdminRoleType.USER,
@@ -455,26 +460,26 @@ export const useFilteredRoutes = () => {
     let select = true;
 
     if (route.role) {
-      select = !!user?.type && user?.type === route?.role;
+      select = select && !!user?.type && user?.type === route?.role;
     }
 
     if (route.userRole) {
-      select = currentProfile?.role === route?.userRole;
+      select = select && currentProfile?.role === route?.userRole;
     }
 
-    if (select && route.environment) {
-      select = route.environment === VITE_NODE_ENV;
+    if (route.environment) {
+      select = select && route.environment === VITE_NODE_ENV;
     }
 
-    if (select && route.appType) {
-      select = !!user?.permissions?.[route.appType];
+    if (route.appType) {
+      select = select && !!user?.permissions?.[route.appType];
     }
     if (route.feature && userFeatures) {
-      select = userFeatures.includes(route.feature) || userFeatures.includes('*');
+      select = select && (userFeatures.includes(route.feature) || userFeatures.includes('*'));
     }
 
-    if (select && !isAdmin && route.canHaveChildren) {
-      select = !!currentProfile?.data?.canHaveChildren;
+    if (!isAdmin && route.canHaveChildren) {
+      select = select && !!currentProfile?.data?.canHaveChildren;
     }
 
     return select;

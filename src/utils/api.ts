@@ -67,6 +67,7 @@ export enum Resources {
   COACHES = '/api/sportsPersons/coaches',
   ATHLETE = '/api/sportsPersons/athletes',
   EDUCATIONAL_COMPANIES = 'api/types/educationalCompanies',
+  QUALIFICATION_CATEGORIES = 'api/types/qualificationCategories',
   BONUSES = '/api/bonuses',
   SCHOLARSHIPS = '/api/scholarships',
   RENTS = '/api/rents',
@@ -704,6 +705,13 @@ class Api {
   getEducationalCompanies = async ({ page, query }: TableList) =>
     await this.getList({
       resource: Resources.EDUCATIONAL_COMPANIES,
+      page,
+      query,
+    });
+
+  getQualificationCategories = async ({ page, query }: TableList) =>
+    await this.getList({
+      resource: Resources.QUALIFICATION_CATEGORIES,
       page,
       query,
     });

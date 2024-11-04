@@ -120,6 +120,7 @@ export const formLabels = {
   addStudies: 'Pridėti mokymąsi ar studijas',
   addWorkRelations: 'Pridėti darbo santykius',
   addCategory: 'Pridėti kategoriją',
+  addResult: 'Pridėti rezultatą'
 };
 
 export const deleteTitles = {

@@ -46,7 +46,7 @@ const mapRequestList = (requests: Request[]): TableRow[] =>
       ageGroup: data?.ageGroup?.name,
       startAt: formatDate(data?.startAt),
       endAt: formatDate(data?.endAt),
-      athleteCount: Object.values(data?.athletes)?.length,
+      athleteCount: Object.values(data?.athletes || {})?.length,
       ...(status && {
         status: <StatusTag label={requestStatusLabels[status]} tagColor={colorsByStatus[status]} />,
       }),
@@ -90,9 +90,9 @@ const UnconfirmedNationalTeams = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        {user.type !== AdminRoleType.USER && (
+        {user.type === AdminRoleType.USER && (
           <Button onClick={() => navigate(slugs.newNationalTeam)}>
-            {buttonsTitles.registerSportBase}
+            {buttonsTitles.registerNationalTeam}
           </Button>
         )}
       </TableButtonsRow>
