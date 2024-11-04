@@ -30,6 +30,12 @@ export const institutionColumns = {
 
 export const classifierColumns = {
   [ClassifierTypes.LEVEL]: { name: { label: 'Sporto bazės lygio pavadinimas', show: true } },
+  [ClassifierTypes.SCHOLARSHIP_REASON]: {
+    name: { label: 'Stipendijos priežasties pavadinimas', show: true },
+  },
+  [ClassifierTypes.DISQUALIFICATION_VIOLATION]: {
+    name: { label: 'Diskvalifikavimo priežasties pavadinimas', show: true },
+  },
   [ClassifierTypes.TECHNICAL_CONDITION]: {
     name: { label: 'Techninės būklės pavadinimas', show: true },
   },

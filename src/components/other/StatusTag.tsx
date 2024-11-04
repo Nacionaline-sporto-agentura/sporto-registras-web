@@ -8,18 +8,7 @@ interface StatusTagProps {
   color?: string;
 }
 
-export const statusBackgroundColors = {
-  [TagColors.BLUE]: '#EFF8FF',
-  [TagColors.BROWN]: '#FFFAEB',
-  [TagColors.GREEN]: '#ECFDF3',
-  [TagColors.PINK]: '#FDF2FA',
-  [TagColors.VIOLET]: '#f4f5fd',
-  [TagColors.ORANGE]: '#fff7eb',
-  [TagColors.SKYBLUE]: '#eef8fa',
-  [TagColors.GREY]: '#F2F4F7',
-};
-
-export const statusFontColors = {
+export const statusColors = {
   [TagColors.BLUE]: '#175CD3',
   [TagColors.BROWN]: '#B54708',
   [TagColors.GREEN]: '#027A48',
@@ -30,11 +19,11 @@ export const statusFontColors = {
   [TagColors.GREY]: '#344054',
 };
 
-const StatusTag = ({ label, tagColor, color = statusBackgroundColors.grey }: StatusTagProps) => {
+const StatusTag = ({ label, tagColor, color = statusColors.grey }: StatusTagProps) => {
   return (
     <div>
-      <Container backgroundColor={tagColor ? statusBackgroundColors[tagColor] : color}>
-        <Text color={tagColor ? statusFontColors[tagColor] : invert(color)}>{label}</Text>
+      <Container backgroundColor={tagColor ? `${statusColors[tagColor]}0f` : `${color}0f`}>
+        <Text color={tagColor ? statusColors[tagColor] : color}>{label}</Text>
       </Container>
     </div>
   );

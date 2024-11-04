@@ -116,7 +116,9 @@ const SportBasesContainer = ({ sportsBases = {}, handleChange, disabled }) => {
                     loadOptions={(input, page) =>
                       getSportBasesList(input, page, {
                         id: {
-                          $nin: Object.values(sportsBases).map((sportBase: any) => sportBase?.id),
+                          $nin: Object.values(sportsBases || {}).map(
+                            (sportBase: any) => sportBase?.id,
+                          ),
                         },
                       })
                     }

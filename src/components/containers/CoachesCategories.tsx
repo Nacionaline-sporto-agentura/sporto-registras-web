@@ -5,7 +5,11 @@ import styled from 'styled-components';
 import * as Yup from 'yup';
 import { FormRow, StyledInnerContainerRow } from '../../styles/CommonStyles';
 import { CoachCategory } from '../../types';
-import { formatDate, getEducationalCompaniesList } from '../../utils/functions';
+import {
+  formatDate,
+  getEducationalCompaniesList,
+  getQualificationCategoriesList,
+} from '../../utils/functions';
 import {
   buttonsTitles,
   descriptions,
@@ -137,7 +141,7 @@ const CoachesCompetences = ({ competences = {}, handleChange, disabled }) => {
                       setFieldValue(`category`, basis);
                     }}
                     getOptionLabel={(option) => option?.name}
-                    loadOptions={(input, page) => getEducationalCompaniesList(input, page)}
+                    loadOptions={(input, page) => getQualificationCategoriesList(input, page)}
                   />
                 </FormRow>
                 <FormRow columns={2}>
