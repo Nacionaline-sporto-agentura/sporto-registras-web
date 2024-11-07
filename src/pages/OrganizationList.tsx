@@ -3,7 +3,7 @@ import Organizations from '../components/containers/OrganizationList';
 import OrganizationRequests from '../components/containers/UnconfirmedOrganizations';
 import TablePageLayout from '../components/layouts/TablePageLayout';
 import NavigateTabBar from '../components/Tabs/NavigateTabBar';
-import { useGetCurrentRoute } from '../utils/hooks';
+import { useGetCurrentRoute, useIsUser } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 import { pageTitles } from '../utils/texts';
 
@@ -22,10 +22,11 @@ const OrganizationList = () => {
   ];
 
   const currentTab = useGetCurrentRoute(tabs);
+  const isUser = useIsUser();
 
   return (
     <TablePageLayout title={pageTitles.organizations}>
-      <StyledTabBar tabs={tabs} />
+      {!isUser && <StyledTabBar tabs={tabs} />}
       {currentTab?.container}
     </TablePageLayout>
   );
