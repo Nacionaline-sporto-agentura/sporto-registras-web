@@ -87,7 +87,7 @@ const ResultsInfo = ({ results = {}, handleChange, disabled }) => {
         ? item?.result?.value
         : '-';
 
-    const sportsPersonValue = Object.values(item.sportsPersons);
+    const sportsPersonValue = Object.values(item.sportsPersons || {});
 
     const sportPerson = [item?.match?.type, item?.matchType].includes(MatchTypes.TEAM)
       ? 'Komanda'
@@ -137,7 +137,7 @@ const ResultsInfo = ({ results = {}, handleChange, disabled }) => {
         }}
       />
 
-      <Popup title={formLabels.addOwner} visible={!!current} onClose={() => setCurrent(undefined)}>
+      <Popup title={formLabels.addResult} visible={!!current} onClose={() => setCurrent(undefined)}>
         <FormContainer>
           <Formik
             validateOnChange={validateOnChange}
@@ -212,7 +212,7 @@ const ResultsInfo = ({ results = {}, handleChange, disabled }) => {
               const { data: matches = [] } = useQuery(
                 ['matches', sportTypeId],
                 async () => api.getAllMatchTypes({ query: { sportType: sportTypeId } }),
-                { enabled: !sportTypeId },
+                { enabled: !!sportTypeId },
               );
 
               const sportsPersons = values?.sportsPersons || {};

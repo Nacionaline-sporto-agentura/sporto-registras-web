@@ -9,13 +9,14 @@ import {
   LegalForms,
   MatchTypes,
   MembershipTypes,
+  PenaltyType,
   ScholarshipType,
   ServerErrorTypes,
   SportTypeButtonKeys,
   StatusTypes,
   StudiesType,
-  TableItemWidth,
   TenantTypes,
+  ViolationType,
 } from './constants';
 
 export const validationTexts = {
@@ -120,6 +121,7 @@ export const formLabels = {
   addStudies: 'Pridėti mokymąsi ar studijas',
   addWorkRelations: 'Pridėti darbo santykius',
   addCategory: 'Pridėti kategoriją',
+  addResult: 'Pridėti rezultatą',
 };
 
 export const deleteTitles = {
@@ -155,6 +157,7 @@ export const deleteDescriptionSecondPart = {
 };
 
 export const inputLabels = {
+  invalidateResult: 'Ar rezultatą anuliuoti',
   hexColor: 'Spalvos kodas(HEX)',
   technicalConditionName: 'Techninės būklės pavadinimas',
   needSportType: 'Rodyti sporto erdvėse sporto šakas',
@@ -170,6 +173,8 @@ export const inputLabels = {
   appointmentDate: 'Skyrimo data',
   appointmentDateFrom: 'Skiriama nuo',
   appointmentDateTo: 'Skiriama iki',
+  dateFrom: 'Data nuo',
+  dateTo: 'Data iki',
   bonusAmount: 'Premijos dydis, EUR',
   scholarshipAmount: 'Stipendijos dydis, bazinių socialinių išmokų dydžiais',
   scholarshipAmountShort: 'Stipendijos dydis, BSI',
@@ -177,6 +182,7 @@ export const inputLabels = {
   rentUnit: 'Rentos mato vienetas',
   document: 'Dokumento (įsakymo) Nr.',
   bonusType: 'Premijos tipas',
+  penaltyType: 'Nuobaudos tipas',
   sportsPerson: 'Sporto asmuo',
   amsInstructorCoach: 'Trenerio vardas, vardas, pavardė, kodas',
   grantedQualificationCategory: 'Suteikta kvalifikacinė kategorija',
@@ -194,6 +200,7 @@ export const inputLabels = {
   matchMemberCount: 'Dalyvių skaičius rungtyje',
   teamCount: 'Dalyvavusių komandų skaičius',
   result: 'Rezultatas',
+  violationType: 'Pažeidimo tipas',
   competitionType: 'Varžybų tipas',
   year: 'Metai',
   type: 'Tipas',
@@ -208,6 +215,7 @@ export const inputLabels = {
   matchName: 'Rungties pavadinimas',
   olympicMatch: 'Olimpinė rungtis',
   sportType: 'Sporto šaka',
+  disqualificationReason: 'Diskvalifikavimo priežastis',
   sportMatchType: 'Sporto šakos rungtis',
   placeFrom: 'Užimta vieta nuo',
   placeTo: 'Užimta vieta iki',
@@ -345,6 +353,7 @@ export const pageTitles = {
   technicalCondition: 'Techninė būklė',
   nationalTeams: 'Nacionalinės rinktinės',
   rents: 'Rentos',
+  violations: 'Pažeidimai',
   scholarships: 'Stipendijos',
   bonuses: 'Premijos',
   coaches: 'Treneriai',
@@ -370,7 +379,7 @@ export const pageTitles = {
   permissions: 'Teisės',
   newOrganization: 'Nauja organizacija',
   newInstitution: 'Nauja įstaiga',
-  updateOrganization: 'Atnaujinti organizaciją',
+  organization: 'Organizacija',
   updateInstitution: 'Atnaujinti instituciją',
   myOrganization: 'Mano organizacija',
   sportBases: 'Sporto infrastruktūra',
@@ -395,6 +404,7 @@ export const pageTitles = {
   bonusInfo: 'Premijos informacija',
   scholarshipInfo: 'Stipendijos informacija',
   rentInfo: 'Rentos informacija',
+  violationInfo: 'Pažeidimo informacija',
   teamInfo: 'Rinktinės informacija',
   athletes: 'Sportininkai',
   newPermission: 'Nauja teisė',
@@ -406,6 +416,7 @@ export const buttonsTitles = {
   newBonus: 'Nauja premija',
   newRent: 'Nauja renta',
   newScholarship: 'Nauja stipendija',
+  newViolation: 'Naujas pažeidimas',
   addFaSpecialist: 'Pridėti FA specialistą',
   addCategory: 'Pridėti kategorijos dokumentą',
   addCoach: 'Pridėti trenerį',
@@ -468,9 +479,11 @@ export const emptyState = {
   groups: 'Jūs neturite jokių grupių. Sukurkite',
   institutions: 'Jūs neturite jokių įstaigų. Sukurkite',
   organizations: 'Jūs neturite jokių sporto organizacijų. Sukurkite',
+  organizationRequests: 'Nėra sukurtų jokių organizacijų prašymų',
   groupGroups: 'Grupė neturi grupių. Sukurkite',
   bonuses: 'Nėra sukurtų premijų',
   scholarship: 'Nėra sukurtų stipendijų',
+  violations: 'Nėra sukurtų pažeidimų',
   rents: 'Nėra sukurtų rentų',
   permissions: 'Jūs neturite jokių teisių. Sukurkite ',
 };
@@ -555,6 +568,8 @@ export const membershipTypeTableLabels = {
 
 export const newClassifierLabels = {
   [ClassifierTypes.LEVEL]: 'Naujas sporto bazės lygis',
+  [ClassifierTypes.SCHOLARSHIP_REASON]: 'Nauja stipendijos priežastis',
+  [ClassifierTypes.DISQUALIFICATION_VIOLATION]: 'Nauja diskvalifikavimo priežastis',
   [ClassifierTypes.TECHNICAL_CONDITION]: 'Nauja techninė būklė',
   [ClassifierTypes.SOURCE]: 'Naujas investicijos šaltinis',
   [ClassifierTypes.SPORTS_BASE_TYPE]: 'Naujas sporto bazės rūšis',
@@ -573,6 +588,8 @@ export const newClassifierLabels = {
 
 export const classifierLabels = {
   [ClassifierTypes.LEVEL]: 'Sporto bazės lygis',
+  [ClassifierTypes.SCHOLARSHIP_REASON]: 'Stipendijos priežastis',
+  [ClassifierTypes.DISQUALIFICATION_VIOLATION]: 'Diskvalifikavimo priežastis',
   [ClassifierTypes.TECHNICAL_CONDITION]: 'Techninė būklė',
   [ClassifierTypes.SOURCE]: 'Investicijos šaltinis',
   [ClassifierTypes.SPORTS_BASE_TYPE]: 'Sporto bazės rūšis',
@@ -623,6 +640,11 @@ export const scholarshipTypeLabel = {
   [ScholarshipType.TERMINATED]: 'Nutraukta',
 };
 
+export const penaltyTypeLabel = {
+  [PenaltyType.DISQUALIFICATION]: 'Diskvalifikacija',
+  [PenaltyType.SUSPENSION]: 'Suspendavimas',
+};
+
 export const legalFormLabels = {
   [LegalForms.COMPANY]: 'Juridinis',
   [LegalForms.PERSON]: 'Fizinis',
@@ -649,4 +671,9 @@ export const featureLabels = {
   [Features.RENTS]: 'Rentos',
   [Features.VIOLATIONS]: 'Pažeidimai',
   [Features.SPORTS_BASES]: 'Sporto infrastruktūra',
+};
+
+export const violationTypeLabels = {
+  [ViolationType.DOPING]: 'Antidopingo pažeidimas',
+  [ViolationType.MANIPULATION]: 'Manipuliacijos sporte',
 };

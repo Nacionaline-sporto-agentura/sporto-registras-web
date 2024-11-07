@@ -43,7 +43,7 @@ const SportBaseSpaceCard = ({
       <Line />
       <TitleRow>
         {sportTypes &&
-          Object.values(sportTypes)?.map((type: any) => (
+          Object.values(sportTypes || {})?.map((type: any) => (
             <StatusTag key={type.id + 'sportType'} label={type.name} />
           ))}
       </TitleRow>

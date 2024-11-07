@@ -1,17 +1,10 @@
 import { useStorage } from '@aplinkosministerija/design-system';
 import { applyPatch } from 'fast-json-patch';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
-import { NotFoundInfoProps, Request, TableRow } from '../../types';
+import { NotFoundInfoProps, Request, TableRow, Tenant } from '../../types';
 import api from '../../utils/api';
 import { colorsByStatus, RequestEntityTypes } from '../../utils/constants';
-import { formatDate } from '../../utils/functions';
-import {
-  useGenericTablePageHooks,
-  useGetPopulateFields,
-  useIsUser,
-  useTableColumns,
-  useTableData,
-} from '../../utils/hooks';
+import { useGenericTablePageHooks, useIsTenantUser, useTableData } from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, emptyState, inputLabels, requestStatusLabels } from '../../utils/texts';
 import Button from '../buttons/Button';
@@ -21,12 +14,11 @@ import { FilterInputTypes } from '../other/DynamicFilter/Filter';
 import StatusTag from '../other/StatusTag';
 import MainTable from '../tables/MainTable';
 
-const nationalTeamsLabels = {
-  name: { label: 'Rinktinės pavadinimas', show: true },
-  ageGroup: { label: 'Amžiaus grupė', show: true },
-  startAt: { label: 'Pradžia', show: true },
-  endAt: { label: 'Pabaiga', show: true },
-  athleteCount: { label: 'Sportininkų skaičius', show: true },
+const OrganizationLabels = {
+  name: { label: 'Sporto organizacijos pavadinimas', show: true },
+  code: { label: 'Kodas', show: true },
+  email: { label: 'El. paštas', show: true },
+  phone: { label: 'Telefonas', show: true },
   status: { label: 'Būsena', show: true },
 };
 
@@ -43,48 +35,40 @@ const rowConfig = [['status']];
 
 const mapRequestList = (requests: Request[]): TableRow[] =>
   requests.map((request: Request) => {
-    const data = applyPatch(request.entity, request.changes).newDocument;
+    const data: Tenant = applyPatch(request.entity, request.changes).newDocument;
     const status = request?.status;
+
     return {
-      id: request.id,
+      id: data.id,
       name: data.name,
-      ageGroup: data?.ageGroup?.name,
-      startAt: formatDate(data?.startAt),
-      endAt: formatDate(data?.endAt),
-      athleteCount: Object.values(data?.athletes || {})?.length,
+      code: data?.code,
+      phone: data?.phone,
+      email: data.email,
       ...(status && {
         status: <StatusTag label={requestStatusLabels[status]} tagColor={colorsByStatus[status]} />,
       }),
-      tenant: request?.tenant?.name,
     };
   });
 
-const UnconfirmedNationalTeams = () => {
+const OrganizationRequests = () => {
   const { navigate, page } = useGenericTablePageHooks();
-  const populate = useGetPopulateFields();
-  const tableColumns = useTableColumns(nationalTeamsLabels);
-  const isUser = useIsUser();
+  const isTenantUser = useIsTenantUser();
 
-  const { value: filter, setValue: setFilters } = useStorage<any>(
-    'unconfirmedNationalTeamsFIlter',
-    {},
-    true,
-  );
+  const { value: filter, setValue: setFilters } = useStorage<any>('organizationRequests', {}, true);
 
   const { tableData, loading } = useTableData({
-    name: 'nationalTeamsRequests',
+    name: 'organizationRequests',
     endpoint: () =>
-      api.getNewRequests({
+      api.getRequests({
         page,
-        query: { ...mapRequestFormFilters(filter), entityType: RequestEntityTypes.NATIONAL_TEAMS },
-        populate,
+        query: { ...mapRequestFormFilters(filter), entityType: RequestEntityTypes.TENANTS },
       }),
     mapData: (list) => mapRequestList(list),
     dependencyArray: [page, filter],
   });
 
   const notFound: NotFoundInfoProps = {
-    text: emptyState.unConfirmedSportBases,
+    text: emptyState.organizationRequests,
   };
 
   return (
@@ -99,9 +83,9 @@ const UnconfirmedNationalTeams = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        {isUser && (
-          <Button onClick={() => navigate(slugs.newNationalTeam)}>
-            {buttonsTitles.registerNationalTeam}
+        {!isTenantUser && (
+          <Button onClick={() => navigate(slugs.newOrganization)} disabled={loading}>
+            {buttonsTitles.newOrganization}
           </Button>
         )}
       </TableButtonsRow>
@@ -110,11 +94,11 @@ const UnconfirmedNationalTeams = () => {
         notFoundInfo={notFound}
         isFilterApplied={false}
         data={tableData}
-        columns={tableColumns}
-        onClick={(id) => navigate(`${slugs.newNationalTeam}?prasymas=${id}`)}
+        columns={OrganizationLabels}
+        onClick={(id) => navigate(`${slugs.organizationUsers(id)}?showRequest=1`)}
       />
     </>
   );
 };
 
-export default UnconfirmedNationalTeams;
+export default OrganizationRequests;

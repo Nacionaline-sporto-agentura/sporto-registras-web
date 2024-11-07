@@ -41,6 +41,8 @@ const createClassifierEndpoints = {
   [ClassifierTypes.VIOLATIONS_ANTI_DOPING]: Resources.VIOLATIONS_ANTI_DOPING_TYPES,
   [ClassifierTypes.ORGANIZATION_BASIS]: Resources.ORGANIZATION_BASIS,
   [ClassifierTypes.RESULT_TYPE]: Resources.RESULT_TYPES,
+  [ClassifierTypes.SCHOLARSHIP_REASON]: Resources.SCHOLARSHIPS_REASONS,
+  [ClassifierTypes.DISQUALIFICATION_VIOLATION]: Resources.VIOLATIONS_DISQUALIFICATION_REASONS,
 };
 
 const Classifier = () => {

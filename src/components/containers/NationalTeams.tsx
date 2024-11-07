@@ -1,11 +1,16 @@
 import { useStorage } from '@aplinkosministerija/design-system';
-import { useAppSelector } from '../../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { NationalTeam, NotFoundInfoProps, TableRow } from '../../types';
 import api from '../../utils/api';
-import { AdminRoleType, colorsByStatus } from '../../utils/constants';
+import { colorsByStatus } from '../../utils/constants';
 import { formatDate, getIlike } from '../../utils/functions';
-import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
+import {
+  useGenericTablePageHooks,
+  useGetPopulateFields,
+  useIsUser,
+  useTableColumns,
+  useTableData,
+} from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, emptyState, inputLabels, requestStatusLabels } from '../../utils/texts';
 import Button from '../buttons/Button';
@@ -14,7 +19,7 @@ import { FilterInputTypes } from '../other/DynamicFilter/Filter';
 import StatusTag from '../other/StatusTag';
 import MainTable from '../tables/MainTable';
 
-const sportBaseLabels = {
+const nationalTeamsLabels = {
   name: { label: 'Rinktinės pavadinimas', show: true },
   ageGroup: { label: 'Amžiaus grupė', show: true },
   startAt: { label: 'Pradžia', show: true },
@@ -56,13 +61,16 @@ const mapList = (requests: NationalTeam[]): TableRow[] =>
       ...(status && {
         status: <StatusTag label={requestStatusLabels[status]} tagColor={colorsByStatus[status]} />,
       }),
+      tenant: nationalTeam?.tenant?.name,
     };
   });
 
 const NationalTeams = () => {
   const { navigate, page } = useGenericTablePageHooks();
-  const user = useAppSelector((state) => state.user.userData);
   const { value: filter, setValue: setFilters } = useStorage<any>('nationalTeamsFIlter', {}, true);
+  const tableColumns = useTableColumns(nationalTeamsLabels);
+  const populate = useGetPopulateFields();
+  const isUser = useIsUser();
 
   const { tableData, loading } = useTableData({
     name: 'nationalTeams',
@@ -70,6 +78,7 @@ const NationalTeams = () => {
       api.getNationalTeams({
         page,
         query: mapQuery(filter),
+        populate,
       }),
     mapData: (list) => mapList(list),
     dependencyArray: [page, filter],
@@ -91,7 +100,7 @@ const NationalTeams = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        {user.type === AdminRoleType.USER && (
+        {isUser && (
           <Button onClick={() => navigate(slugs.newNationalTeam)}>
             {buttonsTitles.registerNationalTeam}
           </Button>
@@ -102,7 +111,7 @@ const NationalTeams = () => {
         notFoundInfo={notFound}
         isFilterApplied={false}
         data={tableData}
-        columns={sportBaseLabels}
+        columns={tableColumns}
         onClick={(id) => navigate(slugs.nationalTeam(id))}
       />
     </>

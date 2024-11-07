@@ -4,8 +4,14 @@ import { useAppSelector } from '../../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { NotFoundInfoProps, Request, TableRow } from '../../types';
 import api from '../../utils/api';
-import { AdminRoleType, colorsByStatus, RequestEntityTypes } from '../../utils/constants';
-import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
+import { colorsByStatus, RequestEntityTypes } from '../../utils/constants';
+import {
+  useGenericTablePageHooks,
+  useGetPopulateFields,
+  useIsUser,
+  useTableColumns,
+  useTableData,
+} from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, emptyState, inputLabels, requestStatusLabels } from '../../utils/texts';
 import Button from '../buttons/Button';
@@ -15,16 +21,11 @@ import { FilterInputTypes } from '../other/DynamicFilter/Filter';
 import StatusTag from '../other/StatusTag';
 import MainTable from '../tables/MainTable';
 
-const resultLabels = {
+const competitionLabels = {
   name: { label: 'Varžybų pavadinimas', show: true },
   year: { label: 'Metai', show: true },
   type: { label: 'Tipas', show: true },
   status: { label: 'Būsena', show: true },
-};
-
-const adminResultLabels = {
-  ...resultLabels,
-  tenant: { label: 'Pateikė', show: true },
 };
 
 const filterConfig = () => ({
@@ -51,14 +52,15 @@ const mapRequestList = (requests: Request[]): TableRow[] =>
       ...(status && {
         status: <StatusTag label={requestStatusLabels[status]} tagColor={colorsByStatus[status]} />,
       }),
-      tenant: result?.tenant?.name,
+      tenant: request?.tenant?.name,
     };
   });
 
 const UnconfirmedCompetitions = () => {
   const { navigate, page, dispatch } = useGenericTablePageHooks();
-  const user = useAppSelector((state) => state.user.userData);
-
+  const populate = useGetPopulateFields();
+  const tableColumns = useTableColumns(competitionLabels);
+  const isUser = useIsUser();
   const filters = useAppSelector((state) => state.filters.unconfirmedCompetitionFilters);
 
   const handleSetFilters = (filters) => {
@@ -71,6 +73,7 @@ const UnconfirmedCompetitions = () => {
       api.getNewRequests({
         page,
         query: { ...mapRequestFormFilters(filters), entityType: RequestEntityTypes.COMPETITIONS },
+        populate,
       }),
     mapData: (list) => mapRequestList(list),
     dependencyArray: [page, filters],
@@ -79,10 +82,6 @@ const UnconfirmedCompetitions = () => {
   const notFound: NotFoundInfoProps = {
     text: emptyState.results,
   };
-
-  const isAdmin = user.type === AdminRoleType.ADMIN;
-
-  const labels = isAdmin ? adminResultLabels : resultLabels;
 
   return (
     <>
@@ -96,7 +95,7 @@ const UnconfirmedCompetitions = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        {!isAdmin && (
+        {isUser && (
           <Button onClick={() => navigate(slugs.newResult)}>{buttonsTitles.registerResult}</Button>
         )}
       </TableButtonsRow>
@@ -105,7 +104,7 @@ const UnconfirmedCompetitions = () => {
         notFoundInfo={notFound}
         isFilterApplied={false}
         data={tableData}
-        columns={labels}
+        columns={tableColumns}
         onClick={(id) => navigate(`${slugs.newResult}?prasymas=${id}`)}
       />
     </>

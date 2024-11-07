@@ -4,9 +4,15 @@ import { useAppSelector } from '../../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { NotFoundInfoProps, Request, TableRow } from '../../types';
 import api from '../../utils/api';
-import { AdminRoleType, colorsByStatus, RequestEntityTypes } from '../../utils/constants';
+import { colorsByStatus, RequestEntityTypes } from '../../utils/constants';
 import { getFormattedAddress } from '../../utils/functions';
-import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
+import {
+  useGenericTablePageHooks,
+  useGetPopulateFields,
+  useIsUser,
+  useTableColumns,
+  useTableData,
+} from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, emptyState, inputLabels, requestStatusLabels } from '../../utils/texts';
 import Button from '../buttons/Button';
@@ -49,14 +55,16 @@ const mapRequestList = (requests: Request[]): TableRow[] =>
       ...(status && {
         status: <StatusTag label={requestStatusLabels[status]} tagColor={colorsByStatus[status]} />,
       }),
+      tenant: request?.tenant?.name,
     };
   });
 
 const UnconfirmedSportBases = () => {
   const { navigate, page, dispatch } = useGenericTablePageHooks();
-  const user = useAppSelector((state) => state.user.userData);
-
   const filters = useAppSelector((state) => state.filters.unconfirmedSportBaseFilters);
+  const populate = useGetPopulateFields();
+  const tableColumns = useTableColumns(sportBaseLabels);
+  const isUser = useIsUser();
 
   const handleSetFilters = (filters) => {
     dispatch(filterActions.setUnconfirmedSportBaseFilters(filters));
@@ -68,6 +76,7 @@ const UnconfirmedSportBases = () => {
       api.getNewRequests({
         page,
         query: { ...mapRequestFormFilters(filters), entityType: RequestEntityTypes.SPORTS_BASES },
+        populate,
       }),
     mapData: (list) => mapRequestList(list),
     dependencyArray: [page, filters],
@@ -89,7 +98,7 @@ const UnconfirmedSportBases = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        {user.type === AdminRoleType.USER && (
+        {isUser && (
           <Button onClick={() => navigate(slugs.newSportBase)}>
             {buttonsTitles.registerSportBase}
           </Button>
@@ -100,7 +109,7 @@ const UnconfirmedSportBases = () => {
         notFoundInfo={notFound}
         isFilterApplied={false}
         data={tableData}
-        columns={sportBaseLabels}
+        columns={tableColumns}
         onClick={(id) => navigate(`${slugs.newSportBase}?prasymas=${id}`)}
       />
     </>

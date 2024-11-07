@@ -120,7 +120,7 @@ export const getSimpleFilter = (input, page, additionalQuery?: any) => {
   return query;
 };
 
-export const getSportsPersonQuery = (filter: any) => {
+export const getSportsPersonQuery = (filter: any = {}) => {
   const query: any = {};
 
   if (filter.sportsPerson) {
@@ -174,6 +174,10 @@ export const getEducationalCompaniesList = async (input: string, page: any) => {
   return await api.getEducationalCompanies(getInputSimpleFilter(input, page));
 };
 
+export const getQualificationCategoriesList = async (input: string, page: any) => {
+  return await api.getQualificationCategories(getInputSimpleFilter(input, page));
+};
+
 export const getStudyProgramList = async (input: string, page: any, query: any) => {
   return await api.getStudyPrograms(getInputSimpleFilter(input, page, query));
 };
@@ -206,6 +210,10 @@ export const getSportTypesList = async (input: string, page: any) => {
   return await api.getSportTypes(getInputSimpleFilter(input, page));
 };
 
+export const getDisqualificationReasons = async (input: string, page: any) => {
+  return await api.getDisqualificationReasons(getInputSimpleFilter(input, page));
+};
+
 export const getSportsPersonList = async (input: string, page: any, query?: any) => {
   return await api.getListSportsPersons(getInputSimpleFilter(input, page, query));
 };
@@ -227,6 +235,10 @@ export const getRcObjects = async (
 
 export const getRentsUnitList = async (input: string, page: any) => {
   return await api.getRentsUnits(getInputSimpleFilter(input, page));
+};
+
+export const getScholarshipReasonList = async (input: string, page: any) => {
+  return await api.getScholarshipReasons(getInputSimpleFilter(input, page));
 };
 
 export const getCompetitionTypesList = async (input: string, page: any) => {
@@ -342,7 +354,7 @@ export const filterAndUpdateTypes = (existingTypes, newTypes, currentValues, upd
   updateCallback(filteredTypes);
 };
 
-export const getFullName = (user) => `${user?.firstName} ${user?.lastName}`;
+export const getFullName = (user) => `${user?.firstName || '-'} ${user?.lastName || '-'}`;
 
 export const getResultLabel = (competitionResult?: Result) => {
   const resultType = competitionResult?.resultType?.type;

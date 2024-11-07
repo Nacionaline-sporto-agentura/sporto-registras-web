@@ -3,9 +3,15 @@ import { useAppSelector } from '../../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { NotFoundInfoProps, SportsPerson, TableRow } from '../../types';
 import api from '../../utils/api';
-import { AdminRoleType, colorsByStatus } from '../../utils/constants';
+import { colorsByStatus } from '../../utils/constants';
 import { getIlike } from '../../utils/functions';
-import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
+import {
+  useGenericTablePageHooks,
+  useGetPopulateFields,
+  useIsUser,
+  useTableColumns,
+  useTableData,
+} from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, emptyState, inputLabels, requestStatusLabels } from '../../utils/texts';
 import Button from '../buttons/Button';
@@ -20,11 +26,6 @@ const sportsPersonLabels = {
   sportType: { label: 'Sporto šaka', show: true },
   status: { label: 'Būsena', show: true },
   competitionsCount: { label: 'Varžybų skaičius', show: true },
-};
-
-const adminSportsPersonLabels = {
-  ...sportsPersonLabels,
-  tenant: { label: 'Pateikė', show: true },
 };
 
 const filterConfig = () => ({
@@ -72,8 +73,9 @@ const mapRequestList = (requests: SportsPerson[]): TableRow[] =>
 
 const SportsPersons = () => {
   const { navigate, page, dispatch } = useGenericTablePageHooks();
-  const user = useAppSelector((state) => state.user.userData);
-
+  const populate = useGetPopulateFields();
+  const tableColumns = useTableColumns(sportsPersonLabels);
+  const isUser = useIsUser();
   const filter = useAppSelector((state) => state.filters.sportsPersonFilters);
 
   const handleSetFilters = (filters) => {
@@ -86,6 +88,7 @@ const SportsPersons = () => {
       api.getSportsPersons({
         page,
         query: mapSportsPersonQuery(filter),
+        populate,
       }),
     mapData: (list) => mapRequestList(list),
     dependencyArray: [page, filter],
@@ -94,9 +97,6 @@ const SportsPersons = () => {
   const notFound: NotFoundInfoProps = {
     text: emptyState.sportsPersons,
   };
-
-  const isAdmin = user.type === AdminRoleType.ADMIN;
-  const labels = isAdmin ? adminSportsPersonLabels : sportsPersonLabels;
 
   return (
     <>
@@ -110,7 +110,7 @@ const SportsPersons = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        {!isAdmin && (
+        {isUser && (
           <Button onClick={() => navigate(slugs.newSportsPerson)}>
             {buttonsTitles.registerSportsPerson}
           </Button>
@@ -121,7 +121,7 @@ const SportsPersons = () => {
         notFoundInfo={notFound}
         isFilterApplied={false}
         data={tableData}
-        columns={labels}
+        columns={tableColumns}
         onClick={(id) => navigate(slugs.sportsPerson(id))}
       />
     </>

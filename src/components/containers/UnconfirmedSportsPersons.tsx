@@ -5,8 +5,14 @@ import { useAppSelector } from '../../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { NotFoundInfoProps, Request, TableRow } from '../../types';
 import api from '../../utils/api';
-import { AdminRoleType, colorsByStatus, RequestEntityTypes } from '../../utils/constants';
-import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
+import { colorsByStatus, RequestEntityTypes } from '../../utils/constants';
+import {
+  useGenericTablePageHooks,
+  useGetPopulateFields,
+  useIsUser,
+  useTableColumns,
+  useTableData,
+} from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, emptyState, inputLabels, requestStatusLabels } from '../../utils/texts';
 import Button from '../buttons/Button';
@@ -21,11 +27,6 @@ const sportsPersonLabels = {
   lastName: { label: 'Pavardė', show: true },
   sportTypes: { label: 'Sporto šaka', show: true },
   status: { label: 'Būsena', show: true },
-};
-
-const adminSportsPersonLabels = {
-  ...sportsPersonLabels,
-  tenant: { label: 'Pateikė', show: true },
 };
 
 const filterConfig = () => ({
@@ -46,7 +47,7 @@ const mapRequestList = (requests: Request[]): TableRow[] =>
 
     return {
       id: request.id,
-      sportTypes: Object.values(sportsPerson?.sportTypes)
+      sportTypes: Object.values(sportsPerson?.sportTypes || {})
         ?.map((sportType) => (sportType as any)?.name)
         .join(', '),
       firstName: sportsPerson.firstName,
@@ -61,7 +62,9 @@ const mapRequestList = (requests: Request[]): TableRow[] =>
 
 const UnconfirmedSportsPersons = () => {
   const { navigate, page, dispatch } = useGenericTablePageHooks();
-  const user = useAppSelector((state) => state.user.userData);
+  const populate = useGetPopulateFields();
+  const isUser = useIsUser();
+  const tableColumns = useTableColumns(sportsPersonLabels);
 
   const filters = useAppSelector((state) => state.filters.unconfirmedSportsPersonFilters);
 
@@ -75,6 +78,7 @@ const UnconfirmedSportsPersons = () => {
       api.getNewRequests({
         page,
         query: { ...mapRequestFormFilters(filters), entityType: RequestEntityTypes.SPORTS_PERSONS },
+        populate,
       }),
     mapData: (list) => mapRequestList(list),
     dependencyArray: [page, filters],
@@ -83,8 +87,6 @@ const UnconfirmedSportsPersons = () => {
   const notFound: NotFoundInfoProps = {
     text: emptyState.sportsPersons,
   };
-  const isAdmin = user.type === AdminRoleType.ADMIN;
-  const labels = isAdmin ? adminSportsPersonLabels : sportsPersonLabels;
 
   return (
     <>
@@ -98,7 +100,7 @@ const UnconfirmedSportsPersons = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        {!isAdmin && (
+        {isUser && (
           <Button onClick={() => navigate(slugs.newSportsPerson)}>
             {buttonsTitles.registerSportsPerson}
           </Button>
@@ -109,7 +111,7 @@ const UnconfirmedSportsPersons = () => {
         notFoundInfo={notFound}
         isFilterApplied={!isEmpty(filters)}
         data={tableData}
-        columns={labels}
+        columns={tableColumns}
         onClick={(id) => {
           navigate(`${slugs.newSportsPerson}?prasymas=${id}`);
         }}
