@@ -175,6 +175,7 @@ const ProfilesContainer = styled.div`
   box-shadow: 0px 4px 15px #12192614;
   border: 1px solid #cdd5df;
   border-radius: 4px;
+  width: 100%;
 `;
 
 const ProfileContainer = styled.div<{ selected: boolean }>`

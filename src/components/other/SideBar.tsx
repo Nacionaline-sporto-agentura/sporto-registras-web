@@ -81,11 +81,12 @@ const Header = styled.div`
   flex-direction: column;
   justify-content: space-between;
   top: 0;
-  width: 400px;
+  min-width: 320px;
   background-color: ${({ theme }) => theme.colors.primary};
   padding: 18px 16px;
   height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
 `;
 
 const StyledLogoutIcon = styled(Icon)`
@@ -94,7 +95,7 @@ const StyledLogoutIcon = styled(Icon)`
 `;
 
 const UserInfo = styled.div`
-  margin: 0 20px 0 8px;
+  margin: 0 0 0 8px;
 `;
 
 const FullName = styled.div`

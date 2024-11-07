@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -7,6 +8,7 @@ import { slugs, useFilteredRoutes } from '../../utils/routes';
 import Icon, { IconName } from '../other/Icons';
 import Avatar from './Avatar';
 import Logo from './Logo';
+import ProfilesDropdown from './ProfileDropdown';
 
 interface MobileHeaderInterface {
   className?: string;
@@ -16,8 +18,8 @@ const MobileNavbar = ({ className }: MobileHeaderInterface) => {
   const [showMenu, setShowMenu] = useState(false);
   const navigate = useNavigate();
   const { mutateAsync } = useLogoutMutation();
-
   const user = useAppSelector((state) => state.user.userData);
+  const hasProfiles = !isEmpty(user.profiles);
 
   const routes = useFilteredRoutes();
 
@@ -48,7 +50,7 @@ const MobileNavbar = ({ className }: MobileHeaderInterface) => {
               .filter((route) => route.sidebar)
               .map((route, index) => {
                 let slug = route.slug;
-                if(route.slug.includes(':dynamic') && route.default) {
+                if (route.slug.includes(':dynamic') && route.default) {
                   slug = route.slug.replace(':dynamic', route.default);
                 }
                 return (
@@ -63,20 +65,24 @@ const MobileNavbar = ({ className }: MobileHeaderInterface) => {
               })}
           </div>
           <BottomRow>
-            <ProfileRow>
-              <Link to={slugs.profile}>
-                <InnerRow>
-                  <Avatar name={user?.firstName || ''} surname={user?.lastName || ''} />
-                  <UserInfo>
-                    <FullName>{`${user?.firstName} ${user?.lastName}`}</FullName>
-                    <Email>{user?.email}</Email>
-                  </UserInfo>
-                </InnerRow>
-              </Link>
-              <div onClick={() => mutateAsync()}>
-                <StyledLogoutIcon name={IconName.logout} />
-              </div>
-            </ProfileRow>
+            {hasProfiles ? (
+              <ProfilesDropdown />
+            ) : (
+              <ProfileRow>
+                <Link to={slugs.profile}>
+                  <InnerRow>
+                    <Avatar name={user?.firstName || ''} surname={user?.lastName || ''} />
+                    <UserInfo>
+                      <FullName>{`${user?.firstName} ${user?.lastName}`}</FullName>
+                      <Email>{user?.email}</Email>
+                    </UserInfo>
+                  </InnerRow>
+                </Link>
+                <div onClick={() => mutateAsync()}>
+                  <StyledLogoutIcon name={IconName.logout} />
+                </div>
+              </ProfileRow>
+            )}
           </BottomRow>
         </Container>
       )}
@@ -120,6 +126,7 @@ const ProfileRow = styled.div`
 `;
 
 const BottomRow = styled.div`
+  margin-top: 16px;
   display: flex;
   flex-direction: column;
   width: 100%;
