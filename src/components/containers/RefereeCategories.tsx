@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import * as Yup from 'yup';
 import { FormRow, StyledInnerContainerRow } from '../../styles/CommonStyles';
 import { RefereeCategory } from '../../types';
-import { formatDate, getEducationalCompaniesList } from '../../utils/functions';
+import { formatDate, getOrganizationsList } from '../../utils/functions';
 import {
   buttonsTitles,
   descriptions,
@@ -130,7 +130,7 @@ const RefereeCategoriesContainer = ({ categories = {}, handleChange, disabled })
                       setFieldValue(`company`, basis);
                     }}
                     getOptionLabel={(option) => option?.name}
-                    loadOptions={(input, page) => getEducationalCompaniesList(input, page)}
+                    loadOptions={(input, page) => getOrganizationsList(input, page)}
                   />
                 </FormRow>
                 <FormRow columns={2}>

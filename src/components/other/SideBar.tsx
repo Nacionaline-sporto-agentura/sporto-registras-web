@@ -81,7 +81,7 @@ const Header = styled.div`
   flex-direction: column;
   justify-content: space-between;
   top: 0;
-  width: 300px;
+  width: 320px;
   background-color: ${({ theme }) => theme.colors.primary};
   padding: 18px 16px;
   height: 100%;

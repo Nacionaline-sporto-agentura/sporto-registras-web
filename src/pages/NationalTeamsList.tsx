@@ -14,7 +14,7 @@ const NationalTeamsList = () => {
       slug: slugs.nationalTeams,
     },
     {
-      label: 'Laukiama tvirtinti rinktinės',
+      label: 'Nepatvirtintos rinktinės',
       slug: slugs.unConfirmedNationalTeams,
     },
   ];

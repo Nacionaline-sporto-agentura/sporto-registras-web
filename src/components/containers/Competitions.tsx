@@ -3,9 +3,15 @@ import { useAppSelector } from '../../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { Competition, NotFoundInfoProps, TableRow } from '../../types';
 import api from '../../utils/api';
-import { AdminRoleType, colorsByStatus } from '../../utils/constants';
+import { colorsByStatus } from '../../utils/constants';
 import { getIlike } from '../../utils/functions';
-import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
+import {
+  useGenericTablePageHooks,
+  useGetPopulateFields,
+  useIsUser,
+  useTableColumns,
+  useTableData,
+} from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, emptyState, inputLabels, requestStatusLabels } from '../../utils/texts';
 import Button from '../buttons/Button';
@@ -14,16 +20,11 @@ import { FilterInputTypes } from '../other/DynamicFilter/Filter';
 import StatusTag from '../other/StatusTag';
 import MainTable from '../tables/MainTable';
 
-const resultLabels = {
+const competitionLabels = {
   name: { label: 'Varžybų pavadinimas', show: true },
   year: { label: 'Metai', show: true },
   type: { label: 'Tipas', show: true },
   status: { label: 'Būsena', show: true },
-};
-
-const adminResultLabels = {
-  ...resultLabels,
-  tenant: { label: 'Pateikė', show: true },
 };
 
 const filterConfig = () => ({
@@ -63,7 +64,9 @@ const mapResultList = (results: Competition[]): TableRow[] =>
 
 const Competitions = () => {
   const { navigate, page, dispatch } = useGenericTablePageHooks();
-  const user = useAppSelector((state) => state.user.userData);
+  const tableColumns = useTableColumns(competitionLabels);
+  const populate = useGetPopulateFields();
+  const isUser = useIsUser();
 
   const filter = useAppSelector((state) => state.filters.competitionFilters);
 
@@ -77,6 +80,7 @@ const Competitions = () => {
       api.getCompetitions({
         page,
         query: mapCompetitionQuery(filter),
+        populate,
       }),
     mapData: (list) => mapResultList(list),
     dependencyArray: [page, filter],
@@ -85,9 +89,6 @@ const Competitions = () => {
   const notFound: NotFoundInfoProps = {
     text: emptyState.results,
   };
-  const isAdmin = user.type === AdminRoleType.USER;
-
-  const labels = isAdmin ? adminResultLabels : resultLabels;
 
   return (
     <>
@@ -101,7 +102,7 @@ const Competitions = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        {isAdmin && (
+        {isUser && (
           <Button onClick={() => navigate(slugs.newResult)}>{buttonsTitles.registerResult}</Button>
         )}
       </TableButtonsRow>
@@ -110,7 +111,7 @@ const Competitions = () => {
         notFoundInfo={notFound}
         isFilterApplied={false}
         data={tableData}
-        columns={labels}
+        columns={tableColumns}
         onClick={(id) => navigate(slugs.result(id))}
       />
     </>

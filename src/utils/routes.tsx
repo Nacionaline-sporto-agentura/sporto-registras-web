@@ -19,6 +19,8 @@ import Organization from '../pages/Organization';
 import OrganizationForm from '../pages/OrganizationForm';
 import OrganizationList from '../pages/OrganizationList';
 import OrganizationUser from '../pages/OrganizationUser';
+import PermissionFormPage from '../pages/PermissionForm';
+import PermissionsList from '../pages/PermissionsList';
 import Profile from '../pages/Profile';
 import RentForm from '../pages/RentForm';
 import RentsList from '../pages/RentsList';
@@ -36,12 +38,12 @@ import TechnicalCondition from '../pages/TechnicalCondition';
 import UpdateInstitutionForm from '../pages/UpdateInstitutionForm';
 import UserFormPage from '../pages/UserForm';
 import UserList from '../pages/UserList';
+import ViolationForm from '../pages/ViolationForm';
+import ViolationList from '../pages/ViolationList';
 import { useAppSelector } from '../state/hooks';
 import { AdminRoleType, Apps, Features, UserRoleType } from './constants';
 import { useGetCurrentProfile } from './hooks';
 import { pageTitles, url } from './texts';
-import PermissionsList from '../pages/PermissionsList';
-import PermissionFormPage from '../pages/PermissionForm';
 
 const env = import.meta.env;
 
@@ -72,6 +74,7 @@ export const slugs = {
   updateInstitution: (id: string) => `/istaigos/${id}/atnaujinti`,
   newInstitutions: `/istaigos/naujas`,
   organizations: `/organizacijos`,
+  organizationRequests: `/organizacijos-prasymai`,
   unConfirmedOrganization: (id: string) => `/organizaciju-prasymai/${id}`,
   organization: (id: string) => `/organizacijos/${id}`,
   updateOrganization: (id: string) => `/organizacijos/${id}/atnaujinti`,
@@ -113,6 +116,9 @@ export const slugs = {
   rents: '/rentos',
   newRent: `/rentos/naujas`,
   rent: (id: string) => `/rentos/${id}`,
+  violations: '/pazeidimai',
+  newViolation: `/pazeidimai/naujas`,
+  violation: (id: string) => `/pazeidimai/${id}`,
   nationalTeams: '/nacionalines-rinktines',
   unConfirmedNationalTeams: '/nepatvirtintos-nacionalines-rinktines',
   newNationalTeam: '/nacionalines-rinktines/naujas',
@@ -122,9 +128,6 @@ export const slugs = {
   updateSportsBaseSpaceGroup: (id: string) =>
     `/klasifikatoriai/sporto_bazes_erdves_rusis/${id}/atnaujinti`,
 };
-
-//Sporto bazės erdvės rūšių klasifikatorius
-
 export const routes = [
   {
     name: 'Vidiniai naudotojai',
@@ -138,6 +141,12 @@ export const routes = [
     name: pageTitles.organizations,
     slug: slugs.organizations,
     sidebar: true,
+    component: <OrganizationList />,
+    canHaveChildren: true,
+    feature: Features.INSTITUTIONS,
+  },
+  {
+    slug: slugs.organizationRequests,
     component: <OrganizationList />,
     canHaveChildren: true,
     feature: Features.INSTITUTIONS,
@@ -325,12 +334,17 @@ export const routes = [
   {
     slug: slugs.unconfirmedResults,
     component: <CompetitionList />,
-    role: AdminRoleType.ADMIN,
+    environment: 'development',
+  },
+  {
+    slug: slugs.newResult,
+    component: <CompetitionPage />,
+    environment: 'development',
   },
   {
     slug: slugs.result(':id'),
     component: <CompetitionPage />,
-    role: AdminRoleType.ADMIN,
+    environment: 'development',
   },
   {
     role: AdminRoleType.USER,
@@ -423,6 +437,23 @@ export const routes = [
     environment: 'development',
     feature: Features.RENTS,
   },
+
+  {
+    name: pageTitles.violations,
+    sidebar: true,
+    slug: slugs.violations,
+    component: <ViolationList />,
+    role: AdminRoleType.ADMIN,
+    environment: 'development',
+    feature: Features.VIOLATIONS,
+  },
+  {
+    slug: slugs.violation(':id'),
+    component: <ViolationForm />,
+    role: AdminRoleType.ADMIN,
+    environment: 'development',
+    feature: Features.RENTS,
+  },
   {
     name: 'Klasifikatoriai',
     slug: slugs.classifiers(':dynamic'),
@@ -455,26 +486,26 @@ export const useFilteredRoutes = () => {
     let select = true;
 
     if (route.role) {
-      select = !!user?.type && user?.type === route?.role;
+      select = select && !!user?.type && user?.type === route?.role;
     }
 
     if (route.userRole) {
-      select = currentProfile?.role === route?.userRole;
+      select = select && currentProfile?.role === route?.userRole;
     }
 
-    if (select && route.environment) {
-      select = route.environment === VITE_NODE_ENV;
+    if (route.environment) {
+      select = select && route.environment === VITE_NODE_ENV;
     }
 
-    if (select && route.appType) {
-      select = !!user?.permissions?.[route.appType];
+    if (route.appType) {
+      select = select && !!user?.permissions?.[route.appType];
     }
     if (route.feature && userFeatures) {
-      select = userFeatures.includes(route.feature) || userFeatures.includes('*');
+      select = select && (userFeatures.includes(route.feature) || userFeatures.includes('*'));
     }
 
-    if (select && !isAdmin && route.canHaveChildren) {
-      select = !!currentProfile?.data?.canHaveChildren;
+    if (!isAdmin && route.canHaveChildren) {
+      select = select && !!currentProfile?.data?.canHaveChildren;
     }
 
     return select;

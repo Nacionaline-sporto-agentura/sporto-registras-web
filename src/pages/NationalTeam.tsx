@@ -30,7 +30,6 @@ const generalSchema = Yup.object().shape({
   sportType: Yup.object().required(validationTexts.requireText),
   gender: Yup.object().required(validationTexts.requireText),
   startAt: Yup.date().required(validationTexts.requireText),
-  endAt: Yup.date().required(validationTexts.requireText),
 });
 
 const nationalTeamSchema = Yup.object().shape({}).concat(generalSchema);

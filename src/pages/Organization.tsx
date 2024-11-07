@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 
 import OrganizationExtendedForm from '../components/forms/OrganizationExtendedForm';
@@ -21,12 +21,15 @@ const cookies = new Cookies();
 const profileId = cookies.get('profileId');
 
 const OrganizationPage = () => {
-  const title = pageTitles.updateOrganization;
+  const title = pageTitles.organization;
   const { id = '' } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { showRequest } = Object.fromEntries([...Array.from(searchParams)]);
+
   const { isFetching, data: organization } = useQuery(
-    ['organization', id],
-    () => Api.getRequestTenant({ id }),
+    ['organization', id, showRequest],
+    () => (!!showRequest ? Api.getRequestTenantBase({ id }) : Api.getRequestTenant({ id })),
     {
       onError: () => {
         handleErrorToastFromServer();

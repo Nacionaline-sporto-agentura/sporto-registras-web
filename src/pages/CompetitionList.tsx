@@ -14,7 +14,7 @@ const CompetitionList = () => {
       slug: slugs.results,
     },
     {
-      label: 'Laukiama tvirtinti rezultatai',
+      label: 'Nepatvirtinti rezultatai',
       slug: slugs.unconfirmedResults,
     },
   ];

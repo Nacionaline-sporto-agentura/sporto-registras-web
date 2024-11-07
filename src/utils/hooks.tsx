@@ -4,16 +4,16 @@ import { matchPath, useLocation, useNavigate, useParams, useSearchParams } from 
 import Cookies from 'universal-cookie';
 import { Tab } from '../components/Tabs/TabBar';
 
+import _ from 'lodash';
 import { useAppDispatch, useAppSelector } from '../state/hooks';
 import { actions as userAction } from '../state/user/reducer';
 import { TableData, TableDataProp, User } from '../types';
-import api from './api';
+import api, { Populations } from './api';
 import { intersectionObserverConfig } from './configs';
-import { UserRoleType } from './constants';
+import { AdminRoleType, UserRoleType } from './constants';
 import { handleErrorToastFromServer } from './functions';
 import { clearCookies, emptyUser, handleSetProfile } from './loginFunctions';
 import { slugs } from './routes';
-import _ from 'lodash';
 
 const cookies = new Cookies();
 
@@ -173,6 +173,35 @@ export const useGetCurrentProfile = () => {
   const profileId = cookies.get('profileId');
   const currentProfile = profiles?.find((profile) => profile.id == profileId);
   return currentProfile;
+};
+
+const useCanManageChildren = () => {
+  const currentProfile = useGetCurrentProfile();
+  const user = useAppSelector((state) => state.user.userData);
+  const isAdmin = user.type === AdminRoleType.ADMIN;
+
+  return currentProfile?.data?.canHaveChildren || isAdmin;
+};
+
+export const useIsUser = () => {
+  const user = useAppSelector((state) => state.user.userData);
+  const isUser = user.type === AdminRoleType.USER;
+
+  return isUser;
+};
+
+export const useGetPopulateFields = () => {
+  const canHaveChildren = useCanManageChildren();
+
+  return canHaveChildren ? [Populations.TENANT] : [];
+};
+
+export const useTableColumns = (defaultColumns) => {
+  const canHaveChildren = useCanManageChildren();
+
+  const childrenStatusColumn = { tenant: { label: 'Pateikė', show: true } };
+
+  return canHaveChildren ? { ...defaultColumns, ...childrenStatusColumn } : defaultColumns;
 };
 
 export const useHasRole = (role) => {

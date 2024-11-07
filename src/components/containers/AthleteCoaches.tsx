@@ -130,7 +130,7 @@ const AthleteCoachesContainer = ({
                     onChange={(sportsPerson) => {
                       setFieldValue(`sportsPerson`, sportsPerson);
                     }}
-                    getOptionLabel={(option) => option?.name}
+                    getOptionLabel={(option) => `${option?.firstName} ${option?.lastName}`}
                     loadOptions={(input, page) =>
                       getSportsPersonList(input, page, { coach: { $exists: true } })
                     }

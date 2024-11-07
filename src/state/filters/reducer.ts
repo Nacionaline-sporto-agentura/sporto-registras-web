@@ -23,6 +23,7 @@ interface UsersFiltersState {
   bonusFilters: any;
   rentFilters: any;
   scholarShipFilters: any;
+  violationFilters: any;
 }
 
 const initialState: UsersFiltersState = {
@@ -50,6 +51,8 @@ const initialState: UsersFiltersState = {
     [ClassifierTypes.ORGANIZATION_BASIS]: {},
     [ClassifierTypes.RESULT_TYPE]: {},
     [ClassifierTypes.SPORTS_BASE_SPACE_GROUP]: {},
+    [ClassifierTypes.SCHOLARSHIP_REASON]: {},
+    [ClassifierTypes.DISQUALIFICATION_VIOLATION]: {},
   },
   sportsPersonFilters: {},
   competitionFilters: {},
@@ -57,12 +60,16 @@ const initialState: UsersFiltersState = {
   unconfirmedSportsPersonFilters: {},
   rentFilters: {},
   scholarShipFilters: {},
+  violationFilters: {},
 };
 
 export const filtersReducer = createSlice({
   name: 'userFilters',
   initialState,
   reducers: {
+    setViolationFilters: (state, action) => {
+      return { ...state, violationFilters: action.payload };
+    },
     setScholarShipFilters: (state, action) => {
       return { ...state, scholarShipFilters: action.payload };
     },
