@@ -16,7 +16,7 @@ export const columns = {
 };
 
 const OrganizationUsers = ({ onClickRow, id }) => {
-  const { navigate, page } = useGenericTablePageHooks();
+  const { navigate, page, pageSize } = useGenericTablePageHooks();
   const newUrl = slugs.newOrganizationUser(id);
   const isTenantUser = useIsTenantUser();
 
@@ -25,10 +25,11 @@ const OrganizationUsers = ({ onClickRow, id }) => {
     endpoint: () =>
       api.getTenantUsers({
         page,
+        pageSize,
         id,
       }),
     mapData: (list) => mapGroupUsersList(list),
-    dependencyArray: [page, id],
+    dependencyArray: [page, id, pageSize],
   });
 
   const notFound: NotFoundInfoProps = {

@@ -57,7 +57,7 @@ const mapRequestList = (requests: Request[]): TableRow[] =>
   });
 
 const UnconfirmedCompetitions = () => {
-  const { navigate, page, dispatch } = useGenericTablePageHooks();
+  const { navigate, page, dispatch, pageSize } = useGenericTablePageHooks();
   const populate = useGetPopulateFields();
   const tableColumns = useTableColumns(competitionLabels);
   const isUser = useIsUser();
@@ -72,11 +72,12 @@ const UnconfirmedCompetitions = () => {
     endpoint: () =>
       api.getNewRequests({
         page,
+        pageSize,
         query: { ...mapRequestFormFilters(filters), entityType: RequestEntityTypes.COMPETITIONS },
         populate,
       }),
     mapData: (list) => mapRequestList(list),
-    dependencyArray: [page, filters],
+    dependencyArray: [page, filters, pageSize],
   });
 
   const notFound: NotFoundInfoProps = {

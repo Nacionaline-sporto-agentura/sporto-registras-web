@@ -7,6 +7,7 @@ import { device } from '../../../styles';
 import { ChildrenType, TableData } from '../../../types';
 import { useWindowSize } from '../../../utils/hooks';
 import Icon from '../../other/Icons';
+import PageSizeDropdown from '../../fields/PageSizeDropdown';
 
 export interface TableLayoutProps {
   data?: TableData;
@@ -14,6 +15,7 @@ export interface TableLayoutProps {
   loading?: boolean;
   children: ChildrenType;
   hidePagination?: boolean;
+  hidePageSizeDropdown?: boolean;
 }
 
 const TableLayout = ({
@@ -22,12 +24,14 @@ const TableLayout = ({
   loading,
   children,
   hidePagination,
+  hidePageSizeDropdown,
 }: TableLayoutProps) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const params = Object.fromEntries([...Array.from(searchParams)]);
   const totalPages = data?.totalPages || 0;
   const showPagination = !hidePagination && !isEmpty(data?.data);
+  const showPageSizeDropdown = !hidePageSizeDropdown && !isEmpty(data?.data);
   const isMobile = useWindowSize(device.mobileL);
   const pageRange = isMobile ? 1 : 3;
   const pageMargin = isMobile ? 1 : 3;
@@ -52,31 +56,53 @@ const TableLayout = ({
     });
   };
 
+  const handlePageSizeChange = (e) => {
+    navigate({
+      search: `?${createSearchParams({
+        ...params,
+        [pageName]: '1',
+        pageSize: e,
+      })}`,
+    });
+  };
+
   return (
-    <Container>
-      {children}
-      {showPagination && (
-        <StyledReactPaginate
-          pageCount={totalPages || 1}
-          pageRangeDisplayed={pageRange}
-          marginPagesDisplayed={pageMargin}
-          forcePage={parseInt(params?.[pageName]) - 1 || 0}
-          onPageChange={handlePageChange}
-          containerClassName="pagination"
-          activeClassName="active"
-          pageLinkClassName="page-link"
-          breakLinkClassName="page-link"
-          nextLinkClassName="page-link"
-          previousLinkClassName="page-link"
-          pageClassName="page-item"
-          breakClassName="page-item"
-          nextClassName="page-item"
-          previousClassName="page-item"
-          previousLabel={<StyledIcon name="backward" />}
-          nextLabel={<StyledIcon name="forward" />}
+    <>
+      <Container>
+        {children}
+        {showPagination && (
+          <StyledReactPaginate
+            pageCount={totalPages || 1}
+            pageRangeDisplayed={pageRange}
+            marginPagesDisplayed={pageMargin}
+            forcePage={parseInt(params?.[pageName]) - 1 || 0}
+            onPageChange={handlePageChange}
+            containerClassName="pagination"
+            activeClassName="active"
+            pageLinkClassName="page-link"
+            breakLinkClassName="page-link"
+            nextLinkClassName="page-link"
+            previousLinkClassName="page-link"
+            pageClassName="page-item"
+            breakClassName="page-item"
+            nextClassName="page-item"
+            previousClassName="page-item"
+            previousLabel={<StyledIcon name="backward" />}
+            nextLabel={<StyledIcon name="forward" />}
+          />
+        )}
+      </Container>
+      {showPageSizeDropdown && (
+        <PageSizeDropdown
+          onChange={(pageSize) => {
+            if (pageSize !== Number(params?.pageSize)) {
+              handlePageSizeChange(pageSize);
+            }
+          }}
+          value={Number(params?.pageSize) || 10}
         />
       )}
-    </Container>
+    </>
   );
 };
 

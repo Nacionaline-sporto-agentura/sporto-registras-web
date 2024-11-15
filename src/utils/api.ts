@@ -127,7 +127,7 @@ interface TableList<T = any> {
   query?: any;
   page?: string | number;
   id?: string;
-  pageSize?: string;
+  pageSize?: number;
   isMy?: boolean;
   scope?: string;
   fields?: string[];
@@ -142,7 +142,7 @@ interface GetAllProps {
   page?: string | number;
   populate?: string[];
   query?: any;
-  pageSize?: string;
+  pageSize?: number;
   search?: string;
   searchFields?: string[];
   sort?: string[];
@@ -399,12 +399,13 @@ class Api {
     });
   };
 
-  getAdminUsers = async ({ query, page }: TableList) => {
+  getAdminUsers = async ({ query, page, pageSize }: TableList) => {
     return this.getList({
       resource: Resources.ADMINS,
       populate: [Populations.GROUPS],
       sort: [SortAscFields.FIRST_NAME, SortAscFields.LAST_NAME],
       page,
+      pageSize,
       query,
     });
   };
@@ -484,25 +485,27 @@ class Api {
     });
   };
 
-  getTenantUsers = async ({ page, id, query }: TableList) => {
+  getTenantUsers = async ({ page, pageSize, id, query }: TableList) => {
     return this.getList({
       resource: `${Resources.TENANTS}/${id}/users`,
       sort: [SortAscFields.FIRST_NAME, SortAscFields.LAST_NAME],
       query,
       page,
+      pageSize,
     });
   };
 
-  getSportsBases = async ({ page, query, populate = [] }: TableList) =>
+  getSportsBases = async ({ page, pageSize, query, populate = [] }: TableList) =>
     await this.getList({
       resource: Resources.SPORTS_BASES,
       populate: [Populations.TYPE, Populations.LAST_REQUEST, ...populate],
       sort: [SortDescFields.ID],
       page,
+      pageSize,
       query,
     });
 
-  getSportsPersons = async ({ page, query, populate = [] }: TableList) =>
+  getSportsPersons = async ({ page, pageSize, query, populate = [] }: TableList) =>
     await this.getList({
       resource: Resources.SPORTS_PERSONS,
       populate: [
@@ -515,6 +518,7 @@ class Api {
       ],
       sort: [SortDescFields.ID],
       page,
+      pageSize,
       query,
     });
 
@@ -526,7 +530,7 @@ class Api {
       query,
     });
 
-  getNationalTeams = async ({ page, query, populate = [] }: TableList) =>
+  getNationalTeams = async ({ page, pageSize, query, populate = [] }: TableList) =>
     await this.getList({
       resource: Resources.NATIONAL_TEAMS,
       populate: [
@@ -539,6 +543,7 @@ class Api {
       ],
       sort: [SortDescFields.ID],
       page,
+      pageSize,
       query,
     });
 
@@ -552,7 +557,7 @@ class Api {
       resource: `${Resources.NATIONAL_TEAMS}/${id}/base`,
     });
 
-  getCompetitions = async ({ page, query, populate = [] }: TableList) =>
+  getCompetitions = async ({ page, pageSize, query, populate = [] }: TableList) =>
     await this.getList({
       resource: Resources.COMPETITIONS,
       populate: [
@@ -564,24 +569,27 @@ class Api {
       ],
       sort: [SortDescFields.ID],
       page,
+      pageSize,
       query,
     });
 
-  getNewRequests = async ({ page, query, populate = [] }: TableList) =>
+  getNewRequests = async ({ page, pageSize, query, populate = [] }: TableList) =>
     await this.getList({
       resource: Resources.REQUESTS + '/new',
       populate: [Populations.ENTITY, ...populate],
       sort: [SortDescFields.ID],
       page,
+      pageSize,
       query,
     });
 
-  getRequests = async ({ page, query, populate = [] }: TableList) =>
+  getRequests = async ({ page, pageSize, query, populate = [] }: TableList) =>
     await this.getList({
       resource: Resources.REQUESTS,
       populate: [Populations.ENTITY, ...populate],
       sort: [SortDescFields.CREATED_AT],
       page,
+      pageSize,
       query,
     });
 
@@ -651,14 +659,15 @@ class Api {
     await this.getList({
       resource: Resources.GROUPS,
       populate: [Populations.CHILDREN],
-      pageSize: '9999',
+      pageSize: 9999,
       sort: [SortAscFields.NAME],
     });
 
-  getGroups = async ({ page, query }: TableList) =>
+  getGroups = async ({ page, pageSize, query }: TableList) =>
     await this.getList({
       resource: Resources.GROUPS,
       page,
+      pageSize,
       query,
       populate: [Populations.CHILDREN],
       sort: [SortAscFields.NAME],
@@ -697,9 +706,10 @@ class Api {
       populate: [Populations.PARENT],
     });
 
-  getGroupUsers = async ({ id, page }) =>
+  getGroupUsers = async ({ id, page, pageSize }) =>
     await this.getList({
       page,
+      pageSize,
       sort: [SortAscFields.FIRST_NAME, SortAscFields.LAST_NAME],
       resource: `${Resources.GROUPS}/${id}/users`,
     });
@@ -713,11 +723,12 @@ class Api {
       sort: [SortAscFields.NAME],
     });
 
-  getOrganizations = async ({ page, query }: TableList) =>
+  getOrganizations = async ({ page, pageSize, query }: TableList) =>
     await this.getList({
       resource: Resources.ORGANIZATIONS,
       populate: [Populations.PARENT],
       page,
+      pageSize,
       query,
       sort: [SortAscFields.NAME],
     });
@@ -736,11 +747,12 @@ class Api {
       query,
     });
 
-  getInstitutions = async ({ page, query }: TableList) =>
+  getInstitutions = async ({ page, pageSize, query }: TableList) =>
     await this.getList({
       resource: Resources.INSTITUTIONS,
       populate: [Populations.PARENT],
       page,
+      pageSize,
       query,
       sort: [SortAscFields.NAME],
     });
@@ -749,7 +761,7 @@ class Api {
     await this.getList({
       resource: Resources.TENANTS,
       populate: [Populations.CHILDREN],
-      pageSize: '9999',
+      pageSize: 9999,
       sort: [SortAscFields.NAME],
     });
 
@@ -794,13 +806,14 @@ class Api {
 
   getProfiles = async () =>
     await this.getList({
-      pageSize: '99999',
+      pageSize: 99999,
       resource: Resources.PROFILES,
     });
 
-  getSportBaseSources = async ({ page, query, sort }: TableList) =>
+  getSportBaseSources = async ({ page, query, pageSize, sort }: TableList) =>
     await this.getList({
       page,
+      pageSize,
       query,
       fields: ['id', 'name'],
       resource: Resources.SPORT_BASE_INVESTMENTS_SOURCES,
@@ -816,28 +829,31 @@ class Api {
       sort: [SortAscFields.NAME],
     });
 
-  getSportBaseLevels = async ({ query, page, sort }: TableList) =>
+  getSportBaseLevels = async ({ query, page, pageSize, sort }: TableList) =>
     await this.getList({
       query,
       page,
+      pageSize,
       fields: ['id', 'name'],
       resource: Resources.LEVELS,
       sort,
     });
 
-  getScholarshipReasons = async ({ page, query }: TableList) =>
+  getScholarshipReasons = async ({ page, query, pageSize }: TableList) =>
     await this.getList({
       resource: Resources.SCHOLARSHIPS_REASONS,
       sort: [SortDescFields.ID],
       fields: ['id', 'name'],
       page,
+      pageSize,
       query,
     });
 
-  getSportBaseTechnicalConditions = async ({ query, page, sort }: TableList) =>
+  getSportBaseTechnicalConditions = async ({ query, page, pageSize, sort }: TableList) =>
     await this.getList({
       query,
       page,
+      pageSize,
       fields: ['id', 'name', 'color'],
       resource: Resources.TECHNICAL_CONDITIONS,
       sort,
@@ -875,10 +891,11 @@ class Api {
     });
   };
 
-  getSportBaseTypes = async ({ query, page, sort }: TableList) =>
+  getSportBaseTypes = async ({ query, page, pageSize, sort }: TableList) =>
     await this.getList({
       query,
       page,
+      pageSize,
       fields: ['id', 'name'],
       resource: Resources.TYPES,
       sort,
@@ -910,66 +927,74 @@ class Api {
     });
   };
 
-  getOrganizationBasis = async ({ query, page }) =>
+  getOrganizationBasis = async ({ query, page, pageSize = 10 }) =>
     await this.getList({
       query,
       page,
+      pageSize,
       fields: ['id', 'name'],
       resource: Resources.ORGANIZATION_BASIS,
     });
 
-  getSportTypes = async ({ query, page, sort }: TableList) =>
+  getSportTypes = async ({ query, page, pageSize, sort }: TableList) =>
     await this.getList({
       query,
       page,
+      pageSize,
       resource: Resources.SPORT_TYPES,
       sort,
     });
 
-  getNationalTeamGenders = async ({ query, page, sort }: TableList) =>
+  getNationalTeamGenders = async ({ query, page, pageSize, sort }: TableList) =>
     await this.getList({
       query,
       page,
+      pageSize,
       resource: Resources.GENDERS,
       sort,
     });
 
-  getNationalTeamAgeGroups = async ({ query, page, sort }: TableList) =>
+  getNationalTeamAgeGroups = async ({ query, page, pageSize, sort }: TableList) =>
     await this.getList({
       query,
       page,
+      pageSize,
       resource: Resources.AGE_GROUPS,
       sort,
     });
 
-  getWorkRelations = async ({ query, page, sort }: TableList) =>
+  getWorkRelations = async ({ query, page, pageSize, sort }: TableList) =>
     await this.getList({
       query,
       page,
+      pageSize,
       resource: Resources.WORK_RELATIONS,
       sort,
     });
 
-  getCoaches = async ({ query, page }: TableList) =>
+  getCoaches = async ({ query, page, pageSize }: TableList) =>
     await this.getList({
       query,
       page,
+      pageSize,
       resource: Resources.COACHES,
       populate: [Populations.SPORTS_PERSON],
     });
 
-  getCompetitionTypes = async ({ query, page, sort }: TableList) =>
+  getCompetitionTypes = async ({ query, page, pageSize, sort }: TableList) =>
     await this.getList({
       query,
       page,
+      pageSize,
       resource: Resources.COMPETITION_TYPES,
       sort,
     });
 
-  getMatchTypes = async ({ query, page, sort }: TableList) =>
+  getMatchTypes = async ({ query, page, pageSize, sort }: TableList) =>
     await this.getList({
       query,
       page,
+      pageSize,
       resource: Resources.MATCH_TYPES,
       sort,
     });
@@ -990,10 +1015,11 @@ class Api {
       sort,
     });
 
-  getResultTypes = async ({ query, page, sort }: TableList): Promise<ResultType[]> =>
+  getResultTypes = async ({ query, page, pageSize, sort }: TableList): Promise<ResultType[]> =>
     await this.getList({
       query,
       page,
+      pageSize,
       resource: Resources.RESULT_TYPES,
       sort,
     });
@@ -1018,45 +1044,50 @@ class Api {
     });
   };
 
-  getTenantSportOrganizationTypes = async ({ query, page, sort }: TableList) =>
+  getTenantSportOrganizationTypes = async ({ query, page, pageSize, sort }: TableList) =>
     await this.getList({
       query,
       page,
+      pageSize,
       fields: ['id', 'name'],
       resource: Resources.SPORT_ORGANIZATION_TYPES,
       sort,
     });
 
-  getDisqualificationReasons = async ({ query, page, sort }: TableList) =>
+  getDisqualificationReasons = async ({ query, page, sort, pageSize }: TableList) =>
     await this.getList({
       query,
       page,
+      pageSize,
       fields: ['id', 'name'],
       resource: Resources.VIOLATIONS_DISQUALIFICATION_REASONS,
       sort,
     });
 
-  getTenantLegalForms = async ({ query, page, sort }: TableList) =>
+  getTenantLegalForms = async ({ query, page, pageSize, sort }: TableList) =>
     await this.getList({
       query,
       page,
+      pageSize,
       fields: ['id', 'name'],
       resource: Resources.LEGAL_FORMS,
       sort,
     });
 
-  getViolationsAntiDopingTypes = async ({ page, query, sort }: TableList) =>
+  getViolationsAntiDopingTypes = async ({ page, query, pageSize, sort }: TableList) =>
     await this.getList({
       page,
+      pageSize,
       fields: ['id', 'name'],
       query,
       resource: Resources.VIOLATIONS_ANTI_DOPING_TYPES,
       sort,
     });
 
-  getSportsBaseSpaceTypes = async ({ page, query }: TableList) =>
+  getSportsBaseSpaceTypes = async ({ page, query, pageSize }: TableList) =>
     await this.getList({
       page,
+      pageSize,
       fields: ['id', 'name', 'needSportType'],
       query,
       resource: Resources.SPACE_TYPES,
@@ -1089,11 +1120,12 @@ class Api {
     });
   };
 
-  getSportBaseSpaceGroups = async ({ page, query, sort }: TableList) =>
+  getSportBaseSpaceGroups = async ({ page, query, pageSize, sort }: TableList) =>
     await this.getList({
       page,
       fields: ['id', 'name'],
       query,
+      pageSize,
       resource: Resources.SPACE_GROUPS,
       sort,
     });
@@ -1185,11 +1217,12 @@ class Api {
       resource: Resources.STUDIES_PROGRAMS,
     });
 
-  getBonuses = async ({ page, query }: TableList): Promise<GetAllResponse<Bonus>> =>
+  getBonuses = async ({ page, pageSize, query }: TableList): Promise<GetAllResponse<Bonus>> =>
     await this.getList({
       resource: Resources.BONUSES,
       page,
       query,
+      pageSize,
       populate: [Populations.SPORTS_PERSON, Populations.RESULT],
       sort: [SortDescFields.ID],
     });
@@ -1220,10 +1253,11 @@ class Api {
       resource: Resources.BONUSES,
     });
 
-  getViolations = async ({ page, query }: TableList): Promise<GetAllResponse<Violation>> =>
+  getViolations = async ({ page, pageSize, query }: TableList): Promise<GetAllResponse<Violation>> =>
     await this.getList({
       resource: Resources.VIOLATIONS,
       page,
+      pageSize,
       query,
       populate: [Populations.SPORTS_PERSON, Populations.SPORT_TYPE],
       sort: [SortDescFields.ID],
@@ -1260,10 +1294,11 @@ class Api {
       resource: Resources.VIOLATIONS,
     });
 
-  getScholarships = async ({ page, query }: TableList): Promise<GetAllResponse<ScholarShip>> =>
+  getScholarships = async ({ page, pageSize, query }: TableList): Promise<GetAllResponse<ScholarShip>> =>
     await this.getList({
       resource: Resources.SCHOLARSHIPS,
       page,
+      pageSize,
       query,
       populate: [Populations.SPORTS_PERSON, Populations.RESULT],
       sort: [SortDescFields.ID],
@@ -1295,10 +1330,11 @@ class Api {
       resource: Resources.SCHOLARSHIPS,
     });
 
-  getRents = async ({ page, query }: TableList): Promise<GetAllResponse<Rent>> =>
+  getRents = async ({ page, pageSize, query }: TableList): Promise<GetAllResponse<Rent>> =>
     await this.getList({
       resource: Resources.RENTS,
       page,
+      pageSize,
       query,
       populate: [Populations.SPORTS_PERSON, Populations.RESULT],
       sort: [SortDescFields.ID],
@@ -1347,11 +1383,12 @@ class Api {
       query,
     });
 
-  getPermissions = async ({ page }): Promise<GetAllResponse<Permission<Group>>> =>
+  getPermissions = async ({ page, pageSize }): Promise<GetAllResponse<Permission<Group>>> =>
     await this.getList({
       resource: Resources.PERMISSIONS,
       populate: ['group'],
       page,
+      pageSize,
     });
 
   getPermission = async ({ id }): Promise<Permission<Group>> =>

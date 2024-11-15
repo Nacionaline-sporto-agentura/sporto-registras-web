@@ -41,7 +41,7 @@ const cookies = new Cookies();
 const profileId = cookies.get('profileId');
 
 const UserList = () => {
-  const { page, navigate, dispatch } = useGenericTablePageHooks();
+  const { page, navigate, dispatch, pageSize } = useGenericTablePageHooks();
   const isTenantAdmin = useIsTenantAdmin();
 
   const filters = useAppSelector((state) => state.filters.userFilters);
@@ -52,6 +52,7 @@ const UserList = () => {
       Api.getTenantUsers({
         id: profileId,
         page,
+        pageSize,
         query: {
           firstName: getIlike(filters?.firstName),
           lastName: getIlike(filters?.lastName),
@@ -59,7 +60,7 @@ const UserList = () => {
         },
       }),
     mapData: (list) => mapGroupUsersList(list),
-    dependencyArray: [filters, page],
+    dependencyArray: [filters, page, pageSize],
   });
 
   const handleSetFilters = (filters) => {

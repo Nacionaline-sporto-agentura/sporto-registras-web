@@ -23,6 +23,7 @@ import { formatDate, handleErrorToastFromServer, isNew } from '../utils/function
 import { slugs } from '../utils/routes';
 import {
   buttonsTitles,
+  competitionHistoryDescriptions,
   descriptions,
   inputLabels,
   matchTypeLabels,
@@ -404,6 +405,7 @@ const CompetitionPage = () => {
                 titles={titles}
                 diff={changes as any}
                 data={values}
+                requestFormHistoryDescriptions={competitionHistoryDescriptions}
               />
             )}
           </Container>

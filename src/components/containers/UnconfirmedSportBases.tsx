@@ -60,7 +60,7 @@ const mapRequestList = (requests: Request[]): TableRow[] =>
   });
 
 const UnconfirmedSportBases = () => {
-  const { navigate, page, dispatch } = useGenericTablePageHooks();
+  const { navigate, page, dispatch, pageSize } = useGenericTablePageHooks();
   const filters = useAppSelector((state) => state.filters.unconfirmedSportBaseFilters);
   const populate = useGetPopulateFields();
   const tableColumns = useTableColumns(sportBaseLabels);
@@ -75,11 +75,12 @@ const UnconfirmedSportBases = () => {
     endpoint: () =>
       api.getNewRequests({
         page,
+        pageSize,
         query: { ...mapRequestFormFilters(filters), entityType: RequestEntityTypes.SPORTS_BASES },
         populate,
       }),
     mapData: (list) => mapRequestList(list),
-    dependencyArray: [page, filters],
+    dependencyArray: [page, filters, pageSize],
   });
 
   const notFound: NotFoundInfoProps = {

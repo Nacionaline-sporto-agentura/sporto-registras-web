@@ -35,7 +35,7 @@ const filterConfig = (columns) => ({
 const rowConfig = [['name']];
 
 const ClassifierList = () => {
-  const { page, navigate, dispatch } = useGenericTablePageHooks();
+  const { page, navigate, dispatch, pageSize } = useGenericTablePageHooks();
   const { dynamic: classifierType } = useParams<{ dynamic: string }>();
 
   const filter = useAppSelector((state) =>
@@ -48,6 +48,7 @@ const ClassifierList = () => {
 
   const query = {
     ...getSimpleFilter(filter?.name, page),
+    pageSize,
     ...(sortedColumn.key && {
       sort: [`${sortedColumn.direction === 'asc' ? '' : '-'}` + sortedColumn.key],
     }),
@@ -92,7 +93,7 @@ const ClassifierList = () => {
     name: tab.route,
     endpoint: tab.endpoint,
     mapData: (list) => list,
-    dependencyArray: [filter, page, sortedColumn],
+    dependencyArray: [filter, page, sortedColumn, pageSize],
   });
 
   const getNewUrl = () => {

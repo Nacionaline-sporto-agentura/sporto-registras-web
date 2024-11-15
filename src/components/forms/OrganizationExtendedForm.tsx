@@ -14,7 +14,12 @@ import api from '../../utils/api';
 import { AdminRoleType, RequestEntityTypes, StatusTypes, TenantTypes } from '../../utils/constants';
 import { formatDate, handleErrorToastFromServer, isNew } from '../../utils/functions';
 import { slugs } from '../../utils/routes';
-import { buttonsTitles, inputLabels, validationTexts } from '../../utils/texts';
+import {
+  buttonsTitles,
+  inputLabels,
+  organizationHistoryDescriptions,
+  validationTexts,
+} from '../../utils/texts';
 import Button from '../buttons/Button';
 import GoverningBodiesContainer from '../containers/GoverningBodies';
 import OrganizationUsers from '../containers/OrganizationUsers';
@@ -433,6 +438,7 @@ const OrganizationExtendedForm = ({ title, disabled, organization, isLoading, id
                 titles={titles}
                 diff={changes as any}
                 data={values}
+                requestFormHistoryDescriptions={organizationHistoryDescriptions}
               />
             )}
           </Container>

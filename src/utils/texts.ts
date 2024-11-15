@@ -19,6 +19,14 @@ import {
   ViolationType,
 } from './constants';
 
+const generateHistoryDescriptions = (entity) => ({
+  [HistoryTypes.CREATED]: `pateikė prašymą įregistruoti ${entity}`,
+  [HistoryTypes.SUBMITTED]: `pateikė pakartotinai prašymą įregistruoti ${entity}`,
+  [HistoryTypes.RETURNED]: `grąžino taisyti pateiktą prašymą įregistruoti ${entity}`,
+  [HistoryTypes.REJECTED]: `atmetė pateiktą prašymą įregistruoti ${entity}`,
+  [HistoryTypes.APPROVED]: `patvirtino prašymą įregistruoti ${entity}`,
+});
+
 export const validationTexts = {
   yearFormat: 'Blogas metų formatas',
   badFileTypes: 'Blogi failų tipai',
@@ -548,13 +556,15 @@ export const requestFormHistoryLabels = {
   [HistoryTypes.APPROVED]: 'Priimtas',
 };
 
-export const requestFormHistoryDescriptions = {
-  [HistoryTypes.CREATED]: 'pateikė prašymą įregistruoti sporto bazę',
-  [HistoryTypes.SUBMITTED]: 'pateikė pakartotinai prašymą įregistruoti sporto bazę',
-  [HistoryTypes.RETURNED]: 'grąžino taisyti pateiktą prašymą įregistruoti sporto bazę',
-  [HistoryTypes.REJECTED]: 'atmetė pateiktą prašymą įregistruoti sporto bazę',
-  [HistoryTypes.APPROVED]: 'patvirtino prašymą įregistruoti sporto bazę',
-};
+export const sportsBaseHistoryDescriptions = generateHistoryDescriptions('sporto bazę');
+
+export const organizationHistoryDescriptions = generateHistoryDescriptions('sporto organizaciją');
+
+export const sportsPersonHistoryDescriptions = generateHistoryDescriptions('sporto asmenį');
+
+export const competitionHistoryDescriptions = generateHistoryDescriptions('rezultatus');
+
+export const nationalTeamHistoryDescriptions = generateHistoryDescriptions('nacionalinę rinktinę');
 
 export const membershipTypeLabels = {
   [MembershipTypes.LITHUANIAN]: 'Narystė Lietuvos sporto organizacijose',

@@ -53,15 +53,15 @@ const filterConfig = () => ({
 const rowConfig = [['sportsPerson']];
 
 const RentsList = () => {
-  const { dispatch, navigate, page } = useGenericTablePageHooks();
+  const { dispatch, navigate, page, pageSize } = useGenericTablePageHooks();
 
   const filters = useAppSelector((state) => state.filters.rentFilters);
 
   const { tableData, loading } = useTableData({
     name: 'rents',
-    endpoint: () => Api.getRents({ page, query: getSportsPersonQuery(filters) }),
+    endpoint: () => Api.getRents({ page, pageSize, query: getSportsPersonQuery(filters) }),
     mapData: (list) => mapData(list),
-    dependencyArray: [filters, page],
+    dependencyArray: [filters, page, pageSize],
   });
 
   const handleSetFilters = (filters) => {

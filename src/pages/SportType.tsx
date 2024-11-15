@@ -57,7 +57,7 @@ const matchLabels = {
 };
 
 const SportTypePage = () => {
-  const { navigate, page, id } = useGenericTablePageHooks();
+  const { navigate, page, id, pageSize } = useGenericTablePageHooks();
   const [current, setCurrent] = useState<Match>();
   const [validateOnChange, setValidateOnChange] = useState(false);
   const queryClient = useQueryClient();
@@ -104,9 +104,9 @@ const SportTypePage = () => {
 
   const { tableData, loading } = useTableData({
     name: 'matches',
-    endpoint: () => api.getMatchTypes({ query: { sportType: id }, page }),
+    endpoint: () => api.getMatchTypes({ query: { sportType: id }, page, pageSize }),
     mapData: (list) => list,
-    dependencyArray: [id, page],
+    dependencyArray: [id, page, pageSize],
   });
 
   const info = [sportType?.olympic ? 'Olimpinė sporto šaka' : 'Neolimpinė sporto šaka'];

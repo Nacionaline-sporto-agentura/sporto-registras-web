@@ -4,7 +4,7 @@ import wkx from 'wkx';
 import { ActionTypes } from '../components/other/HistoryContainer';
 import { Address, Result, User } from '../types';
 import api, { SortAscFields } from './api';
-import { AdminRoleType, ResultTypeTypes } from './constants';
+import { AdminRoleType, HistoryTypes, ResultTypeTypes } from './constants';
 import { url, validationTexts } from './texts';
 
 export interface Path {
@@ -417,3 +417,4 @@ export const getResult = (result) => {
     ? result?.value
     : '-';
 };
+

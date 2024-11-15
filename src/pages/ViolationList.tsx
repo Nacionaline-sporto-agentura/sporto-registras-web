@@ -51,15 +51,15 @@ const filterConfig = () => ({
 const rowConfig = [['sportsPerson']];
 
 const ViolationList = () => {
-  const { dispatch, navigate, page } = useGenericTablePageHooks();
+  const { dispatch, navigate, page, pageSize } = useGenericTablePageHooks();
 
   const filters = useAppSelector((state) => state.filters.violationFilters);
 
   const { tableData, loading } = useTableData({
     name: 'violations',
-    endpoint: () => Api.getViolations({ page }),
+    endpoint: () => Api.getViolations({ page, pageSize }),
     mapData: (list) => mapData(list),
-    dependencyArray: [filters, page],
+    dependencyArray: [filters, page, pageSize],
   });
 
   const handleSetFilters = (filters) => {

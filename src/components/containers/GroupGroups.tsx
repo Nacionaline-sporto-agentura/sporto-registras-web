@@ -11,20 +11,21 @@ import Button from '../buttons/Button';
 import RecursiveTable from '../tables/RecursiveTable';
 
 const GroupGroups = ({ groups = [] }: { groups: Group[] }) => {
-  const { navigate, page, id } = useGenericTablePageHooks();
+  const { navigate, page, id, pageSize } = useGenericTablePageHooks();
   const [tableData, setTableData] = useState<TableData>();
   const newUrl = `${slugs.newGroup}${id ? `?parent=${id}` : ''}`;
+
   useEffect(() => {
     const pageData = handlePagination({
       data: groups,
       page: page,
-      pageSize: 10,
+      pageSize: pageSize,
     });
     setTableData({
       data: mapGroupList(pageData.slicedData),
       totalPages: pageData.totalPages,
     });
-  }, [page, groups]);
+  }, [page, pageSize, groups]);
 
   const notFound: NotFoundInfoProps = {
     text: emptyState.groups,

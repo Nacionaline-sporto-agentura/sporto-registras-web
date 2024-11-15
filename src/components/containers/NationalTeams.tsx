@@ -66,7 +66,7 @@ const mapList = (requests: NationalTeam[]): TableRow[] =>
   });
 
 const NationalTeams = () => {
-  const { navigate, page } = useGenericTablePageHooks();
+  const { navigate, page, pageSize } = useGenericTablePageHooks();
   const { value: filter, setValue: setFilters } = useStorage<any>('nationalTeamsFIlter', {}, true);
   const tableColumns = useTableColumns(nationalTeamsLabels);
   const populate = useGetPopulateFields();
@@ -77,11 +77,12 @@ const NationalTeams = () => {
     endpoint: () =>
       api.getNationalTeams({
         page,
+        pageSize,
         query: mapQuery(filter),
         populate,
       }),
     mapData: (list) => mapList(list),
-    dependencyArray: [page, filter],
+    dependencyArray: [page, filter, pageSize],
   });
 
   const notFound: NotFoundInfoProps = {

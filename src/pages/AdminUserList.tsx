@@ -70,7 +70,7 @@ export const mapUsersList = (users: User[]): TableRow[] =>
 const AdminUserList = () => {
   const currentUser: User = useAppSelector((state) => state.user.userData);
 
-  const { page, navigate, dispatch } = useGenericTablePageHooks();
+  const { page, navigate, dispatch, pageSize } = useGenericTablePageHooks();
 
   const filters = useAppSelector((state) => state.filters.userFilters);
 
@@ -79,6 +79,7 @@ const AdminUserList = () => {
     endpoint: () =>
       Api.getAdminUsers({
         page,
+        pageSize,
         query: {
           firstName: getIlike(filters?.firstName),
           lastName: getIlike(filters?.lastName),
@@ -86,7 +87,7 @@ const AdminUserList = () => {
         },
       }),
     mapData: (list) => mapUsersList(list),
-    dependencyArray: [filters, page],
+    dependencyArray: [filters, page, pageSize],
   });
 
   const handleSetFilters = (filters) => {
