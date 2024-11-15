@@ -10,6 +10,7 @@ export interface Tab {
   slug?: string;
   value?: any;
   canDelete?: boolean;
+  container?: JSX.Element;
 }
 
 const TabBar = ({

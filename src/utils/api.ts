@@ -134,6 +134,7 @@ interface TableList<T = any> {
   resource?: Resources;
   search?: string;
   sort?: string[];
+  populate?: Populations[];
 }
 
 interface GetAllProps {
@@ -492,16 +493,16 @@ class Api {
     });
   };
 
-  getSportsBases = async ({ page, query }: TableList) =>
+  getSportsBases = async ({ page, query, populate = [] }: TableList) =>
     await this.getList({
       resource: Resources.SPORTS_BASES,
-      populate: [Populations.TYPE, Populations.LAST_REQUEST],
+      populate: [Populations.TYPE, Populations.LAST_REQUEST, ...populate],
       sort: [SortDescFields.ID],
       page,
       query,
     });
 
-  getSportsPersons = async ({ page, query }: TableList) =>
+  getSportsPersons = async ({ page, query, populate = [] }: TableList) =>
     await this.getList({
       resource: Resources.SPORTS_PERSONS,
       populate: [
@@ -510,6 +511,7 @@ class Api {
         Populations.TENANT,
         Populations.SPORT_TYPES,
         Populations.ATHLETE,
+        ...populate,
       ],
       sort: [SortDescFields.ID],
       page,
@@ -524,7 +526,7 @@ class Api {
       query,
     });
 
-  getNationalTeams = async ({ page, query }: TableList) =>
+  getNationalTeams = async ({ page, query, populate = [] }: TableList) =>
     await this.getList({
       resource: Resources.NATIONAL_TEAMS,
       populate: [
@@ -533,6 +535,7 @@ class Api {
         Populations.SPORT_TYPES,
         Populations.AGE_GROUP,
         Populations.ATHLETES,
+        ...populate,
       ],
       sort: [SortDescFields.ID],
       page,
@@ -549,7 +552,7 @@ class Api {
       resource: `${Resources.NATIONAL_TEAMS}/${id}/base`,
     });
 
-  getCompetitions = async ({ page, query }: TableList) =>
+  getCompetitions = async ({ page, query, populate = [] }: TableList) =>
     await this.getList({
       resource: Resources.COMPETITIONS,
       populate: [
@@ -557,17 +560,27 @@ class Api {
         Populations.LAST_REQUEST,
         Populations.TENANT,
         Populations.COMPETITION_TYPE,
+        ...populate,
       ],
       sort: [SortDescFields.ID],
       page,
       query,
     });
 
-  getNewRequests = async ({ page, query }: TableList) =>
+  getNewRequests = async ({ page, query, populate = [] }: TableList) =>
     await this.getList({
       resource: Resources.REQUESTS + '/new',
-      populate: [Populations.ENTITY, Populations.TENANT],
+      populate: [Populations.ENTITY, ...populate],
       sort: [SortDescFields.ID],
+      page,
+      query,
+    });
+
+  getRequests = async ({ page, query, populate = [] }: TableList) =>
+    await this.getList({
+      resource: Resources.REQUESTS,
+      populate: [Populations.ENTITY, ...populate],
+      sort: [SortDescFields.CREATED_AT],
       page,
       query,
     });
@@ -703,7 +716,7 @@ class Api {
   getOrganizations = async ({ page, query }: TableList) =>
     await this.getList({
       resource: Resources.ORGANIZATIONS,
-      populate: [Populations.PARENT, Populations.LAST_REQUEST],
+      populate: [Populations.PARENT],
       page,
       query,
       sort: [SortAscFields.NAME],
@@ -748,18 +761,16 @@ class Api {
     });
   };
 
-  getRequestTenant = async ({ id }: { id: string }): Promise<Tenant> => {
+  getRequestTenantBase = async ({ id }: { id: string }): Promise<Tenant> => {
     return await this.getOne({
       resource: `${Resources.TENANTS}/${id}/base`,
-      populate: [
-        Populations.CHILDREN,
-        Populations.LAST_REQUEST,
-        Populations.CAN_EDIT,
-        Populations.CAN_CREATE_REQUEST,
-        Populations.CAN_VALIDATE,
-        Populations.TYPE,
-        Populations.LEGAL_FORM,
-      ],
+    });
+  };
+
+  getRequestTenant = async ({ id }: { id: string }): Promise<Tenant> => {
+    return await this.getOne({
+      resource: `${Resources.TENANTS}/${id}`,
+      populate: [Populations.CHILDREN, Populations.TYPE, Populations.LEGAL_FORM],
     });
   };
 

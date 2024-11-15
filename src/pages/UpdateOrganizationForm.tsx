@@ -69,7 +69,7 @@ const UpdateOrganizationForm = () => {
   const [searchParams] = useSearchParams();
   const { parent } = Object.fromEntries([...Array.from(searchParams)]);
 
-  const title = pageTitles.updateOrganization;
+  const title = pageTitles.organization;
 
   const { isFetching, data: institution } = useQuery(
     ['organization', id],

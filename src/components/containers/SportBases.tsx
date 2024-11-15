@@ -4,9 +4,15 @@ import { useAppSelector } from '../../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { NotFoundInfoProps, SportsBase, TableRow } from '../../types';
 import api from '../../utils/api';
-import { AdminRoleType, colorsByStatus, StatusTypes } from '../../utils/constants';
+import { colorsByStatus, StatusTypes } from '../../utils/constants';
 import { getFormattedAddress, getIlike, getSportBaseTypeList } from '../../utils/functions';
-import { useGenericTablePageHooks, useTableData } from '../../utils/hooks';
+import {
+  useGenericTablePageHooks,
+  useGetPopulateFields,
+  useIsUser,
+  useTableColumns,
+  useTableData,
+} from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
 import { buttonsTitles, emptyState, inputLabels, requestStatusLabels } from '../../utils/texts';
 import Button from '../buttons/Button';
@@ -77,13 +83,15 @@ const mapRequestList = (requests: SportsBase[]): TableRow[] =>
       ...(status && {
         status: <StatusTag label={requestStatusLabels[status]} tagColor={colorsByStatus[status]} />,
       }),
+      tenant: sportsBase?.tenant?.name,
     };
   });
 
 const SportBases = () => {
   const { navigate, page, dispatch } = useGenericTablePageHooks();
-  const user = useAppSelector((state) => state.user.userData);
-
+  const populate = useGetPopulateFields();
+  const tableColumns = useTableColumns(sportBaseLabels);
+  const isUser = useIsUser();
   const filter = useAppSelector((state) => state.filters.sportBaseFilters);
 
   const handleSetFilters = (filters) => {
@@ -96,6 +104,7 @@ const SportBases = () => {
       api.getSportsBases({
         page,
         query: mapSportBaseQuery(filter),
+        populate,
       }),
     mapData: (list) => mapRequestList(list),
     dependencyArray: [page, filter],
@@ -117,7 +126,7 @@ const SportBases = () => {
             disabled={loading}
           />
         </TableButtonsInnerRow>
-        {user.type === AdminRoleType.USER && (
+        {isUser && (
           <Button onClick={() => navigate(slugs.newSportBase)}>
             {buttonsTitles.registerSportBase}
           </Button>
@@ -128,7 +137,7 @@ const SportBases = () => {
         notFoundInfo={notFound}
         isFilterApplied={false}
         data={tableData}
-        columns={sportBaseLabels}
+        columns={tableColumns}
         onClick={(id) => navigate(slugs.sportsBase(id))}
       />
     </>

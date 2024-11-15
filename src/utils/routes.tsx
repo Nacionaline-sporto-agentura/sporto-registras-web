@@ -74,6 +74,7 @@ export const slugs = {
   updateInstitution: (id: string) => `/istaigos/${id}/atnaujinti`,
   newInstitutions: `/istaigos/naujas`,
   organizations: `/organizacijos`,
+  organizationRequests: `/organizacijos-prasymai`,
   unConfirmedOrganization: (id: string) => `/organizaciju-prasymai/${id}`,
   organization: (id: string) => `/organizacijos/${id}`,
   updateOrganization: (id: string) => `/organizacijos/${id}/atnaujinti`,
@@ -127,7 +128,6 @@ export const slugs = {
   updateSportsBaseSpaceGroup: (id: string) =>
     `/klasifikatoriai/sporto_bazes_erdves_rusis/${id}/atnaujinti`,
 };
-
 export const routes = [
   {
     name: 'Vidiniai naudotojai',
@@ -141,6 +141,12 @@ export const routes = [
     name: pageTitles.organizations,
     slug: slugs.organizations,
     sidebar: true,
+    component: <OrganizationList />,
+    canHaveChildren: true,
+    feature: Features.INSTITUTIONS,
+  },
+  {
+    slug: slugs.organizationRequests,
     component: <OrganizationList />,
     canHaveChildren: true,
     feature: Features.INSTITUTIONS,

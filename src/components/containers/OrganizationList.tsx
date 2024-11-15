@@ -1,12 +1,10 @@
-import { applyPatch } from 'fast-json-patch';
 import { isEmpty } from 'lodash';
 import { actions as filterActions } from '../../state/filters/reducer';
 import { useAppSelector } from '../../state/hooks';
 import { TableButtonsInnerRow, TableButtonsRow } from '../../styles/CommonStyles';
 import { NotFoundInfoProps, TableRow, Tenant } from '../../types';
 import api from '../../utils/api';
-import { organizationColumns } from '../../utils/columns';
-import { colorsByStatus, StatusTypes, TenantTypes } from '../../utils/constants';
+import { TenantTypes } from '../../utils/constants';
 import { getIlike } from '../../utils/functions';
 import { useGenericTablePageHooks, useIsTenantUser, useTableData } from '../../utils/hooks';
 import { slugs } from '../../utils/routes';
@@ -15,15 +13,21 @@ import {
   emptyState,
   emptyStateUrl,
   inputLabels,
-  requestStatusLabels,
   tenantTypeLabels,
 } from '../../utils/texts';
 import Button from '../buttons/Button';
 import DynamicFilter from '../other/DynamicFilter';
 import { FilterInputTypes } from '../other/DynamicFilter/Filter';
-import StatusTag from '../other/StatusTag';
 import MainTable from '../tables/MainTable';
 import TableItem from '../tables/TableItem';
+
+const organizationColumns = {
+  name: { label: 'Sporto organizacijos pavadinimas', show: true },
+  code: { label: 'Kodas', show: true },
+  email: { label: 'El. paštas', show: true },
+  phone: { label: 'Telefonas', show: true },
+  parentName: { label: 'Tėvinė organizacija', show: true },
+};
 
 const filterConfig = () => ({
   name: {
@@ -55,46 +59,26 @@ const rowConfig = [
 
 export const mapOrganizationList = (tenants: Tenant[]): TableRow[] => {
   return tenants.map((tenant: Tenant) => {
-    const status = tenant?.lastRequest?.status;
-
-    const lastRequestIsNotApprovalOrRejection =
-      tenant?.lastRequest &&
-      ![StatusTypes.APPROVED, StatusTypes.REJECTED].includes(tenant?.lastRequest?.status);
-
-    const tenantRequest = lastRequestIsNotApprovalOrRejection
-      ? applyPatch(
-          tenant,
-          tenant.lastRequest?.changes.filter((change) => {
-            return !['fundingSources', 'governingBodies', 'memberships'].some((item) =>
-              change.path.includes(item),
-            );
-          }),
-        ).newDocument
-      : tenant;
-
     return {
-      id: tenantRequest.id,
-      name: tenantRequest.name,
-      code: tenantRequest.code,
-      phone: tenantRequest.phone,
-      email: tenantRequest.email,
-      parentName: tenantRequest?.parent && (
+      id: tenant.id,
+      name: tenant.name,
+      code: tenant.code,
+      phone: tenant.phone,
+      email: tenant.email,
+      parentName: tenant?.parent && (
         <TableItem
-          label={`${tenantRequest?.parent?.name}${
-            tenantRequest?.parent?.tenantType === TenantTypes.MUNICIPALITY
+          label={`${tenant?.parent?.name}${
+            tenant?.parent?.tenantType === TenantTypes.MUNICIPALITY
               ? ` (${tenantTypeLabels.MUNICIPALITY})`
               : ''
           }`}
           url={
-            tenantRequest?.parent?.tenantType === TenantTypes.ORGANIZATION
-              ? slugs.organizationUsers(tenantRequest?.parent?.id || '')
-              : slugs.institutionUsers(tenantRequest?.parent?.id || '')
+            tenant?.parent?.tenantType === TenantTypes.ORGANIZATION
+              ? slugs.organizationUsers(tenant?.parent?.id || '')
+              : slugs.institutionUsers(tenant?.parent?.id || '')
           }
         />
       ),
-      ...(status && {
-        status: <StatusTag label={requestStatusLabels[status]} tagColor={colorsByStatus[status]} />,
-      }),
     };
   });
 };
@@ -156,7 +140,7 @@ const Organizations = () => {
         isFilterApplied={!isEmpty(filters)}
         data={tableData}
         columns={organizationColumns}
-        onClick={(id) => navigate(`${slugs.organizationUsers(id)}`)}
+        onClick={(id) => navigate(slugs.organizationUsers(id))}
       />
     </>
   );

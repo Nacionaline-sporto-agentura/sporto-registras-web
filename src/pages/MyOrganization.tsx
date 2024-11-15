@@ -65,7 +65,7 @@ const MyOrganization = () => {
   const isTenantAdmin = useIsTenantAdmin();
   const { isFetching, data: organization } = useQuery(
     ['organization', profileId],
-    () => Api.getRequestTenant({ id: profileId }),
+    () => Api.getRequestTenantBase({ id: profileId }),
     {
       onError: () => {
         handleErrorToastFromServer();

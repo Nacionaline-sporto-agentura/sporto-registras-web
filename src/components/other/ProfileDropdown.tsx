@@ -50,10 +50,10 @@ const ProfilesDropdown = () => {
                 }}
                 selected={selected}
               >
-                <div>
+                <InnerProfileContainer>
                   <Name>{profile?.name || '-'}</Name>
                   <Email>{profile?.email || user?.email}</Email>
-                </div>
+                </InnerProfileContainer>
                 {selected && <SelectedIcon name={IconName.checkmark} />}
               </ProfileContainer>
             );
@@ -87,6 +87,10 @@ const TabIconContainer = styled.div`
   align-items: center;
 `;
 
+const InnerProfileContainer = styled.div`
+  width: 100%;
+`;
+
 const TabIcon = styled(Icon)`
   color: #9aa4b2;
   font-size: 1.7rem;
@@ -107,7 +111,6 @@ const Hr = styled.div`
 
 const Container = styled.div`
   position: relative;
-  min-width: 200px;
   &:focus {
     outline: none;
   }
@@ -132,9 +135,7 @@ const Select = styled.div`
   align-items: center;
 `;
 
-const SelectContainer = styled.div`
-  width: 100%;
-`;
+const SelectContainer = styled.div``;
 
 const Name = styled.div`
   font-size: 1.4rem;
@@ -179,6 +180,7 @@ const ProfilesContainer = styled.div`
 
 const ProfileContainer = styled.div<{ selected: boolean }>`
   padding: 9px 12px;
+  width: 100%;
   border-radius: 2px;
   border: 1px solid ${({ theme, selected }) => (selected ? theme.colors.primary : 'none')};
   display: flex;
