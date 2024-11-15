@@ -152,12 +152,14 @@ export const useTableData = ({ endpoint, mapData, dependencyArray, name }: Table
 export const useGenericTablePageHooks = () => {
   const { id = '' } = useParams();
   const [searchParams] = useSearchParams();
-  const { page } = Object.fromEntries([...Array.from(searchParams)]);
+
+  const { page, pageSize } = Object.fromEntries([...Array.from(searchParams)]);
+
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const location = useLocation();
 
-  return { page, navigate, dispatch, location, id };
+  return { page, pageSize: Number(pageSize || 10), navigate, dispatch, location, id };
 };
 
 export const useGetCurrentRoute = (tabs: Tab[]) => {

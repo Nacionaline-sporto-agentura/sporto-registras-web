@@ -84,7 +84,7 @@ export const mapOrganizationList = (tenants: Tenant[]): TableRow[] => {
 };
 
 const Organizations = () => {
-  const { navigate, page, dispatch } = useGenericTablePageHooks();
+  const { navigate, page, dispatch, pageSize } = useGenericTablePageHooks();
   const isTenantUser = useIsTenantUser();
 
   const filters = useAppSelector((state) => state.filters.organizationFilters);
@@ -92,12 +92,12 @@ const Organizations = () => {
   const handleSetFilters = (filters) => {
     dispatch(filterActions.setOrganizationFilters(filters));
   };
-
   const { tableData, loading } = useTableData({
     name: 'organizations',
     endpoint: () =>
       api.getOrganizations({
         page,
+        pageSize,
         query: {
           name: getIlike(filters?.name),
           code: getIlike(filters?.code),
@@ -106,7 +106,7 @@ const Organizations = () => {
         },
       }),
     mapData: (list) => mapOrganizationList(list),
-    dependencyArray: [filters, page],
+    dependencyArray: [filters, page, pageSize],
   });
 
   const notFoundInfo: NotFoundInfoProps = {

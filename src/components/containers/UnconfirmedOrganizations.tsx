@@ -51,7 +51,7 @@ const mapRequestList = (requests: Request[]): TableRow[] =>
   });
 
 const OrganizationRequests = () => {
-  const { navigate, page } = useGenericTablePageHooks();
+  const { navigate, page, pageSize } = useGenericTablePageHooks();
   const isTenantUser = useIsTenantUser();
 
   const { value: filter, setValue: setFilters } = useStorage<any>('organizationRequests', {}, true);
@@ -61,10 +61,11 @@ const OrganizationRequests = () => {
     endpoint: () =>
       api.getRequests({
         page,
+        pageSize,
         query: { ...mapRequestFormFilters(filter), entityType: RequestEntityTypes.TENANTS },
       }),
     mapData: (list) => mapRequestList(list),
-    dependencyArray: [page, filter],
+    dependencyArray: [page, filter, pageSize],
   });
 
   const notFound: NotFoundInfoProps = {

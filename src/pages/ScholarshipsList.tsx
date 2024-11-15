@@ -53,15 +53,15 @@ const filterConfig = () => ({
 const rowConfig = [['sportsPerson']];
 
 const ScholarshipsList = () => {
-  const { dispatch, navigate, page } = useGenericTablePageHooks();
+  const { dispatch, navigate, page, pageSize } = useGenericTablePageHooks();
 
   const filters = useAppSelector((state) => state.filters.scholarShipFilters);
 
   const { tableData, loading } = useTableData({
     name: 'scholarships',
-    endpoint: () => Api.getScholarships({ page, query: getSportsPersonQuery(filters) }),
+    endpoint: () => Api.getScholarships({ page, pageSize, query: getSportsPersonQuery(filters) }),
     mapData: (list) => mapData(list),
-    dependencyArray: [filters, page],
+    dependencyArray: [filters, page, pageSize],
   });
 
   const handleSetFilters = (filters) => {

@@ -29,7 +29,7 @@ const filterConfig = () => ({
 const rowConfig = [['name']];
 
 const InstitutionList = () => {
-  const { dispatch, navigate, page } = useGenericTablePageHooks();
+  const { dispatch, navigate, page, pageSize } = useGenericTablePageHooks();
   const { id } = useParams();
 
   const newGroupUrl = `${slugs.newInstitutions}${id ? `?parent=${id}` : ''}`;
@@ -38,9 +38,9 @@ const InstitutionList = () => {
 
   const { tableData, loading } = useTableData({
     name: 'institutions',
-    endpoint: () => Api.getInstitutions(getSimpleFilter(filters.name, page)),
+    endpoint: () => Api.getInstitutions({...getSimpleFilter(filters.name, page), pageSize}),
     mapData: (list) => mapInstitutionList(list),
-    dependencyArray: [id, filters, page],
+    dependencyArray: [id, filters, page, pageSize],
   });
 
   const handleSetFilters = (filters) => {

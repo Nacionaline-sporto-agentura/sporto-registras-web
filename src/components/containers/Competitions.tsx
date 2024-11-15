@@ -63,7 +63,7 @@ const mapResultList = (results: Competition[]): TableRow[] =>
   });
 
 const Competitions = () => {
-  const { navigate, page, dispatch } = useGenericTablePageHooks();
+  const { navigate, page, dispatch, pageSize } = useGenericTablePageHooks();
   const tableColumns = useTableColumns(competitionLabels);
   const populate = useGetPopulateFields();
   const isUser = useIsUser();
@@ -79,11 +79,12 @@ const Competitions = () => {
     endpoint: () =>
       api.getCompetitions({
         page,
+        pageSize,
         query: mapCompetitionQuery(filter),
         populate,
       }),
     mapData: (list) => mapResultList(list),
-    dependencyArray: [page, filter],
+    dependencyArray: [page, filter, pageSize],
   });
 
   const notFound: NotFoundInfoProps = {

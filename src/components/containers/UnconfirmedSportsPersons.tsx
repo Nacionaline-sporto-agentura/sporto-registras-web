@@ -61,7 +61,7 @@ const mapRequestList = (requests: Request[]): TableRow[] =>
   });
 
 const UnconfirmedSportsPersons = () => {
-  const { navigate, page, dispatch } = useGenericTablePageHooks();
+  const { navigate, page, dispatch, pageSize } = useGenericTablePageHooks();
   const populate = useGetPopulateFields();
   const isUser = useIsUser();
   const tableColumns = useTableColumns(sportsPersonLabels);
@@ -77,11 +77,12 @@ const UnconfirmedSportsPersons = () => {
     endpoint: () =>
       api.getNewRequests({
         page,
+        pageSize,
         query: { ...mapRequestFormFilters(filters), entityType: RequestEntityTypes.SPORTS_PERSONS },
         populate,
       }),
     mapData: (list) => mapRequestList(list),
-    dependencyArray: [page, filters],
+    dependencyArray: [page, filters, pageSize],
   });
 
   const notFound: NotFoundInfoProps = {

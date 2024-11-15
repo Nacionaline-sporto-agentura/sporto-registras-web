@@ -31,7 +31,7 @@ const filterConfig = () => ({
 const rowConfig = [['name']];
 
 const GroupsList = () => {
-  const { dispatch, navigate, page } = useGenericTablePageHooks();
+  const { dispatch, navigate, page, pageSize } = useGenericTablePageHooks();
   const { id } = useParams();
   const currentUser: User = useAppSelector((state) => state.user.userData);
 
@@ -45,9 +45,9 @@ const GroupsList = () => {
 
   const { tableData, loading } = useTableData({
     name: 'groups',
-    endpoint: () => Api.getGroups(getSimpleFilter(filters.name, page, { parent: id })),
+    endpoint: () => Api.getGroups({...getSimpleFilter(filters.name, page, { parent: id }), pageSize}),
     mapData: (list) => mapGroupList(list),
-    dependencyArray: [id, filters, page],
+    dependencyArray: [id, filters, page, pageSize],
   });
 
   const handleSetFilters = (filters) => {

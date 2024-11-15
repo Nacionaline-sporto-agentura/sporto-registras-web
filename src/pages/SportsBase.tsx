@@ -4,7 +4,7 @@ import { Formik, yupToFormErrors } from 'formik';
 import { cloneDeep, isEmpty } from 'lodash';
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { createSearchParams, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 import Button from '../components/buttons/Button';
@@ -44,6 +44,7 @@ import {
   deleteTitles,
   descriptions,
   inputLabels,
+  sportsBaseHistoryDescriptions,
   validationTexts,
 } from '../utils/texts';
 
@@ -61,7 +62,8 @@ const generalSchema = Yup.object().shape({
     .trim()
     .matches(phoneNumberRegexPattern, validationTexts.badPhoneFormat),
   webPage: Yup.string().required(validationTexts.requireText),
-  level: Yup.object().shape({
+  level: Yup.object()
+    .shape({
       id: Yup.number().required(validationTexts.requireText),
       name: Yup.string().required(validationTexts.requireText),
     })
@@ -234,7 +236,13 @@ const SportsBasePage = () => {
     const params = getCreateOrUpdateParams({ changes, status: StatusTypes.DRAFT });
 
     createOrUpdateRequest.mutateAsync(params, {
-      onSuccess: () => {
+      onSuccess: (response) => {
+        if (isNew(id)) {
+          navigate({
+            search: createSearchParams({ prasymas: response.id }).toString(),
+          });
+        }
+
         queryClient.invalidateQueries();
       },
     });
@@ -324,11 +332,11 @@ const SportsBasePage = () => {
 
         const submitChanges = changes.map((change: any) => change[0]);
 
-        useAutoSave({
-          canAutoSave: showDraftButton,
-          changes: submitChanges,
-          onSave: handleDraft,
-        });
+        // useAutoSave({
+        //   canAutoSave: showDraftButton,
+        //   changes: submitChanges,
+        //   onSave: handleDraft,
+        // });
 
         const containers = {
           [sportsBaseTabTitles.generalInfo]: (
@@ -660,6 +668,7 @@ const SportsBasePage = () => {
             />
             {!isNewRequest && (
               <HistoryContainer
+                requestFormHistoryDescriptions={sportsBaseHistoryDescriptions}
                 handleClear={() => {
                   setValues(sportBaseWithoutLastRequest);
                 }}

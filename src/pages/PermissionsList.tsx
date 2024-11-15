@@ -42,7 +42,7 @@ export const mapPermissionsList = (permissions: Permission<Group>[]): TableRow[]
 const PermissionsList = () => {
   const [searchParams] = useSearchParams();
   const params = Object.fromEntries([...Array.from(searchParams)]);
-  const { page } = params;
+  const { page, pageSize } = params;
   const navigate = useNavigate();
   const currentUser = useAppSelector((state) => state.user.userData);
 
@@ -50,9 +50,9 @@ const PermissionsList = () => {
 
   const { tableData, loading } = useTableData({
     name: 'permissions',
-    endpoint: () => Api.getPermissions({ page }),
+    endpoint: () => Api.getPermissions({ page, pageSize }),
     mapData: (list) => mapPermissionsList(list),
-    dependencyArray: [searchParams, page],
+    dependencyArray: [searchParams, page, pageSize],
   });
 
   const notFoundInfo: NotFoundInfoProps = {

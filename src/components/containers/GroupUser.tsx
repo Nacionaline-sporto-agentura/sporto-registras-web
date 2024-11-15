@@ -10,7 +10,7 @@ import Button from '../buttons/Button';
 import MainTable from '../tables/MainTable';
 
 const GroupUser = () => {
-  const { navigate, page, id } = useGenericTablePageHooks();
+  const { navigate, page, id, pageSize } = useGenericTablePageHooks();
   const newUrl = `${slugs.newAdminUser}?group=${id}`;
 
   const { tableData, loading } = useTableData({
@@ -18,10 +18,11 @@ const GroupUser = () => {
     endpoint: () =>
       api.getGroupUsers({
         page,
+        pageSize,
         id,
       }),
     mapData: (list) => mapGroupUsersList(list),
-    dependencyArray: [page],
+    dependencyArray: [page, pageSize],
   });
 
   const notFound: NotFoundInfoProps = {

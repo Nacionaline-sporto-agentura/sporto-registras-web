@@ -50,7 +50,7 @@ const matchLabels = {
 };
 
 const SportBaseSpaceGroup = () => {
-  const { navigate, page, id } = useGenericTablePageHooks();
+  const { navigate, page, id, pageSize } = useGenericTablePageHooks();
   const [current, setCurrent] = useState<SportBaseSpaceType>();
   const [validateOnChange, setValidateOnChange] = useState(false);
   const queryClient = useQueryClient();
@@ -70,7 +70,7 @@ const SportBaseSpaceGroup = () => {
 
   const handleSuccess = () => {
     setCurrent(undefined);
-    queryClient.invalidateQueries(['sportsBaseSpaceType', id, page]);
+    queryClient.invalidateQueries(['sportsBaseSpaceType', id, page, pageSize]);
   };
 
   const createOrUpdateType = useMutation(
@@ -97,9 +97,9 @@ const SportBaseSpaceGroup = () => {
 
   const { tableData, loading } = useTableData({
     name: 'sportsBaseSpaceType',
-    endpoint: () => api.getSportsBaseSpaceTypes({ query: { group: id }, page }),
+    endpoint: () => api.getSportsBaseSpaceTypes({ query: { group: id }, page, pageSize }),
     mapData: (list) => list,
-    dependencyArray: [id, page],
+    dependencyArray: [id, page, pageSize],
   });
 
   if (sportTypeLoading) return <FullscreenLoader />;

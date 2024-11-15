@@ -88,7 +88,7 @@ const mapRequestList = (requests: SportsBase[]): TableRow[] =>
   });
 
 const SportBases = () => {
-  const { navigate, page, dispatch } = useGenericTablePageHooks();
+  const { navigate, page, dispatch, pageSize } = useGenericTablePageHooks();
   const populate = useGetPopulateFields();
   const tableColumns = useTableColumns(sportBaseLabels);
   const isUser = useIsUser();
@@ -103,11 +103,12 @@ const SportBases = () => {
     endpoint: () =>
       api.getSportsBases({
         page,
+        pageSize,
         query: mapSportBaseQuery(filter),
         populate,
       }),
     mapData: (list) => mapRequestList(list),
-    dependencyArray: [page, filter],
+    dependencyArray: [page, filter, pageSize],
   });
 
   const notFound: NotFoundInfoProps = {

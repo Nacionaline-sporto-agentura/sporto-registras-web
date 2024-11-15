@@ -32,7 +32,12 @@ import api from '../utils/api';
 import { AdminRoleType, RequestEntityTypes, StatusTypes } from '../utils/constants';
 import { formatDate, handleErrorToastFromServer, isNew } from '../utils/functions';
 import { slugs } from '../utils/routes';
-import { buttonsTitles, inputLabels, validationTexts } from '../utils/texts';
+import {
+  buttonsTitles,
+  inputLabels,
+  sportsPersonHistoryDescriptions,
+  validationTexts,
+} from '../utils/texts';
 
 const generalSchema = Yup.object().shape({
   firstName: Yup.string().required(validationTexts.requireText),
@@ -483,6 +488,7 @@ const SportsPersonPage = () => {
                 titles={titles}
                 diff={changes as any}
                 data={values}
+                requestFormHistoryDescriptions={sportsPersonHistoryDescriptions}
               />
             )}
           </Container>

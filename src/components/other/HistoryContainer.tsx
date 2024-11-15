@@ -7,7 +7,7 @@ import api from '../../utils/api';
 import { colorsByStatus } from '../../utils/constants';
 import { formatDateAndTime } from '../../utils/functions';
 import { useInfinityLoad } from '../../utils/hooks';
-import { requestFormHistoryDescriptions, requestStatusLabels } from '../../utils/texts';
+import { requestStatusLabels } from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
 import FullscreenLoader from './FullscreenLoader';
 import Icon, { IconName } from './Icons';
@@ -126,6 +126,7 @@ const HistoryContainer = ({
   open,
   requestId,
   handleClear,
+  requestFormHistoryDescriptions,
 }: {
   titles: { [key: string]: any };
   disabled: boolean;
@@ -136,6 +137,7 @@ const HistoryContainer = ({
   open: boolean;
   requestId: any;
   handleClear: () => void;
+  requestFormHistoryDescriptions: { [key: string]: string };
 }) => {
   const observerRef = useRef(null);
 
