@@ -36,7 +36,6 @@ const membershipSchema = Yup.object().shape({
   name: Yup.string().required(validationTexts.requireText),
   //companyCode: Yup.string().required(validationTexts.requireText),
   startAt: Yup.date().required(validationTexts.requireText),
-  endAt: Yup.date().required(validationTexts.requireText),
 });
 
 const membershipTableLabels = {

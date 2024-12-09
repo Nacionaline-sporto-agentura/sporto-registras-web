@@ -51,6 +51,9 @@ export const validationTexts = {
   colorCode: 'Blogas spalvos kodas',
   companyCode: 'Blogas įmonės kodas',
   minCharacters: 'Privalote įvesti bent 3 simbolius',
+  [ServerErrorTypes.AUTH_COMPANY_EXISTS]: 'Įmonė su tokiu įmonės kodu jau egzistuoja',
+  [ServerErrorTypes.AUTH_USER_EXISTS]: `Naudotojas su tokiu asmens kodu jau egzistuoja`,
+  [ServerErrorTypes.AUTH_INVALID_DATA]: 'Blogai suvesti duomenys',
 };
 
 export const descriptions = {
@@ -329,7 +332,7 @@ export const inputLabels = {
   nonGovernmentalOrganization: 'Atitinka nevyriausybinėms organizacijoms keliamus reikalavimus',
   nonFormalEducation: 'Gali vykdyti akredituotas neformaliojo vaikų švietimo programas',
   canHaveChildren: 'Įstaiga yra sporto organizacija, kuriai leidžiama kurti vaikines organizacijas',
-  ownerWithPassword: 'Pakviesti vadovą su slaptažodžiu',
+  ownerWithPassword: 'Pakviesti atstovą su slaptažodiu',
   userWithPassword: 'Pakviesti naudotoją su slaptažodžiu',
   legalForm: 'Teisinė forma',
   sportBaseName: 'Sporto bazės pavadinimas',

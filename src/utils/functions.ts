@@ -4,7 +4,7 @@ import wkx from 'wkx';
 import { ActionTypes } from '../components/other/HistoryContainer';
 import { Address, Result, User } from '../types';
 import api, { SortAscFields } from './api';
-import { AdminRoleType, HistoryTypes, ResultTypeTypes } from './constants';
+import { AdminRoleType, ResultTypeTypes } from './constants';
 import { url, validationTexts } from './texts';
 
 export interface Path {
@@ -25,7 +25,7 @@ interface HandlePaginationProps {
 
 export const getErrorMessage = (error: string) => validationTexts[error] || validationTexts.error;
 
-export const getReactQueryErrorMessage = (response: any) => response?.data?.type;
+export const getReactQueryErrorMessage = (error: any) => error?.response?.data?.type;
 
 export const handleErrorToast = (message: string) => {
   toast.error(message, {
@@ -417,4 +417,3 @@ export const getResult = (result) => {
     ? result?.value
     : '-';
 };
-
