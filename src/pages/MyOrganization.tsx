@@ -2,6 +2,7 @@ import { useMutation, useQuery } from 'react-query';
 import * as Yup from 'yup';
 import Api from '../utils/api';
 import {
+  getErrorMessage,
   getReactQueryErrorMessage,
   handleErrorToastFromServer,
   handleSuccessToast,
@@ -132,8 +133,9 @@ const MyOrganization = () => {
         return await updateTenant.mutateAsync(params);
       } catch (e: any) {
         const error = e as ReactQueryError;
-        const errorMessage = getReactQueryErrorMessage(error.response.data.message);
-        setErrors({ email: errorMessage });
+        const type = getReactQueryErrorMessage(error);
+        const message = getErrorMessage(type);
+        setErrors({ email: message });
       }
     };
 
