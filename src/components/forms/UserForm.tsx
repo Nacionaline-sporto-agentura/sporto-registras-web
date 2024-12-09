@@ -9,6 +9,7 @@ import { DeleteInfoProps, ReactQueryError, User } from '../../types';
 import api from '../../utils/api';
 import { AdminRoleType, UserRoleType } from '../../utils/constants';
 import {
+  getErrorMessage,
   getReactQueryErrorMessage,
   handleErrorToastFromServer,
   isCurrentUser,
@@ -132,8 +133,10 @@ const UserForm = ({
         await createUser.mutateAsync(params);
       } catch (e: any) {
         const error = e as ReactQueryError;
-        const errorMessage = getReactQueryErrorMessage(error.response.data.message);
-        setErrors({ email: errorMessage });
+        const type = getReactQueryErrorMessage(error);
+        const message = getErrorMessage(type);
+
+        setErrors({ email: message });
       }
       return;
     }

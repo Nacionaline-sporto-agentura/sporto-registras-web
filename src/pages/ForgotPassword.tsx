@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import Button from '../components/buttons/Button';
 import TextField from '../components/fields/TextField';
 import ReturnToLogin from '../components/other/ReturnToLogin';
+import { ReactQueryError } from '../types';
 import api from '../utils/api';
 import {
   getErrorMessage,
@@ -24,10 +25,12 @@ const ForgotPassword = () => {
     return await api.remindPassword(params);
   };
 
-  const handleInputError = ({ response }) => {
-    const error = getErrorMessage(getReactQueryErrorMessage(response));
+  const handleInputError = (e) => {
+    const error = e as ReactQueryError;
+    const type = getReactQueryErrorMessage(error);
+    const message = getErrorMessage(type);
     if (error) {
-      return setErrors({ email: error });
+      return setErrors({ email: message });
     }
     handleErrorToastFromServer();
   };

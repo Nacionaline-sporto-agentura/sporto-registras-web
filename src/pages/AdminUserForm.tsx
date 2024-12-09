@@ -12,6 +12,7 @@ import { FormRow, TitleColumn } from '../styles/CommonStyles';
 import { DeleteInfoProps, ReactQueryError, User } from '../types';
 import Api from '../utils/api';
 import {
+  getErrorMessage,
   getReactQueryErrorMessage,
   handleErrorToastFromServer,
   isCurrentUser,
@@ -107,8 +108,9 @@ const AdminUserForm = () => {
         await createUser.mutateAsync(params);
       } catch (e: any) {
         const error = e as ReactQueryError;
-        const errorMessage = getReactQueryErrorMessage(error.response.data.message);
-        setErrors({ email: errorMessage });
+        const type = getReactQueryErrorMessage(error);
+        const message = getErrorMessage(type);
+        setErrors({ email: message });
       }
       return;
     }

@@ -9,6 +9,7 @@ import { DeleteInfoProps, ReactQueryError } from '../types';
 import Api from '../utils/api';
 import {
   filterOutGroup,
+  getErrorMessage,
   getReactQueryErrorMessage,
   handleErrorToastFromServer,
   isNew,
@@ -110,8 +111,9 @@ const UpdateOrganizationForm = () => {
       return await updateTenant.mutateAsync(params);
     } catch (e: any) {
       const error = e as ReactQueryError;
-      const errorMessage = getReactQueryErrorMessage(error.response.data.message);
-      setErrors({ email: errorMessage });
+      const type = getReactQueryErrorMessage(error);
+      const message = getErrorMessage(type);
+      setErrors({ email: message });
     }
   };
 

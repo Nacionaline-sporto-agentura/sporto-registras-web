@@ -7,8 +7,13 @@ import FormikFormLayout from '../components/layouts/FormikFormLayout';
 import { TitleColumn } from '../styles/CommonStyles';
 import { ReactQueryError } from '../types';
 import Api from '../utils/api';
-import { TenantTypes } from '../utils/constants';
-import { getReactQueryErrorMessage, handleErrorToastFromServer, isNew } from '../utils/functions';
+import { ServerErrorTypes, TenantTypes } from '../utils/constants';
+import {
+  getErrorMessage,
+  getReactQueryErrorMessage,
+  handleErrorToastFromServer,
+  isNew,
+} from '../utils/functions';
 import { useIsTenantUser } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 import { pageTitles } from '../utils/texts';
@@ -100,8 +105,14 @@ const OrganizationFormPage = () => {
         await createTenant.mutateAsync(params);
       } catch (e: any) {
         const error = e as ReactQueryError;
-        const errorMessage = getReactQueryErrorMessage(error.response.data.message);
-        setErrors({ email: errorMessage });
+        const type = getReactQueryErrorMessage(error);
+        const message = getErrorMessage(type);
+
+        if (type === ServerErrorTypes.AUTH_COMPANY_EXISTS) {
+          setErrors({ companyCode: message });
+        } else {
+          setErrors({ form: message });
+        }
       }
       return;
     }

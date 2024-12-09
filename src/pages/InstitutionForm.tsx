@@ -5,7 +5,7 @@ import FormikFormLayout from '../components/layouts/FormikFormLayout';
 import { TitleColumn } from '../styles/CommonStyles';
 import { ReactQueryError } from '../types';
 import Api from '../utils/api';
-import { getReactQueryErrorMessage, handleErrorToastFromServer, isNew } from '../utils/functions';
+import { getErrorMessage, getReactQueryErrorMessage, handleErrorToastFromServer, isNew } from '../utils/functions';
 import { slugs } from '../utils/routes';
 import { pageTitles } from '../utils/texts';
 import OwnerForm from '../components/forms/OwnerForm';
@@ -95,8 +95,9 @@ const InstitutionForm = () => {
         await createTenant.mutateAsync(params);
       } catch (e: any) {
         const error = e as ReactQueryError;
-        const errorMessage = getReactQueryErrorMessage(error.response.data.message);
-        setErrors({ email: errorMessage });
+        const type = getReactQueryErrorMessage(error);
+        const message = getErrorMessage(type);
+        setErrors({ email: message });
       }
       return;
     }

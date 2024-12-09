@@ -111,8 +111,9 @@ const Profile = () => {
       await updateProfile.mutateAsync(params);
     } catch (e: any) {
       const error = e as ReactQueryError;
-      const errorMessage = getErrorMessage(getReactQueryErrorMessage(error.response));
-      setErrors({ oldPassword: errorMessage });
+      const type = getReactQueryErrorMessage(error);
+      const message = getErrorMessage(type);
+      setErrors({ oldPassword: message });
     }
   };
 
