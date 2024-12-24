@@ -100,10 +100,10 @@
   resolved "https://registry.yarnpkg.com/@aplinkosministerija/biip-prettier-config/-/biip-prettier-config-1.1.0.tgz#f62b0dde76107ab3f646cce2d54d02bd783ce388"
   integrity sha512-DxWGfBY2KuK8OgP2KUb96ieGlqE5gYuxI22Yt1FfoIldlDENW5I8kXj+YFB4iG65i7e1neXPZd9RGHmxxDxxSQ==
 
-"@aplinkosministerija/design-system@^0.0.98":
-  version "0.0.98"
-  resolved "https://registry.yarnpkg.com/@aplinkosministerija/design-system/-/design-system-0.0.98.tgz#ac3d3e9c9845b6f897a8dcfdb0848349b4930bc0"
-  integrity sha512-zIgXXREOAQ+OE9kt/3cs6MLqm9XV4UT+9/aPhUsM8O4o/cM59TJ70xsowaS+B/ETvcfalVgRTOxejiIi3Dftvg==
+"@aplinkosministerija/design-system@^1.2.4":
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@aplinkosministerija/design-system/-/design-system-1.2.4.tgz#c34b43e77b3a850475b135dcc1320f8dba0cfa6a"
+  integrity sha512-DqdVyaQOkbcSOdFd2G3JZZSNyWySjbrSvu5J7HYBJW8SBb34cGCktDbEHAxdvOjkKrepchBDVqUfDvHQQvQXwg==
   dependencies:
     "@mapbox/mapbox-gl-draw" "^1.4.3"
     "@mapbox/mapbox-gl-draw-static-mode" "^1.0.1"
@@ -121,6 +121,7 @@
     lodash "^4.17.21"
     maplibre-gl "^4.3.2"
     numeral "^2.0.6"
+    openapi-fetch "^0.12.2"
     pmtiles "^3.0.6"
     proj4 "^2.11.0"
     react-datepicker "^6.9.0"
@@ -5967,6 +5968,18 @@ openapi-fetch@^0.10.2:
   integrity sha512-GCzgKIZchnxZRnztiOlRTKk9tQT0NHvs5MNXYFtOwG7xaj1iCJOGDsTLbn/2QUP37PjGTT890qERFjvmjxzQMg==
   dependencies:
     openapi-typescript-helpers "^0.0.9"
+
+openapi-fetch@^0.12.2:
+  version "0.12.5"
+  resolved "https://registry.yarnpkg.com/openapi-fetch/-/openapi-fetch-0.12.5.tgz#b0cabd3fe2d423f44b83a0ce99a20e1aa4067287"
+  integrity sha512-FnAMWLt0MNL6ComcL4q/YbB1tUgyz5YnYtwA1+zlJ5xcucmK5RlWsgH1ynxmEeu8fGJkYjm8armU/HVpORc9lw==
+  dependencies:
+    openapi-typescript-helpers "^0.0.15"
+
+openapi-typescript-helpers@^0.0.15:
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/openapi-typescript-helpers/-/openapi-typescript-helpers-0.0.15.tgz#96ffa762a5e01ef66a661b163d5f1109ed1967ed"
+  integrity sha512-opyTPaunsklCBpTK8JGef6mfPhLSnyy5a0IN9vKtx3+4aExf+KxEqYwIy3hqkedXIB97u357uLMJsOnm3GVjsw==
 
 openapi-typescript-helpers@^0.0.9:
   version "0.0.9"
